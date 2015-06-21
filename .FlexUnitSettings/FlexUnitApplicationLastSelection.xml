@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testrun name="" >
+<testsuite  name="Default Test Suite" project="cmal">
+<testsuite name="jp.coremind.control:TestRoutine" type="testcaseclass"/>
+<testsuite name="jp.coremind.control:TestThread" type="testcaseclass"/>
+</testsuite>
+<portNumber value="8765" />
+</testrun>

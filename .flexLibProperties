@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
+  <includeClasses>
+    <classEntry path="$"/>
+    <classEntry path="jp.coremind.configure.ApplicationConfigure"/>
+    <classEntry path="jp.coremind.configure.DisplayAspectRatio"/>
+    <classEntry path="jp.coremind.configure.IApplicationConfigure"/>
+    <classEntry path="jp.coremind.configure.VariableDirection"/>
+    <classEntry path="jp.coremind.control.Application"/>
+    <classEntry path="jp.coremind.control.FrameLoop"/>
+    <classEntry path="jp.coremind.control.FramePostProcessLoop"/>
+    <classEntry path="jp.coremind.control.FramePreProcessLoop"/>
+    <classEntry path="jp.coremind.control.Loop"/>
+    <classEntry path="jp.coremind.control.Process"/>
+    <classEntry path="jp.coremind.control.Routine"/>
+    <classEntry path="jp.coremind.control.Thread"/>
+    <classEntry path="jp.coremind.control.TimerLoop"/>
+    <classEntry path="jp.coremind.control.routine.Sleep"/>
+    <classEntry path="jp.coremind.control.routine.WebRequest"/>
+    <classEntry path="jp.coremind.data.HashList"/>
+    <classEntry path="jp.coremind.data.Index"/>
+    <classEntry path="jp.coremind.data.List"/>
+    <classEntry path="jp.coremind.data.ListFilter"/>
+    <classEntry path="jp.coremind.data.Paginate"/>
+    <classEntry path="jp.coremind.data.Progress"/>
+    <classEntry path="jp.coremind.transition.ViewTransition"/>
+    <classEntry path="jp.coremind.network.RequestConfigure"/>
+    <classEntry path="jp.coremind.network.ResponseContainer"/>
+    <classEntry path="jp.coremind.resource.CSVContent"/>
+    <classEntry path="jp.coremind.resource.ContentParser"/>
+    <classEntry path="jp.coremind.resource.IByteArrayContent"/>
+    <classEntry path="jp.coremind.resource.ImageContent"/>
+    <classEntry path="jp.coremind.resource.JPEGContent"/>
+    <classEntry path="jp.coremind.resource.JSONContent"/>
+    <classEntry path="jp.coremind.resource.MediaContent"/>
+    <classEntry path="jp.coremind.resource.PNGContent"/>
+    <classEntry path="jp.coremind.resource.SWFContent"/>
+    <classEntry path="jp.coremind.resource.TextContent"/>
+    <classEntry path="jp.coremind.utility.Log"/>
+    <classEntry path="jp.coremind.utility.Status"/>
+    <classEntry path="jp.coremind.utility.helper.ArrayHelper"/>
+    <classEntry path="jp.coremind.utility.helper.EventHelper"/>
+    <classEntry path="jp.coremind.utility.helper.HashHelper"/>
+    <classEntry path="jp.coremind.utility.helper.HelperContainer"/>
+    <classEntry path="jp.coremind.utility.helper.LoopHelper"/>
+    <classEntry path="jp.coremind.utility.helper.StringHelper"/>
+    <classEntry path="jp.coremind.utility.validation.ArrayValidation"/>
+    <classEntry path="jp.coremind.utility.validation.BooleanValidation"/>
+    <classEntry path="jp.coremind.utility.validation.HashValidation"/>
+    <classEntry path="jp.coremind.utility.validation.IValidation"/>
+    <classEntry path="jp.coremind.utility.validation.NumberValidation"/>
+    <classEntry path="jp.coremind.utility.validation.StringValidation"/>
+    <classEntry path="jp.coremind.view.IView"/>
+    <classEntry path="jp.coremind.view.IViewContainer"/>
+    <classEntry path="jp.coremind.view.flash.LinkageMovieClip"/>
+    <classEntry path="jp.coremind.view.flash.Navigation"/>
+    <classEntry path="jp.coremind.view.flash.View"/>
+    <classEntry path="jp.coremind.view.flash.ViewControl"/>
+    <classEntry path="jp.coremind.view.starling.RootView"/>
+    <classEntry path="jp.coremind.view.starling.ViewControl"/>
+    <classEntry path="jp.coremind.view.ViewContainer"/>
+    <classEntry path="jp.coremind.utility.Drug"/>
+    <classEntry path="jp.coremind.utility.TransitionPhysics"/>
+    <classEntry path="jp.coremind.utility.VectorGraphics"/>
+    <classEntry path="jp.coremind.transition.Spring"/>
+    <classEntry path="jp.coremind.data.NumberTracker"/>
+    <classEntry path="jp.coremind.utility.Measure"/>
+    <classEntry path="jp.coremind.utility.Flick"/>
+    <classEntry path="jp.coremind.data.FlickAcceleration"/>
+    <classEntry path="jp.coremind.view.flash.VariableContainer"/>
+    <classEntry path="jp.coremind.view.flash.ElementContainer"/>
+    <classEntry path="jp.coremind.view.flash.Element"/>
+    <classEntry path="jp.coremind.view.IElement"/>
+    <classEntry path="jp.coremind.view.IElementContainer"/>
+    <classEntry path="jp.coremind.view.layout.MatrixLayout"/>
+    <classEntry path="jp.coremind.view.flash.ListContainer"/>
+    <classEntry path="jp.coremind.view.layout.ILayout"/>
+    <classEntry path="jp.coremind.transition.ElementTransition"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>
