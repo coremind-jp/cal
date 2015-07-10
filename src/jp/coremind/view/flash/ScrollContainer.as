@@ -12,7 +12,7 @@ package jp.coremind.view.flash
     import jp.coremind.utility.VectorGraphics;
     import jp.coremind.view.IElementContainer;
     
-    public class VariableContainer extends ElementContainer
+    public class ScrollContainer extends ElementContainer
     {
         private static const _OFFSET:Rectangle = new Rectangle();
         private static const _BEFORE_FLICKAREA_POS:Point = new Point();
@@ -26,7 +26,8 @@ package jp.coremind.view.flash
             _flickArea:Rectangle,
             _flick:Flick;
         
-        public function VariableContainer(
+        public function ScrollContainer(
+            conatinerClass:Class,
             containerWidth:Number,
             containerHeight:Number,
             absorbThreshold:Number = 0)
@@ -37,7 +38,7 @@ package jp.coremind.view.flash
                 mask = addChild(maskShape);
                 VectorGraphics.rect(maskShape.graphics, containerWidth, containerHeight);
                 
-                addElement(_container = new ElementContainer());
+                addElement(_container = new conatinerClass());
                 
                 addChild(_listener = new Sprite()).addEventListener(MouseEvent.MOUSE_DOWN, _onDrug);
                 VectorGraphics.rect(_listener.graphics, containerWidth, containerHeight, 0, 0);

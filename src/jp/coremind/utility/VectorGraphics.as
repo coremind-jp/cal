@@ -4,7 +4,7 @@ package jp.coremind.utility
 
     public class VectorGraphics
     {
-        public static function rect(g:Graphics, w:Number, h:Number, color:uint = 0xFF0000, alpha:Number = 1, ellipse:Number = 0, x:Number = 0, y:Number = 0):void
+        public static function rect(g:Graphics, w:Number, h:Number, color:uint = 0xFF0000, alpha:Number = 1, ellipse:Number = 0):void
         {
             g.beginFill(color, alpha);
             

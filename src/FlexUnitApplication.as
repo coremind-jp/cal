@@ -4,7 +4,7 @@ package
     
     import flash.display.Sprite;
     
-    import flexUnitTests.TestTimerLoop;
+    import flexUnitTests.TestFrameLoop;
     
     import flexunit.flexui.FlexUnitTestRunnerUIAS;
     
@@ -26,7 +26,7 @@ package
         public function currentRunTestSuite():Array
         {
             var testsToRun:Array = new Array();
-            testsToRun.push(flexUnitTests.TestTimerLoop);
+            testsToRun.push(flexUnitTests.TestFrameLoop);
             return testsToRun;
         }
     }

@@ -1,7 +1,6 @@
 package jp.coremind.utility.helper
 {
     import jp.coremind.data.HashList;
-    
     import jp.coremind.utility.Log;
 
     public class HashHelper
@@ -34,6 +33,16 @@ package jp.coremind.utility.helper
             
             _val = o[_key];
             return _hierarchy.length > 0 ? read(_val, _hierarchy.join(".")): _val;
+        }
+        
+        public function keyClone(o:Object):Object
+        {
+            var _result:Object = {};
+            
+            for (var p:String in o)
+                _result[p] = o[p];
+            
+            return _result;
         }
         
         public function del(o:Object, path:String):void

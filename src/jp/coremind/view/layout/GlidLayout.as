@@ -1,8 +1,10 @@
 package jp.coremind.view.layout
 {
     import flash.geom.Point;
+    
+    import jp.coremind.control.Application;
 
-    public class MatrixLayout implements ILayout
+    public class GlidLayout implements ILayout
     {
         public static const VARIABLE_DIRECTION_X:String = "variableDirectionX";
         public static const VARIABLE_DIRECTION_Y:String = "variableDirectionY";
@@ -14,7 +16,7 @@ package jp.coremind.view.layout
             _stack:int,
             _point:Point;
         
-        public function MatrixLayout(
+        public function GlidLayout(
             variableDirection:String = "x",
             marginX:int = 0,
             marginY:int = 0,
@@ -46,6 +48,23 @@ package jp.coremind.view.layout
             }
             
             return p;
+        }
+        
+        public function calcMaxContains(global:Point, elementWidth:Number, elementHeight:Number):int
+        {
+            var w:Number = Application.stage.stageWidth;
+            var h:Number = Application.stage.stageHeight;
+            
+            var drawbleX:int, drawbleY:int = 0;
+            var overflowX:Boolean, overflowY:Boolean;
+            for (var i:int; !overflowX && !overflowY; i++)
+            {
+                var p:Point = calcPosition(elementWidth, elementHeight, i);
+                global.x + p.x + elementWidth  < w ? drawbleX = i: overflowX = true;
+                global.y + p.y + elementHeight < h ? drawbleY = i: overflowY = true;
+            }
+            
+            return drawbleX * drawbleY;
         }
     }
 }

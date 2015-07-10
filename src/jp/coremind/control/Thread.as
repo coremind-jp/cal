@@ -9,6 +9,8 @@ package jp.coremind.control
         public static const TAG:String = "[Thread]";
         Log.addCustomTag(TAG);
         
+        private static const EMPTY_ROUTINE:Function = function(r:Routine, t:Thread):void { r.scceeded(); };
+        
         internal var
             _threadRoutine:Routine;
         
@@ -64,11 +66,12 @@ package jp.coremind.control
         {
             if (_threadRoutine.phase.equal(Status.IDLING))
             {
-                _routineList.source.push(new Routine(_threadRoutine.name+" ["+_routineList.length+"]", weight));
-                _functionList.source.push(function(r:Routine, t:Thread):void
+                var len:int = _routineList.source.length;
+                _routineList.source[len] = new Routine(_threadRoutine.name+" ["+_routineList.length+"]", weight);
+                _functionList.source[len] = function(r:Routine, t:Thread):void
                 {
                     $.apply(f, args ? new Array(r, t).concat(args): [r, t]);
-                });
+                };
             }
             else Log.custom(TAG, _threadRoutine.name+" pushRoutine cancelled.");
             
@@ -119,12 +122,10 @@ package jp.coremind.control
         private function _exec(callback:Function, parallel:Boolean, memory:Object):void
         {
             if (_routineList.length == 0)
-                callback(null);
-            else
-            {
-                _threadRoutine.terminateHandler = _terminate;
-                _threadRoutine.exec(parallel ? _execParallel: _execSeriarl, memory, callback);
-            }
+                pushRoutine(EMPTY_ROUTINE);
+            
+            _threadRoutine.terminateHandler = _terminate;
+            _threadRoutine.exec(parallel ? _execParallel: _execSeriarl, memory, callback);
         }
         
         internal function unbindRoutine():void//*unitTest用にinternalにしている。本来であればprivate

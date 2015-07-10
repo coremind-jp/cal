@@ -52,7 +52,6 @@
     <classEntry path="jp.coremind.utility.validation.StringValidation"/>
     <classEntry path="jp.coremind.view.IView"/>
     <classEntry path="jp.coremind.view.IViewContainer"/>
-    <classEntry path="jp.coremind.view.flash.LinkageMovieClip"/>
     <classEntry path="jp.coremind.view.flash.Navigation"/>
     <classEntry path="jp.coremind.view.flash.View"/>
     <classEntry path="jp.coremind.view.flash.ViewControl"/>
@@ -67,15 +66,42 @@
     <classEntry path="jp.coremind.utility.Measure"/>
     <classEntry path="jp.coremind.utility.Flick"/>
     <classEntry path="jp.coremind.data.FlickAcceleration"/>
-    <classEntry path="jp.coremind.view.flash.VariableContainer"/>
+    <classEntry path="jp.coremind.view.flash.ScrollContainer"/>
     <classEntry path="jp.coremind.view.flash.ElementContainer"/>
     <classEntry path="jp.coremind.view.flash.Element"/>
     <classEntry path="jp.coremind.view.IElement"/>
     <classEntry path="jp.coremind.view.IElementContainer"/>
-    <classEntry path="jp.coremind.view.layout.MatrixLayout"/>
+    <classEntry path="jp.coremind.view.layout.GlidLayout"/>
     <classEntry path="jp.coremind.view.flash.ListContainer"/>
     <classEntry path="jp.coremind.view.layout.ILayout"/>
     <classEntry path="jp.coremind.transition.ElementTransition"/>
+    <classEntry path="jp.coremind.control.StorageControl"/>
+    <classEntry path="jp.coremind.model.storage.IStorage"/>
+    <classEntry path="jp.coremind.model.StorageAccessor"/>
+    <classEntry path="jp.coremind.model.storage.StorageType"/>
+    <classEntry path="jp.coremind.model.storage.HashStorage"/>
+    <classEntry path="jp.coremind.model.storage.SharedObjectStrage"/>
+    <classEntry path="jp.coremind.model.storage.SqLiteStorage"/>
+    <classEntry path="jp.coremind.model.storage.Storage"/>
+    <classEntry path="jp.coremind.model.ListTransaction"/>
+    <classEntry path="jp.coremind.model.ElementEditer"/>
+    <classEntry path="jp.coremind.model.IList"/>
+    <classEntry path="jp.coremind.model.TransactionLog"/>
+    <classEntry path="jp.coremind.model.Diff"/>
+    <classEntry path="jp.coremind.model.ITransaction"/>
+    <classEntry path="jp.coremind.model.IStorageListener"/>
+    <classEntry path="jp.coremind.model.IContainerTransaction"/>
+    <classEntry path="jp.coremind.model.ListDiff"/>
+    <classEntry path="jp.coremind.model.HashDiff"/>
+    <classEntry path="jp.coremind.utility.InstancePool"/>
+    <classEntry path="jp.coremind.utility.IRecycle"/>
+    <classEntry path="jp.coremind.model.ITransactionLogParser"/>
+    <classEntry path="jp.coremind.view.layout.LiquidLayout"/>
+    <classEntry path="jp.coremind.view.starling.Element"/>
+    <classEntry path="jp.coremind.view.starling.ElementContainer"/>
+    <classEntry path="jp.coremind.view.starling.ListContainer"/>
+    <classEntry path="jp.coremind.view.LayoutSimulation"/>
+    <classEntry path="jp.coremind.view.starling.ScrollContainer"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

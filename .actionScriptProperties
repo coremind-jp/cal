@@ -38,6 +38,7 @@
       <libraryPathEntry kind="1" linkType="1" path="${FLEXUNIT_LIB_LOCATION}/version4libs/ASProject_Extended"/>
       <libraryPathEntry kind="1" linkType="1" path="${FLEXUNIT_LOCALE_LOCATION}"/>
       <libraryPathEntry kind="1" linkType="1" path="C:/Program Files (x86)/Adobe Gaming SDK 1.4/Frameworks/Starling/Starling-Framework/starling/bin"/>
+      <libraryPathEntry kind="3" linkType="1" path="libs/BetweenAS3-Alpha-r3022-fp10.swc" useDefaultLinkType="false"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>

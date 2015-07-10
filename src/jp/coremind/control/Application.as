@@ -60,8 +60,6 @@ package jp.coremind.control
                     Starling.current.showStatsAt("left","top",2);
                     
                     _STAGE.frameRate = 60;
-                    _STAGE.stageHeight = 800;
-                    _STAGE.stageWidth  = 800;
                 }
             };
             
@@ -69,6 +67,8 @@ package jp.coremind.control
                 _bind():
                 $.event.anyone(deploymentTarget, [Event.ADDED_TO_STAGE], [_bind]);
         }
+        
+        public static const storage:StorageControl = new StorageControl();
         
         public static function get stage():Stage { return _STAGE; }
         

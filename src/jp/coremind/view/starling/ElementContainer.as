@@ -1,10 +1,10 @@
-package jp.coremind.view.flash
+package jp.coremind.view.starling
 {
-    import flash.display.DisplayObject;
-    
     import jp.coremind.view.IElement;
     import jp.coremind.view.IElementContainer;
-
+    
+    import starling.display.DisplayObject;
+    
     public class ElementContainer extends Element implements IElementContainer
     {
         public function ElementContainer()

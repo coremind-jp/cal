@@ -5,5 +5,6 @@ package jp.coremind.view.layout
     public interface ILayout
     {
         function calcPosition(width:Number, height:Number, index:int, length:int = 0):Point
+        function calcMaxContains(global:Point, elementWidth:Number, elementHeight:Number):int;
     }
 }

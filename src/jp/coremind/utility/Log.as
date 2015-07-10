@@ -4,6 +4,7 @@ package jp.coremind.utility
     {
         public static var STACK_TRACE_NUM:int  = 25;
         public static var _OUTPUT:Function     = trace;
+//        public static var _OUTPUT:Function     = function(...rest):void{};
         
         private static const LINE_BREAK:String = "\n";
         private static const REST_SPACE:String = " ";
@@ -15,11 +16,17 @@ package jp.coremind.utility
         public static function addCustomTag(tag:String):void    { VALID_TAG_LIST[tag] = true; }
         public static function removeCustomTag(tag:String):void { delete VALID_TAG_LIST[tag]; }
         public static function switchCustomTag(tag:String):void { (tag in VALID_TAG_LIST) ? removeCustomTag(tag): addCustomTag(tag); }
+        
         public static function custom(tag:String, ...rest):void { if (tag in VALID_TAG_LIST) _OUTPUT(tag+INDENT+_join(rest)); }
+//        public static function custom(tag:String, ...rest):void { }
         
         public static function info(...rest):void    { _OUTPUT("INFO    :"+INDENT+_join(rest)); }
-        public static function debug(...rest):void   { _OUTPUT("DEBUG   :"+INDENT+_join(rest)); }
-        public static function warning(...rest):void { _OUTPUT("WARNING :"+INDENT+_join(rest)); }
+//        public static function debug(...rest):void   { _OUTPUT("DEBUG   :"+INDENT+_join(rest)); }
+//        public static function warning(...rest):void { _OUTPUT("WARNING :"+INDENT+_join(rest)); }
+//        public static function info(...rest):void    { }
+        public static function debug(...rest):void   { }
+        public static function warning(...rest):void { }
+        
         public static function error(...rest):void
         {
             var _stackTrace:String = new Error()
@@ -47,6 +54,8 @@ package jp.coremind.utility
             return $.isPrimitive(value) ? value:
                 $.isArray(value) ? LINE_BREAK + _dumpArray(value, indent + INDENT):
                 _isObject(value) ? LINE_BREAK + _dumpHash(value, indent + INDENT):
+                value === null ? "null":
+                value === undefined ? "undefined":
                 value;
         }
         

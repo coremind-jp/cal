@@ -1,11 +1,25 @@
 package jp.coremind.view
 {
+    import flash.geom.Point;
+    
+    import jp.coremind.model.StorageAccessor;
+
     public interface IElement
     {
-        function bindData(data:Object):void;
-        function get data():Object;
+        function initialize(model:StorageAccessor):void
         function destroy():void;
         
+        function enablePointerDeviceControl():void;
+        function disablePointerDeviceControl():void;
+        
+        function get elementWidth():Number;
+        function get elementHeight():Number;
+        
+        function get addTransition():Function;
+        function get mvoeTransition():Function;
+        function get removeTransition():Function;
+        
+        //flash displayObject accessor
         function set name(v:String):void
         function get name():String
         
@@ -21,13 +35,7 @@ package jp.coremind.view
         function get height():Number;
         function set height(n:Number):void;
         
-        function containsElement(element:IElement):Boolean;
-        
-        function get elementWidth():Number;
-        function get elementHeight():Number;
-        
-        function get addTransition():Function;
-        function get mvoeTransition():Function;
-        function get removeTransition():Function;
+        function get storage():StorageAccessor;
+        function get parentElement():IElementContainer;
     }
 }
