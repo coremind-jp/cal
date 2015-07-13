@@ -1,8 +1,8 @@
 package jp.coremind.utility.helper
 {
-    import jp.coremind.control.FramePostProcessLoop;
-    import jp.coremind.control.FramePreProcessLoop;
-    import jp.coremind.control.TimerLoop;
+    import jp.coremind.core.FramePostProcessLoop;
+    import jp.coremind.core.FramePreProcessLoop;
+    import jp.coremind.core.TimerLoop;
 
     public class LoopHelper
     {

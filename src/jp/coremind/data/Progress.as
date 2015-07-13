@@ -1,7 +1,10 @@
 package jp.coremind.data
 {
     import jp.coremind.utility.Log;
-
+    
+    /**
+     * 任意進捗量を操作するクラス.
+     */
     public class Progress
     {
         public var enabledRound:Boolean;
@@ -18,6 +21,9 @@ package jp.coremind.data
             setRange();
         }
         
+        /**
+         * 範囲を指定する.
+         */
         public function setRange(min:Number = 0, max:Number = 1):void
         {
             if (max < min)
@@ -34,16 +40,49 @@ package jp.coremind.data
             update(_now);
         }
         
+        /**
+         * 現在の進捗値を絶対値で取得する.
+         */
         public function get now():Number  { return _now; }
+        /**
+         * 最小値を取得する.
+         */
         public function get min():Number  { return _min; }
+        /**
+         * 最大値を取得する.
+         */
         public function get max():Number  { return _max; }
         
+        /**
+         * 最小値と最大値の幅を取得する.
+         */
+        public function get distance():Number { return _max - _min; }
+        /**
+         * 現在の進捗値を相対地で取得する.
+         */
         public function get gain():Number { return _now - _min; }
-        public function get rate():Number { return gain / (_max - _min); }
+        /**
+         * 現在の進捗値を単位値(0~1)で取得する.
+         */
+        public function get rate():Number { return gain / distance; }
         
-        public function forcedComplete():void { _now = _max; }
-        public function reset():void          { _now = _min; }
+        /**
+         * 現在の進捗値が最小値と最大値の間に含まれるかを示す値を返す.
+         */
+        public function isOutOfRange():Boolean { return _now < _min || _max < _now; }
+        /**
+         * 強制的に現在の進捗値を最大値にする.
+         */
+        public function forcedComplete():void  { _now = _max; }
+        /**
+         * 強制的に現在の進捗値を最小値にする.
+         */
+        public function reset():void           { _now = _min; }
         
+        /**
+         * 進捗値を更新する.
+         * enabledRoundがtrueの場合で最小値を下回ったり最大値を上回った場合範囲内に丸め込まれる。
+         */
         public function update(now:Number):Boolean
         {
             if (enabledRound)
@@ -57,6 +96,24 @@ package jp.coremind.data
                 _now = isNaN(now) ? _min: now;
             
             return true;
+        }
+        
+        /**
+         * 進捗値を単位値(0~1)で更新する.
+         * enabledRoundがtrueの場合で最小値を下回ったり最大値を上回った場合範囲内に丸め込まれる。
+         */
+        public function updateByRate(rate:Number):Boolean
+        {
+            rate = enabledRound ?
+                rate < 0 ? 0: 1 < rate ? 1: rate:
+                rate;
+            
+            return update(_min + distance * rate);
+        }
+        
+        public function toString():String
+        {
+            return "now="+_now+" min="+_min+" max="+_max+" distance="+distance+" gain="+gain;
         }
     }
 }

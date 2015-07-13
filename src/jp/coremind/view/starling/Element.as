@@ -1,10 +1,12 @@
 package jp.coremind.view.starling
 {
+    import jp.coremind.event.ElementEvent;
     import jp.coremind.model.Diff;
-    import jp.coremind.model.IStorageListener;
     import jp.coremind.model.StorageAccessor;
-    import jp.coremind.transition.ElementTransition;
+    import jp.coremind.model.storage.IStorageListener;
+    import jp.coremind.view.transition.ElementTransition;
     import jp.coremind.utility.IRecycle;
+    import jp.coremind.utility.Log;
     import jp.coremind.view.IElement;
     import jp.coremind.view.IElementContainer;
     
@@ -21,6 +23,15 @@ package jp.coremind.view.starling
         public function Element()
         {
             _elementWidth = _elementHeight = NaN;
+            touchable = false;
+        }
+        
+        protected function _updateElementSize(w:Number, h:Number):void
+        {
+            _elementWidth  = w;
+            _elementHeight = h;
+            Log.info("_updateElementSize", w, h);
+            dispatchEventWith(ElementEvent.UPDATE_SIZE);
         }
         
         //IRecycle interface
@@ -47,7 +58,7 @@ package jp.coremind.view.starling
                 _storage = null;
             }
             
-            if (parent) parent.removeChild(this);
+            removeFromParent(true);
         }
         
         //IElement interface
@@ -57,17 +68,26 @@ package jp.coremind.view.starling
             _storage.addListener(this);
         }
         
-        public function enablePointerDeviceControl():void  {  }
-        public function disablePointerDeviceControl():void {  }
+        public function addListener(type:String, listener:Function):void    { addEventListener(type, listener); }
+        public function removeListener(type:String, listener:Function):void { removeEventListener(type, listener); }
+        public function hasListener(type:String):void { hasEventListener(type); }
+        
+        public function enablePointerDeviceControl():void  { touchable = false; }
+        public function disablePointerDeviceControl():void { touchable = false; }
         public function get parentElement():IElementContainer { return parent as IElementContainer; }
         public function get elementWidth():Number          { return isNaN(_elementWidth) ? width: _elementWidth; }
         public function get elementHeight():Number         { return isNaN(_elementHeight) ? height: _elementHeight; }
         public function get addTransition():Function       { return ElementTransition.FAST_ADD; }
         public function get mvoeTransition():Function      { return ElementTransition.LINER_MOVE; }
         public function get removeTransition():Function    { return ElementTransition.FAST_REMOVE; }
+        public function get visibleTransition():Function   { return ElementTransition.FAST_VISIBLE; }
+        public function get invisibleTransition():Function { return ElementTransition.FAST_INVISIBLE; }
+
         public function get storage():StorageAccessor      { return _storage; }
         
         //IStorageListener interface
-        public function preview(diff:Diff):void {}
+        public function refresh():void {}
+        public function preview(plainDiff:Diff):void {}
+        public function commit(plainDiff:Diff):void {}
     }
 }

@@ -1,13 +1,14 @@
 package jp.coremind.model
 {
-    import jp.coremind.control.Application;
+    import jp.coremind.core.Application;
     import jp.coremind.model.storage.StorageType;
     import jp.coremind.utility.Log;
+    import jp.coremind.model.storage.IStorageListener;
 
     public class StorageAccessor
     {
         public static const TAG:String = "StorageAccessor";
-        //Log.addCustomTag(TAG);
+        Log.addCustomTag(TAG);
         
         private var
             _filter:Function,
@@ -73,7 +74,7 @@ package jp.coremind.model
             if (_sortNames === names && _sortOptions === options)
                 return;
             
-            Log.custom("sortOn", names, options);
+            Log.custom(TAG, "sortOn", names, options);
             _sortNames   = names;
             _sortOptions = options;
             _dispatch(true, false);
@@ -120,7 +121,7 @@ package jp.coremind.model
             if (_transaction)
                 return;
             
-            Log.custom("beginTransaction");
+            Log.custom(TAG, "beginTransaction");
             _transaction = true;
             _notifyListener = notifyListener;
         }
@@ -153,7 +154,7 @@ package jp.coremind.model
         {
             if (_transaction)
             {
-                Log.custom("rollback");
+                Log.custom(TAG, "rollback");
                 _history.length = 0;
                 _dispatch(notifyListener, false);
                 _transaction    = false;
@@ -165,7 +166,7 @@ package jp.coremind.model
         {
             if (_history.length > 0)
             {
-                Log.custom("commit");
+                Log.custom(TAG, "commit");
                 _dispatch(notifyListener, true);
                 _history.length = 0;
                 _transaction    = false;
@@ -175,25 +176,29 @@ package jp.coremind.model
         
         private function _dispatch(notifyListener:Boolean, doUpdate:Boolean):void
         {
+            var i:int;
             var origin:*  = read();
             var diff:Diff = $.isPrimitive(origin) ? new Diff():
                             $.isArray(origin)     ? new ListDiff(): new HashDiff();
             
             if (notifyListener)
             {
-                Log.custom("build(preview)");
+                Log.custom(TAG, "build(preview)");
                 diff.build(origin, _history, _sortNames, _sortOptions, _filter, _latestFiltered || []);
                 _latestFiltered = (diff as HashDiff).filtered;
                 
-                for (var i:int = 0; i < _listeners.length; i++) 
+                for (i = 0; i < _listeners.length; i++) 
                     _listeners[i].preview(diff);
             }
             
             if (doUpdate)
             {
-                Log.custom("build(storage update)");
+                Log.custom(TAG, "build(storage update)");
                 diff.build(origin, _history);
                 Application.storage.update(this, _origin = diff.editedOrigin);
+                
+                for (i = 0; i < _listeners.length; i++) 
+                    _listeners[i].commit(diff);
             }
         }
     }

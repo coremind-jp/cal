@@ -3,7 +3,7 @@ package flexUnitTests
     import flash.utils.getTimer;
     import flash.utils.setTimeout;
     
-    import jp.coremind.control.Thread;
+    import jp.coremind.core.Thread;
     import jp.coremind.data.Progress;
     import jp.coremind.utility.Log;
     

@@ -7,9 +7,9 @@ package flexUnitTests
     
     import flexunit.framework.Assert;
     
-    import jp.coremind.control.Process;
-    import jp.coremind.control.Routine;
-    import jp.coremind.control.Thread;
+    import jp.coremind.core.Process;
+    import jp.coremind.core.Routine;
+    import jp.coremind.core.Thread;
     import jp.coremind.utility.Log;
     import jp.coremind.utility.Status;
     

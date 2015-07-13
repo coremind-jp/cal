@@ -6,11 +6,11 @@ package jp.coremind.view.flash
     import flash.events.EventDispatcher;
     
     import jp.coremind.configure.ApplicationConfigure;
-    import jp.coremind.control.Process;
-    import jp.coremind.control.Routine;
-    import jp.coremind.control.Thread;
+    import jp.coremind.core.Process;
+    import jp.coremind.core.Routine;
+    import jp.coremind.core.Thread;
     import jp.coremind.data.Progress;
-    import jp.coremind.view.ILayerControl;
+    import jp.coremind.view.layout.ILayerControl;
     import jp.coremind.view.IView;
     import jp.coremind.view.ViewContainer;
     import jp.coremind.view.starling.RootView;

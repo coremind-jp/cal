@@ -3,15 +3,13 @@ package jp.coremind.view.flash
     import flash.geom.Point;
     import flash.utils.Dictionary;
     
-    import jp.coremind.control.Process;
-    import jp.coremind.control.Routine;
-    import jp.coremind.control.Thread;
+    import jp.coremind.core.Process;
+    import jp.coremind.core.Routine;
+    import jp.coremind.core.Thread;
     import jp.coremind.model.Diff;
     import jp.coremind.model.ListDiff;
     import jp.coremind.model.StorageAccessor;
     import jp.coremind.model.TransactionLog;
-    import jp.coremind.utility.IRecycle;
-    import jp.coremind.utility.InstancePool;
     import jp.coremind.utility.Log;
     import jp.coremind.view.IElement;
     import jp.coremind.view.layout.ILayout;

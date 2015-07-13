@@ -5,7 +5,7 @@ package jp.coremind.view.starling
     
     import starling.display.DisplayObject;
     
-    public class ElementContainer extends Element implements IElementContainer
+    public class ElementContainer extends InteractiveElement implements IElementContainer
     {
         public function ElementContainer()
         {

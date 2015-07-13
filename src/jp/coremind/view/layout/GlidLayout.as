@@ -2,7 +2,7 @@ package jp.coremind.view.layout
 {
     import flash.geom.Point;
     
-    import jp.coremind.control.Application;
+    import jp.coremind.utility.Log;
 
     public class GlidLayout implements ILayout
     {
@@ -11,6 +11,7 @@ package jp.coremind.view.layout
         
         private var
             _variableDirection:String,
+            _visibleNumChildren:int,
             _marginX:int,
             _marginY:int,
             _stack:int,
@@ -28,6 +29,11 @@ package jp.coremind.view.layout
             _marginY = marginY;
             _stack = stack < 1 ? 1: stack;
             _point = point;
+        }
+        
+        public function get visibleNumChildren():int
+        {
+            return _visibleNumChildren;
         }
         
         public function calcPosition(width:Number, height:Number, index:int, length:int = 0):Point
@@ -50,21 +56,29 @@ package jp.coremind.view.layout
             return p;
         }
         
-        public function calcMaxContains(global:Point, elementWidth:Number, elementHeight:Number):int
+        public function updateVisibleNumChildren(elementWidth:Number, elementHeight:Number, clipW:Number, clipH:Number):void
         {
-            var w:Number = Application.stage.stageWidth;
-            var h:Number = Application.stage.stageHeight;
+            _visibleNumChildren = 0;
+            var p:Point;
             
-            var drawbleX:int, drawbleY:int = 0;
-            var overflowX:Boolean, overflowY:Boolean;
-            for (var i:int; !overflowX && !overflowY; i++)
+            if (_variableDirection == VARIABLE_DIRECTION_X)
             {
-                var p:Point = calcPosition(elementWidth, elementHeight, i);
-                global.x + p.x + elementWidth  < w ? drawbleX = i: overflowX = true;
-                global.y + p.y + elementHeight < h ? drawbleY = i: overflowY = true;
+                while (true)
+                {
+                    p = calcPosition(elementWidth, elementHeight, _visibleNumChildren);
+                    if (clipW < p.x + elementWidth) break;
+                    else _visibleNumChildren++;
+                }
             }
-            
-            return drawbleX * drawbleY;
+            else
+            {
+                while (true)
+                {
+                    p = calcPosition(elementWidth, elementHeight, _visibleNumChildren);
+                    if (clipH < p.y + elementHeight) break;
+                    else _visibleNumChildren++;
+                }
+            }
         }
     }
 }

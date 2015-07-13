@@ -52,5 +52,10 @@ package jp.coremind.data
         {
             return _totalDelta;
         }
+        
+        override public function toString():String
+        {
+            return super.toString()+" start="+_start+" prevent="+_prevent+" preventDelta="+_preventDelta+" totalDelta="+_totalDelta;
+        }
     }
 }

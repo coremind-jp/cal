@@ -7,7 +7,7 @@ package flexUnitTests
 
     public class TestStringValidation
     {		
-        var validation:IValidation;
+        private var validation:IValidation;
         
         [Before]
         public function setUp():void

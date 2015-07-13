@@ -6,9 +6,10 @@ package jp.coremind.view.flash
     import flash.geom.Point;
     import flash.geom.Rectangle;
     
-    import jp.coremind.control.Application;
+    import jp.coremind.core.Application;
     import jp.coremind.data.NumberTracker;
     import jp.coremind.utility.Flick;
+    import jp.coremind.utility.Log;
     import jp.coremind.utility.VectorGraphics;
     import jp.coremind.view.IElementContainer;
     
@@ -79,7 +80,7 @@ package jp.coremind.view.flash
             
             _setInitialPosition();
             
-            _flick.observe(_onFlickUpdate, _OFFSET, _flickArea);
+            _flick.observe(_onFlickUpdate, _onDrop, _OFFSET, _flickArea);
         }
         
         private function _updateFlickArea():void
@@ -115,6 +116,10 @@ package jp.coremind.view.flash
                 _container.y = _BEFORE_CONTAINER_POS.y + y.totalDelta;
                 _flickArea.y = _BEFORE_FLICKAREA_POS.y - y.totalDelta;
             }
+        }
+        
+        private function _onDrop(x:NumberTracker, y:NumberTracker):void
+        {
         }
         
         private function _drawDrugBox():void

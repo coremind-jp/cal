@@ -1,11 +1,7 @@
 package flexUnitTests
 {
-    import flash.utils.getQualifiedClassName;
-    
     import flexunit.framework.Assert;
     
-    import jp.coremind.view;
-    import jp.coremind.utility.Log;
     import jp.coremind.view.flash.View;
     import jp.coremind.view.flash.ViewControl;
     

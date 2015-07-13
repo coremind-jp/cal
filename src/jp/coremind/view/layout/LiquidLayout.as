@@ -18,9 +18,13 @@ package jp.coremind.view.layout
             _point = point;
         }
         
-        public function calcMaxContains(global:Point, elementWidth:Number, elementHeight:Number):int
+        public function get visibleNumChildren():int
         {
             return 0;
+        }
+        
+        public function updateVisibleNumChildren(elementWidth:Number, elementHeight:Number, clipW:Number, clipH:Number):void
+        {
         }
         
         public function pushLine(column:Array):LiquidLayout
