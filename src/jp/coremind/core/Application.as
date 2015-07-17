@@ -7,8 +7,8 @@ package jp.coremind.core
     
     import jp.coremind.configure.ApplicationConfigure;
     import jp.coremind.utility.Log;
-    import jp.coremind.view.flash.ViewControl;
-    import jp.coremind.view.starling.ViewControl;
+    import jp.coremind.view.implement.flash.ViewControl;
+    import jp.coremind.view.implement.starling.ViewControl;
     
     import starling.core.Starling;
     import jp.coremind.model.StorageControl;
@@ -21,11 +21,11 @@ package jp.coremind.core
             _ENABLED_LOG = boolean;
         }
         
-        private static var _VIEW_CONTROL_STARLING:jp.coremind.view.starling.ViewControl;
-        public static function get contentView():jp.coremind.view.starling.ViewControl { return _VIEW_CONTROL_STARLING; }
+        private static var _VIEW_CONTROL_STARLING:jp.coremind.view.implement.starling.ViewControl;
+        public static function get contentView():jp.coremind.view.implement.starling.ViewControl { return _VIEW_CONTROL_STARLING; }
         
-        private static var _VIEW_CONTROL_FLASH:jp.coremind.view.flash.ViewControl;
-        public static function get uiView():jp.coremind.view.flash.ViewControl { return _VIEW_CONTROL_FLASH; }
+        private static var _VIEW_CONTROL_FLASH:jp.coremind.view.implement.flash.ViewControl;
+        public static function get uiView():jp.coremind.view.implement.flash.ViewControl { return _VIEW_CONTROL_FLASH; }
         
         private static var _STAGE:Stage;
         public static function initialize(useStarling:Boolean, deploymentTarget:Sprite):void
@@ -42,10 +42,10 @@ package jp.coremind.core
                 return;
             }
             
-            _VIEW_CONTROL_FLASH = new jp.coremind.view.flash.ViewControl();
+            _VIEW_CONTROL_FLASH = new jp.coremind.view.implement.flash.ViewControl();
             
             if (useStarling)
-                _VIEW_CONTROL_STARLING = new jp.coremind.view.starling.ViewControl();
+                _VIEW_CONTROL_STARLING = new jp.coremind.view.implement.starling.ViewControl();
             
             var _bind:Function = function(e:Event = null):void
             {

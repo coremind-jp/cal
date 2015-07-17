@@ -37,7 +37,6 @@ package jp.coremind.data
                 _min = min;
                 _max = max;
             }
-            update(_now);
         }
         
         /**

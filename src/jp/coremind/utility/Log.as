@@ -22,10 +22,10 @@ package jp.coremind.utility
         
         public static function info(...rest):void    { _OUTPUT("INFO    :"+INDENT+_join(rest)); }
 //        public static function debug(...rest):void   { _OUTPUT("DEBUG   :"+INDENT+_join(rest)); }
-//        public static function warning(...rest):void { _OUTPUT("WARNING :"+INDENT+_join(rest)); }
+        public static function warning(...rest):void { _OUTPUT("WARNING :"+INDENT+_join(rest)); }
 //        public static function info(...rest):void    { }
         public static function debug(...rest):void   { }
-        public static function warning(...rest):void { }
+//        public static function warning(...rest):void { }
         
         public static function error(...rest):void
         {
@@ -38,6 +38,11 @@ package jp.coremind.utility
             
             _OUTPUT("ERROR   :"+INDENT+_join(rest)+LINE_BREAK+_stackTrace);
         }
+        
+        /**
+         * Logクラスで使用されているハッシュ・配列のストリング変換処理を利用してパラメータへ渡した値の文字列型データを取得する.
+         */
+        public static function toString(...rest):String { return _join(rest); }
         
         private static function _join(logList:Array):String
         {

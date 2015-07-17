@@ -22,8 +22,8 @@ package jp.coremind.core
         }
         
         public function get name():String      { return _processRoutine.name; }
-        public function get phase():String     { return _processRoutine.phase.status; }
-        public function get result():String    { return _processRoutine.result.status; }
+        public function get phase():String     { return _processRoutine.phase.value; }
+        public function get result():String    { return _processRoutine.result.value; }
         public function get progress():Number  { return _processRoutine.progress.rate; }
         public function readData(key:String):* { return $.hash.read(_processRoutine.memory || {}, key); }
         public function terminate():void       { _processRoutine.terminate(); }
@@ -152,7 +152,7 @@ package jp.coremind.core
         
         public function dumpStatus():void
         {
-            Log.custom(TAG, _processRoutine.name+" phase ["+_processRoutine.phase.status+"] result:["+_processRoutine.result.status+"].");
+            Log.custom(TAG, _processRoutine.name+" phase ["+_processRoutine.phase.value+"] result:["+_processRoutine.result.value+"].");
             for (var i:int = 0; i < _threadList.length; i++) 
                 (_threadList.getElement(i) as Thread).dumpStatus();
         }

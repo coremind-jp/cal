@@ -3,8 +3,8 @@ package jp.coremind.view.transition
     import jp.coremind.core.Routine;
     import jp.coremind.core.Thread;
     import jp.coremind.utility.Log;
-    import jp.coremind.view.IView;
-    import jp.coremind.view.IViewContainer;
+    import jp.coremind.view.abstract.IView;
+    import jp.coremind.view.abstract.IViewContainer;
 
     public class ViewTransition
     {

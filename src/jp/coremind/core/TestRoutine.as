@@ -84,8 +84,8 @@ package jp.coremind.core
                 function(e:FlexEvent, ctx:Object):void
                 {
                     assertThat(_r.progress.rate, equalTo(1));
-                    assertThat(_r.result.status, equalTo(Status.FAILED));
-                    assertThat(_r.phase.status, equalTo(Status.FINISHED));
+                    assertThat(_r.result.value, equalTo(Status.FAILED));
+                    assertThat(_r.phase.value, equalTo(Status.FINISHED));
                     assertThat(_mem.key, equalTo("failed result."));
                 }, _assertDelay);
             
@@ -109,8 +109,8 @@ package jp.coremind.core
                 function(e:FlexEvent, ctx:Object):void
                 {
                     assertThat(_r.progress.rate, equalTo(1));
-                    assertThat(_r.result.status, equalTo(Status.FATAL));
-                    assertThat(_r.phase.status, equalTo(Status.FINISHED));
+                    assertThat(_r.result.value, equalTo(Status.FATAL));
+                    assertThat(_r.phase.value, equalTo(Status.FINISHED));
                     assertThat(_mem.key, equalTo("fatal result."));
                 }, _assertDelay);
                 
@@ -134,15 +134,15 @@ package jp.coremind.core
                 function(e:FlexEvent, ctx:Object):void
                 {
                     assertThat(_r.progress.rate, equalTo(1));
-                    assertThat(_r.result.status, equalTo(Status.SCCEEDED));
-                    assertThat(_r.phase.status, equalTo(Status.FINISHED));
+                    assertThat(_r.result.value, equalTo(Status.SCCEEDED));
+                    assertThat(_r.phase.value, equalTo(Status.FINISHED));
                     assertThat(_mem.key, equalTo("scceeded result."));
                     
                     //リセット後のステータスチェック
                     _r.resetStatus();
                     assertThat(_r.progress.rate, equalTo(0));
-                    assertThat(_r.result.status, equalTo(Status.IDLING));
-                    assertThat(_r.phase.status, equalTo(Status.IDLING));
+                    assertThat(_r.result.value, equalTo(Status.IDLING));
+                    assertThat(_r.phase.value, equalTo(Status.IDLING));
                     
                 }, _assertDelay);
             
@@ -167,8 +167,8 @@ package jp.coremind.core
                 {
                     _r.resetStatus();
                     assertThat(_r.progress.rate, equalTo(0));
-                    assertThat(_r.result.status, equalTo(Status.IDLING));
-                    assertThat(_r.phase.status, equalTo(Status.IDLING));
+                    assertThat(_r.result.value, equalTo(Status.IDLING));
+                    assertThat(_r.phase.value, equalTo(Status.IDLING));
                 }, _assertDelay);
             
             new Routine("ResetStatus").exec(
@@ -189,8 +189,8 @@ package jp.coremind.core
                 function(e:FlexEvent, ctx:Object):void
                 {
                     assertThat(_r.progress.rate, equalTo(1));
-                    assertThat(_r.result.status, equalTo(Status.TERMINATE));
-                    assertThat(_r.phase.status, equalTo(Status.FINISHED));
+                    assertThat(_r.result.value, equalTo(Status.TERMINATE));
+                    assertThat(_r.phase.value, equalTo(Status.FINISHED));
                     assertThat(_terminated, equalTo(true));
                     _r.dumpStatus();
                 }, _assertDelay);
@@ -199,8 +199,8 @@ package jp.coremind.core
             q.exec(function(r:Routine):void
             {
                 //起動中のステータスチェック
-                assertThat(r.result.status, equalTo(Status.IDLING));
-                assertThat(r.phase.status, equalTo(Status.RUNNING));
+                assertThat(r.result.value, equalTo(Status.IDLING));
+                assertThat(r.phase.value, equalTo(Status.RUNNING));
                 
                 //外部からterminateが呼ばれた際にこのprocessを中断させる処理を追加できる
                 //追加しない場合、process自体は最後まで処理される
@@ -218,8 +218,8 @@ package jp.coremind.core
             }, _mem, _doAsyncTest);
             
             //起動中のステータスチェック
-            assertThat(q.result.status, equalTo(Status.IDLING));
-            assertThat(q.phase.status, equalTo(Status.RUNNING));
+            assertThat(q.result.value, equalTo(Status.IDLING));
+            assertThat(q.phase.value, equalTo(Status.RUNNING));
             
             //強制終了
             setTimeout(q.terminate, _asyncDelay / 2);
@@ -233,8 +233,8 @@ package jp.coremind.core
                 function(e:FlexEvent, ctx:Object):void
                 {
                     assertThat(_r.progress.rate, equalTo(1));
-                    assertThat(_r.result.status, equalTo(Status.SCCEEDED));
-                    assertThat(_r.phase.status, equalTo(Status.FINISHED));
+                    assertThat(_r.result.value, equalTo(Status.SCCEEDED));
+                    assertThat(_r.phase.value, equalTo(Status.FINISHED));
                     assertThat(_mem.dlc is URLLoader, equalTo(true));
                 }, 5000);
             

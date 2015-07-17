@@ -3,8 +3,8 @@ package jp.coremind.view.transition
     import jp.coremind.core.Routine;
     import jp.coremind.core.Thread;
     import jp.coremind.utility.Log;
-    import jp.coremind.view.IElement;
-    import jp.coremind.view.IElementContainer;
+    import jp.coremind.view.abstract.IElement;
+    import jp.coremind.view.abstract.IElementContainer;
     
     import org.libspark.betweenas3.BetweenAS3;
     import org.libspark.betweenas3.tweens.IObjectTween;

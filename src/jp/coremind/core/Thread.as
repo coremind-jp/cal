@@ -28,8 +28,8 @@ package jp.coremind.core
         }
         
         public function get name():String      { return _threadRoutine.name; }
-        public function get phase():String     { return _threadRoutine.phase.status; }
-        public function get result():String    { return _threadRoutine.result.status; }
+        public function get phase():String     { return _threadRoutine.phase.value; }
+        public function get result():String    { return _threadRoutine.result.value; }
         public function get progress():Number  { return _threadRoutine.progress.rate; }
         public function readData(key:String):* { return $.hash.read(_threadRoutine.memory || {}, key); }
         public function terminate():void       { _threadRoutine.terminate(); }
@@ -230,7 +230,7 @@ package jp.coremind.core
         
         public function dumpStatus():void
         {
-            Log.custom(TAG, _threadRoutine.name+" phase ["+_threadRoutine.phase.status+"] result:["+_threadRoutine.result.status+"].");
+            Log.custom(TAG, _threadRoutine.name+" phase ["+_threadRoutine.phase.value+"] result:["+_threadRoutine.result.value+"].");
             for (var i:int = 0; i < _routineList.length; i++) 
                 (_routineList.getElement(i) as Routine).dumpStatus();
         }

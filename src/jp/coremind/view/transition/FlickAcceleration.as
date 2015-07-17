@@ -53,6 +53,8 @@ package jp.coremind.view.transition
             _v += _springAcceleration;
             
             v.update(_adjust(v, _v));
+            
+            //Log.info(Math.abs(_springAcceleration), _slidAcceleration);
             return 0.025 < Math.abs(_springAcceleration) || _slidAcceleration != 0;
         }
         
@@ -127,7 +129,7 @@ package jp.coremind.view.transition
                 return v.min;
             }
             else
-                return _now|0;
+                return _now;
         }
     }
 }

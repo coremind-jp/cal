@@ -4,9 +4,11 @@ package
     
     import flash.display.Sprite;
     
-    import flexUnitTests.TestFrameLoop;
+    import flexUnitTests.TestMultistageStatus;
     
     import flexunit.flexui.FlexUnitTestRunnerUIAS;
+    
+    import org.flexunit.runner.Request;
     
     public class FlexUnitApplication extends Sprite
     {
@@ -26,7 +28,8 @@ package
         public function currentRunTestSuite():Array
         {
             var testsToRun:Array = new Array();
-            testsToRun.push(flexUnitTests.TestFrameLoop);
+            testsToRun.push(Request.methods(flexUnitTests.TestMultistageStatus,["testEqual"]));
+            
             return testsToRun;
         }
     }

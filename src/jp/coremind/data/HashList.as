@@ -1,5 +1,7 @@
 package jp.coremind.data
 {
+    import jp.coremind.utility.Log;
+
     public class HashList extends List
     {
         private var _isTmporary:Boolean;
@@ -89,6 +91,11 @@ package jp.coremind.data
             if (_isTmporary) destory();
             
             return _result;
+        }
+        
+        public function toString():String
+        {
+            return Log.toString(_source);
         }
     }
 }

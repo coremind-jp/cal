@@ -1,7 +1,7 @@
 package jp.coremind.view.layout
 {
     import jp.coremind.core.Process;
-    import jp.coremind.view.IView;
+    import jp.coremind.view.abstract.IView;
 
     public interface ILayerControl
     {

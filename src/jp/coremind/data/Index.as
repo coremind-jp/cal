@@ -19,7 +19,7 @@ package jp.coremind.data
         public function get head():int    { return _head; }
         
         public function isFirst():Boolean { return _head == 0; }
-        public function isLast():Boolean  { return length > 0 && _head == length - 1; }
+        public function isLast():Boolean  { return 0 < length && _head == length - 1; }
         
         public function refreshLength(value:int = 0):void
         {

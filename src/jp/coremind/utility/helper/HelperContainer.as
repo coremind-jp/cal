@@ -113,10 +113,16 @@ package jp.coremind.utility.helper
         
         public function apply(f:Function, args:Array):*
         {
+            if (!(f is Function))
+            {
+                Log.error("f paramater is not Function dump auguments", arguments);
+                return null;
+            }
+            
             try {
                 return f.apply(null, args);
             } catch(e:Error) {
-                Log.error("anonymouse function error. message("+e.message+")");
+                Log.error("dump auguments", arguments, "\nanonymouse function error. message("+e.message+")");
                 return null;
             }
         }

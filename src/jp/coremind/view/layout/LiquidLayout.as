@@ -2,7 +2,7 @@ package jp.coremind.view.layout
 {
     import flash.geom.Point;
 
-    public class LiquidLayout implements ILayout
+    public class LiquidLayout
     {
         private var
             _layout:Array,

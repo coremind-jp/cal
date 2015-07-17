@@ -117,7 +117,7 @@ package jp.coremind.core
         
         internal function dumpStatus():void
         {
-            Log.custom(TAG, _name+" phase["+_phase.status+"] result["+_result.status+"]");
+            Log.custom(TAG, _name+" phase["+_phase.value+"] result["+_result.value+"]");
         }
     }
 }
