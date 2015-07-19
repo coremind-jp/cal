@@ -92,10 +92,10 @@ package jp.coremind.view.transition
         protected function _createTracker(offset:Rectangle, drugArea:Rectangle):void
         {
             _trackX = new NumberTracker();
-            _trackX.setRange(drugArea.left + offset.x, drugArea.right - offset.width + offset.x);
+            _trackX.setRange(drugArea.left + offset.x, drugArea.right - offset.width + offset.x, false);
             
             _trackY = new NumberTracker();
-            _trackY.setRange(drugArea.top + offset.y, drugArea.bottom - offset.height + offset.y);
+            _trackY.setRange(drugArea.top + offset.y, drugArea.bottom - offset.height + offset.y, false);
         }
         
         protected function _onUpdate(elapsed:int):Boolean

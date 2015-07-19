@@ -5,7 +5,7 @@ package jp.coremind.view.implement.starling
     import jp.coremind.model.StorageAccessor;
     import jp.coremind.model.storage.IStorageListener;
     import jp.coremind.view.transition.ElementTransition;
-    import jp.coremind.utility.IRecycle;
+    import jp.coremind.data.IRecycle;
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.abstract.IElementContainer;
@@ -64,8 +64,11 @@ package jp.coremind.view.implement.starling
         //IElement interface
         public function initialize(storage:StorageAccessor):void
         {
-            _storage = storage;
-            _storage.addListener(this);
+            if (storage)
+            {
+                _storage = storage;
+                _storage.addListener(this);
+            }
         }
         
         public function addListener(type:String, listener:Function):void    { addEventListener(type, listener); }

@@ -24,13 +24,14 @@ package jp.coremind.data
         /**
          * 範囲を指定する.
          */
-        public function setRange(min:Number = 0, max:Number = 1):void
+        public function setRange(min:Number = 0, max:Number = 1, invalidReport:Boolean = true):void
         {
             if (max < min)
             {
-                Log.warning("invalid value. (Progress) min:"+min+" max:"+max);
+                if (invalidReport)
+                    Log.info("invalid value. (Progress) min:"+min+" max:"+max);
                 _min = 0;
-                _max = 1;
+                _max = 0;
             }
             else
             {
@@ -63,7 +64,11 @@ package jp.coremind.data
         /**
          * 現在の進捗値を単位値(0~1)で取得する.
          */
-        public function get rate():Number { return gain / distance; }
+        public function get rate():Number
+        {
+            var a:Number = distance;
+            return a == 0 ? a: gain / distance;
+        }
         
         /**
          * 現在の進捗値が最小値と最大値の間に含まれるかを示す値を返す.

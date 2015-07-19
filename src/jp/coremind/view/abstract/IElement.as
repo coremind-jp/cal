@@ -7,7 +7,14 @@ package jp.coremind.view.abstract
         function initialize(model:StorageAccessor):void
         function destroy():void;
         
+        /**
+         * マウスやタップイベントのリスニングを有効にする.
+         */
         function enablePointerDeviceControl():void;
+        
+        /**
+         * マウスやタップイベントのリスニングを無効にする.
+         */
         function disablePointerDeviceControl():void;
         
         function get elementWidth():Number;

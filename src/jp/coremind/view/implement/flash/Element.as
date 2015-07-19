@@ -9,7 +9,7 @@ package jp.coremind.view.implement.flash
     import jp.coremind.model.Diff;
     import jp.coremind.model.StorageAccessor;
     import jp.coremind.model.storage.IStorageListener;
-    import jp.coremind.utility.IRecycle;
+    import jp.coremind.data.IRecycle;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.abstract.IElementContainer;
     import jp.coremind.view.transition.ElementTransition;

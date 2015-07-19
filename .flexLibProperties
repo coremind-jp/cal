@@ -60,7 +60,6 @@
     <classEntry path="jp.coremind.view.abstract.ViewContainer"/>
     <classEntry path="jp.coremind.view.transition.Drug"/>
     <classEntry path="jp.coremind.utility.VectorGraphics"/>
-    <classEntry path="jp.coremind.view.transition.Spring"/>
     <classEntry path="jp.coremind.data.NumberTracker"/>
     <classEntry path="jp.coremind.view.transition.Flick"/>
     <classEntry path="jp.coremind.view.transition.FlickAcceleration"/>
@@ -69,7 +68,7 @@
     <classEntry path="jp.coremind.view.implement.flash.Element"/>
     <classEntry path="jp.coremind.view.abstract.IElement"/>
     <classEntry path="jp.coremind.view.abstract.IElementContainer"/>
-    <classEntry path="jp.coremind.view.layout.GlidLayout"/>
+    <classEntry path="jp.coremind.view.layout.GridLayout"/>
     <classEntry path="jp.coremind.view.implement.flash.component.ListContainer"/>
     <classEntry path="jp.coremind.view.layout.ILayout"/>
     <classEntry path="jp.coremind.view.transition.ElementTransition"/>
@@ -87,14 +86,14 @@
     <classEntry path="jp.coremind.model.ListDiff"/>
     <classEntry path="jp.coremind.model.HashDiff"/>
     <classEntry path="jp.coremind.utility.InstancePool"/>
-    <classEntry path="jp.coremind.utility.IRecycle"/>
+    <classEntry path="jp.coremind.data.IRecycle"/>
     <classEntry path="jp.coremind.view.layout.LiquidLayout"/>
     <classEntry path="jp.coremind.view.implement.starling.Element"/>
     <classEntry path="jp.coremind.view.implement.starling.ElementContainer"/>
     <classEntry path="jp.coremind.view.implement.starling.component.ListContainer"/>
     <classEntry path="jp.coremind.view.layout.LayoutSimulation"/>
     <classEntry path="jp.coremind.view.implement.starling.component.ScrollContainer"/>
-    <classEntry path="jp.coremind.view.implement.starling.InteractiveElement"/>
+    <classEntry path="jp.coremind.view.implement.starling.MouseElement"/>
     <classEntry path="jp.coremind.event.ElementEvent"/>
     <classEntry path="jp.coremind.view.abstract.component.Grid3X"/>
     <classEntry path="jp.coremind.resource.EmbedResourceDifine"/>
@@ -115,16 +114,22 @@
     <classEntry path="jp.coremind.view.implement.starling.buildin.MovieClip"/>
     <classEntry path="jp.coremind.view.abstract.component.Grid9"/>
     <classEntry path="jp.coremind.view.abstract.component.Gauge"/>
-    <classEntry path="jp.coremind.view.abstract.IProgressDisplayObject"/>
+    <classEntry path="jp.coremind.view.abstract.IProgressElement"/>
     <classEntry path="jp.coremind.view.abstract.component.Accordion"/>
     <classEntry path="jp.coremind.view.abstract.component.AccordionX"/>
     <classEntry path="jp.coremind.view.abstract.IBox"/>
     <classEntry path="jp.coremind.view.abstract.component.AccordionY"/>
     <classEntry path="jp.coremind.utility.MultistageStatus"/>
-    <classEntry path="jp.coremind.view.implement.starling.component.Button"/>
     <classEntry path="flexUnitTests.TestMultistageStatus"/>
-    <classEntry path="jp.coremind.view.implement.starling.component.ButtonType"/>
-    <classEntry path="jp.coremind.view.implement.starling.component.Switch"/>
+    <classEntry path="jp.coremind.view.implement.starling.component.TouchSwitch"/>
+    <classEntry path="jp.coremind.configure.StatusConfigure"/>
+    <classEntry path="jp.coremind.configure.UpdateRule"/>
+    <classEntry path="jp.coremind.view.implement.starling.InteractiveElement"/>
+    <classEntry path="jp.coremind.view.implement.starling.StatefulElement"/>
+    <classEntry path="jp.coremind.view.implement.starling.TouchElement"/>
+    <classEntry path="jp.coremind.view.implement.starling.component.MouseSwitch"/>
+    <classEntry path="jp.coremind.view.abstract.IInteractiveElement"/>
+    <classEntry path="jp.coremind.view.abstract.ISwitch"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

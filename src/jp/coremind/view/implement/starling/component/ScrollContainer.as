@@ -36,15 +36,18 @@ package jp.coremind.view.implement.starling.component
             containerHeight:Number)
         {
             addElement(_container = conatiner);
-            _container.addListener(ElementEvent.UPDATE_SIZE, _onUpdateContentSize);
             
             if (0 < containerWidth && 0 < containerHeight)
             {
-                clipRect   = new Rectangle(0, 0, containerWidth, containerHeight);
+                _container.addListener(ElementEvent.UPDATE_SIZE, _onUpdateContentSize);
                 
+                clipRect   = new Rectangle(0, 0, containerWidth, containerHeight);
                 _flick     = new Flick();
                 _flickArea = new Rectangle();
                 _drugSize  = new Point();
+                
+                reuseInstance();
+                initialize(null);
             }
             else
                 disablePointerDeviceControl();
@@ -130,7 +133,7 @@ package jp.coremind.view.implement.starling.component
             if (_sliderY) _sliderY.update(y.rate);
         }
         
-        override protected function _onDown(t:Touch):void
+        override protected function _onDown():void
         {
             globalToLocal(new Point(Application.stage.mouseX, Application.stage.mouseY), _POINT);
             
@@ -152,6 +155,9 @@ package jp.coremind.view.implement.starling.component
                 g.y - (_container.elementHeight - clipRect.height + _drugSize.y),
                 _container.elementWidth,
                 _container.elementHeight);
+            
+            _flickArea.x |= 0;
+            _flickArea.y |= 0;
         }
         
         private function _setInitialPosition():void

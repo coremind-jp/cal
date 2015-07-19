@@ -4,7 +4,7 @@ package jp.coremind.view.layout
     
     import jp.coremind.core.Direction;
 
-    public class GlidLayout implements ILayout
+    public class GridLayout implements ILayout
     {
         private var
             _variableDirection:String,
@@ -13,7 +13,7 @@ package jp.coremind.view.layout
             _stack:int,
             _point:Point;
         
-        public function GlidLayout(
+        public function GridLayout(
             variableDirection:String,
             marginX:int = 0,
             marginY:int = 0,

@@ -1,6 +1,7 @@
 package jp.coremind.utility
 {
     import flash.utils.Dictionary;
+    import jp.coremind.data.IRecycle;
 
     /**
      * IRecyleインターフェースを実装したクラスインスタンスをプールするクラス.

@@ -11,7 +11,7 @@ package jp.coremind.view.implement.starling.component
     import jp.coremind.model.ListDiff;
     import jp.coremind.model.StorageAccessor;
     import jp.coremind.model.TransactionLog;
-    import jp.coremind.utility.IRecycle;
+    import jp.coremind.data.IRecycle;
     import jp.coremind.utility.InstancePool;
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IElement;
@@ -45,6 +45,7 @@ package jp.coremind.view.implement.starling.component
             
             var child:IElement = new childClass();
             _childSize = new Point(child.elementWidth, child.elementHeight);
+            child.destroy();
         }
         
         override public function initialize(storage:StorageAccessor):void
@@ -143,7 +144,7 @@ package jp.coremind.view.implement.starling.component
             {
                 var e:IElement = _requestElement(editedOrigin[i]);
                 e.storage.updateLocalId(i.toString());
-                //e.initialize(e.storage);//debug
+                e.initialize(e.storage);//debug
             }
         }
         

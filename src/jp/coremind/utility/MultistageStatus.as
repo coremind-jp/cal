@@ -1,7 +1,7 @@
 package jp.coremind.utility
 {
-    import flash.events.Event;
-    
+    import jp.coremind.configure.StatusConfigure;
+    import jp.coremind.configure.UpdateRule;
     import jp.coremind.data.HashList;
 
     public class MultistageStatus
@@ -9,10 +9,7 @@ package jp.coremind.utility
         public static const TAG:String = "[MultistageStatus]";
         Log.addCustomTag(TAG);
         
-        public static const PRIORITY_SYSTEM:int        = int.MAX_VALUE;
-        public static const STATUS_GROUP_SYSTEM:String = "statusGroupSystem";
-        
-        private static const EVENT:Event = new Event(Event.CHANGE);
+        private static const _LOG:Vector.<String> = new <String>[];
         
         /**
          * fromパラメータに指定したpriorityListと第二パラメータ以降に指定したpriorityListをマージした新しい配列を返す.
@@ -28,56 +25,74 @@ package jp.coremind.utility
         
         private var
             _isClonedPriorityList:Boolean,
-            _priorityList:HashList,
+            _sortedConfigList:HashList,
             _statusList:Object;
         
-        public function MultistageStatus(priorityList:Array = null)
+        public function MultistageStatus(configList:Array = null)
         {
             _statusList = {};
             
-            if (priorityList)
+            if (configList)
             {
                 _isClonedPriorityList = true;
-                _priorityList = new HashList(priorityList);
+                _sortedConfigList = new HashList(configList as Array);
                 
                 //todo conflict check
-                for (var i:int, len:int = priorityList.length; i < len; i++) 
-                    _statusList[priorityList[i].group] = new Status(priorityList[i].initialStatus);
+                for (var i:int, len:int = configList.length; i < len; i++) 
+                    _statusList[configList[i].group] = configList[i].createStatus();
             }
             else
             {
                 _isClonedPriorityList = false;
-                _priorityList = new HashList([]);
+                _sortedConfigList = new HashList([]);
             }
         }
         
         public function destroy():void
         {
-            _priorityList.destory();
+            _sortedConfigList.destory();
             
             for (var p:String in _statusList)
                 delete _statusList[p];
         }
         
-        public function get value():String
+        public function get headStatus():String
         {
-            var activeStatus:Status = _getActiveStatus();
-            return activeStatus ? activeStatus.value: null;
+            var s:Status = _headStatus;
+            return s ? s.value: null;
         }
         
-        private function _getActiveStatus():Status
+        public function get headGroup():String
         {
-            return _getStatus(this.group);
+            return _sortedConfigList.length > 0 ? _sortedConfigList.headElement.group: null;
         }
         
-        private function _getStatus(group:String):Status
+        public function exportHash():Object
         {
-            return _statusList[group];
+            var result:Object = { __HEAD__:_sortedConfigList.head };
+            
+            for (var p:String in _statusList)
+                result[p] = getGroupStatus(p).value;
+            
+            return result;
         }
         
-        public function get group():String
+        public function importHash(exportHash:Object):void
         {
-            return _priorityList.length > 0 ? _priorityList.headElement.group: null;
+            for (var p:String in _statusList)
+                getGroupStatus(p).update(exportHash[p]);
+            
+            forcedChangeGroup(exportHash.__HEAD__);
+        }
+        
+        private function get _headConfig():StatusConfigure
+        {
+            return _sortedConfigList.length > 0 ? _sortedConfigList.headElement: null;
+        }
+        
+        private function get _headStatus():Status
+        {
+            return getGroupStatus(headGroup);
         }
         
         public function getGroupStatus(group:String):Status
@@ -87,87 +102,97 @@ package jp.coremind.utility
         
         public function createGroup(group:String, priority:int, decrementCondition:Array):MultistageStatus
         {
-            if (_isClonedPriorityList)
-            {
-                Log.warning("[MultistageStatus] can not createGroup. priorityList is external reference.");
-                return this;
-            }
-            
-            if (_getStatus(group))
+            if (getGroupStatus(group))
                 return this;
             
             _statusList[group] = new Status(Status.IDLING);
             
-            _priorityList.source.push({
+            _sortedConfigList.source.push({
                 group: group,
                 priority:priority,
                 decrementCondition: decrementCondition
             });
             
-            var beforeName:String = this.group;
-            _priorityList.source.sortOn("priority", Array.NUMERIC|Array.DESCENDING);
+            var beforeName:String = headGroup;
+            _sortedConfigList.source.sortOn("priority", Array.NUMERIC|Array.DESCENDING);
             
-            if (beforeName && beforeName != this.group)
-                _priorityList.jump(_priorityList.findIndex("group", beforeName));
+            if (beforeName && beforeName != headGroup)
+                _sortedConfigList.jump(_sortedConfigList.findIndex("group", beforeName));
             
             return this;
         }
         
         public function equal(expect:String):Boolean
         {
-            return 0 == _priorityList.length ? false: _getActiveStatus().equal(expect);
+            return 0 == _sortedConfigList.length ? false: _headStatus.equal(expect);
         }
         
         public function equalGroup(expect:String):Boolean
         {
-            return 0 == _priorityList.length ? false: group === expect;
+            return 0 == _sortedConfigList.length ? false: headGroup === expect;
         }
         
-        public function update(group:String, status:String):void
+        public function update(group:String, status:String):Vector.<String>
         {
-            var  activeStatus:Status = _getStatus(group);
-            if (!activeStatus)
+            _LOG.length = 0;
+            
+            var target:Status = getGroupStatus(group);
+            if (!target)
             {
                 Log.warning("[MultistageStatus] update is canceled. undefined status group", group);
-                return;
+                return _LOG;
             }
             
-            
-            var n:int = _priorityList.findIndex("group", group);
-            //現在のグループステータスのプライオリティーより高いプライオリティーのグループステータスのステータス変更があった場合はその更新を受け入れる
-            if (n <= _priorityList.head)
+            var conf:StatusConfigure;
+            var n:int = _sortedConfigList.findIndex("group", group);
+            //現在のグループステータスのプライオリティーと同値またはより高いプライオリティーのグループステータスのステータス変更があった場合はその更新を受け入れる
+            if (n <= _sortedConfigList.head)
             {
-                activeStatus.update(status);
-                _priorityList.jump(n);
+                target.update(status);
+                
+                _sortedConfigList.jump(n);
+                
+                _LOG[_LOG.length] = group;
+                
+                conf = _headConfig;
+                
+                do {
+                    var doStageDown:Boolean = conf.invokableStageDown(status);
+                    
+                    if (doStageDown)
+                    {
+                        _sortedConfigList.next();
+                        status = headStatus;
+                        conf   = _headConfig;
+                        
+                        if (conf.includeDownStageLog)
+                            _LOG[_LOG.length] = conf.group;
+                    }
+                } while (doStageDown && !_sortedConfigList.isLast());
             }
             else
-            //例外としてignorePriorityが設定されている場合はプライオリティーに関係なくステータスの更新を受け入れる
-            if (_priorityList.getElement(n).ignorePriority)
-                activeStatus.update(status);
+            {
+                //例外としてUpdateRule.ALWAYSが設定されている場合はプライオリティーに関係なくステータスの更新を受け入れる
+                conf = _sortedConfigList.getElement(n);
+                if (conf.updateRule === UpdateRule.ALWAYS)
+                    target.update(status);
+            }
             
-            do {
-                var condition:Array   = _priorityList.headElement.decrementCondition;
-                var groupDown:Boolean = condition.indexOf(status) != -1;
-                if (groupDown)
-                {
-                    _priorityList.next();
-                    status = value;
-                }
-            } while (groupDown && !_priorityList.isLast());
+            return _LOG;
         }
         
         public function forcedChangeGroup(group:String):void
         {
-            var n:int = _priorityList.findIndex("group", group);
-            if (n != -1) _priorityList.jump(n);
+            var n:int = _sortedConfigList.findIndex("group", group);
+            if (n != -1) _sortedConfigList.jump(n);
         }
         
         public function toString():String
         {
             var result:String = Log.toString(
-                "currentStatusGroup:", group,
-                "\ncurrentStatusValue:", value,
-                "\npriorityList", _priorityList,
+                "currentStatusGroup:", headGroup,
+                "\ncurrentStatusValue:", headStatus,
+                "\npriorityList", _sortedConfigList,
                 "\nstatusList", _statusList);
             
             return result;

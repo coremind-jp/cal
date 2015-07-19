@@ -1,12 +1,12 @@
 package jp.coremind.view.abstract.component
 {
     import jp.coremind.data.Progress;
-    import jp.coremind.view.abstract.IProgressDisplayObject;
+    import jp.coremind.view.abstract.IProgressElement;
     
     /**
      * Grid3クラスを応用したゲージ表現クラス.
      */
-    public class Gauge implements IProgressDisplayObject
+    public class Gauge implements IProgressElement
     {
         private var
             _grid:Grid3,

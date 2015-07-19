@@ -5,7 +5,7 @@ package jp.coremind.view.implement.starling
     
     import starling.display.DisplayObject;
     
-    public class ElementContainer extends InteractiveElement implements IElementContainer
+    public class ElementContainer extends MouseElement implements IElementContainer
     {
         public function ElementContainer()
         {

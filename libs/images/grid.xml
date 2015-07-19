@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<TextureAtlas imagePath="grid.png">
-	<!-- Created with Adobe Flash Professional version 14.2.0.20 -->
-	<!-- http://www.adobe.com/products/flash.html -->
-	<SubTexture name="シンボル 10000" x="0" y="0" width="5" height="10" pivotX="0" pivotY="0"/>
-	<SubTexture name="シンボル 10001" x="5" y="0" width="5" height="10"/>
-</TextureAtlas>

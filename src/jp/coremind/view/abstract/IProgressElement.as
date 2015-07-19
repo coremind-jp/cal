@@ -1,6 +1,6 @@
 package jp.coremind.view.abstract
 {
-    public interface IProgressDisplayObject
+    public interface IProgressElement
     {
         /**
          * オブジェクトを破棄する.

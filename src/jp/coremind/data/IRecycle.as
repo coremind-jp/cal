@@ -1,4 +1,4 @@
-package jp.coremind.utility
+package jp.coremind.data
 {
     public interface IRecycle
     {
