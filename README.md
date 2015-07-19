@@ -1,2 +1,2 @@
 # cmal
-Coremind Mobile Air Library
+Coremind Air Library
