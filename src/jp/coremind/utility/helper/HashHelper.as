@@ -1,6 +1,6 @@
 package jp.coremind.utility.helper
 {
-    import jp.coremind.data.HashList;
+    import jp.coremind.utility.data.HashList;
     import jp.coremind.utility.Log;
 
     public class HashHelper
@@ -20,14 +20,14 @@ package jp.coremind.utility.helper
             
             if (!$.isHash(o))
             {
-                Log.warning("arguments is not HashObject. (HashHelper::read)", path, o);
+                Log.warning("arguments is not HashObject. (HashHelper::read)", path/*, o*/);
                 return undefined;
             }
             
             _key = _hierarchy.shift();
             if (!(_key in o))
             {
-                Log.warning("undefined property ["+_key+"]. (HashHelper::read)", path, o);
+                Log.warning("undefined property ["+_key+"]. (HashHelper::read)", path/*, o*/);
                 return undefined;
             }
             
@@ -87,7 +87,7 @@ package jp.coremind.utility.helper
             {
                 _hierarchy.length > 0 ?
                     write(o[_key], _hierarchy.join("."), value):
-                    Log.error("already defined property ["+_key+"]. (HashHelper::write)", path, o);
+                    Log.error("already defined property ["+_key+"]. (HashHelper::write)", path/*, o*/);
             }
             else
             {

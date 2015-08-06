@@ -1,9 +1,9 @@
 package jp.coremind.view.abstract
 {
-    import jp.coremind.core.Process;
-    import jp.coremind.core.Routine;
-    import jp.coremind.core.Thread;
-    import jp.coremind.view.layout.ILayerControl;
+    import jp.coremind.utility.process.Process;
+    import jp.coremind.utility.process.Routine;
+    import jp.coremind.utility.process.Thread;
+    import jp.coremind.control.ILayerControl;
     
     public class ViewContainer implements ILayerControl
     {

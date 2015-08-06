@@ -1,7 +1,7 @@
 package jp.coremind.view.transition
 {
     import jp.coremind.core.Application;
-    import jp.coremind.data.NumberTracker;
+    import jp.coremind.utility.data.NumberTracker;
     
     /**
      * フリック時の加速度を計算するクラス.

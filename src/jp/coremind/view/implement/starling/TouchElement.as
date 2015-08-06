@@ -3,33 +3,34 @@ package jp.coremind.view.implement.starling
     import flash.geom.Point;
     import flash.geom.Rectangle;
     
-    import jp.coremind.configure.StatusConfigure;
-    import jp.coremind.configure.UpdateRule;
-    import jp.coremind.utility.MultistageStatus;
-    import jp.coremind.utility.Status;
+    import jp.coremind.model.StatusModelConfigure;
+    import jp.coremind.model.StatusConfigure;
+    import jp.coremind.model.StatusGroup;
+    import jp.coremind.model.UpdateRule;
+    import jp.coremind.utility.data.Status;
 
     public class TouchElement extends InteractiveElement
     {
+        override protected function get _statusModelConfigureKey():Class { return TouchElement }
+        
+        StatusModelConfigure.registry(
+            TouchElement,
+            StatusModelConfigure.marge(
+                InteractiveElement,
+                    new StatusConfigure(StatusGroup.PRESS,   UpdateRule.ALWAYS, 75, Status.UP, false, [Status.CLICK, Status.UP]),
+                    new StatusConfigure(StatusGroup.RELEASE, UpdateRule.LESS_THAN_PRIORITY, 25, Status.UP, true)
+                ));
+        
         protected static const _POINT_LOCAL:Point  = new Point();
         protected static const _POINT_GLOBAL:Point = new Point();
         protected static const _POINTER_RECT:Rectangle = new Rectangle(0, 0, 1, 1);
-        
-        public static const GROUP_PRESS:String = "groupPress";
-        public static const GROUP_RELEASE:String = "groupRelease";
-        public static const CONFIG_LIST:Array = MultistageStatus.margePriorityList(
-            InteractiveElement.CONFIG_LIST,
-            new StatusConfigure(GROUP_PRESS,   UpdateRule.ALWAYS, 25, Status.UP, false, [Status.CLICK, Status.UP]),
-            new StatusConfigure(GROUP_RELEASE, UpdateRule.LESS_THAN_PRIORITY, 0, Status.UP, true)
-        );
         
         protected var
             _triggerRect:Rectangle,
             _hold:Boolean;
             
-        public function TouchElement(inflateSize:Number = 6, multistageStatusConfig:Array = null)
+        public function TouchElement(inflateSize:Number = 6)
         {
-            super(multistageStatusConfig || CONFIG_LIST);
-            
             _triggerRect = new Rectangle();
             inflateClickRange(inflateSize, inflateSize);
             
@@ -40,7 +41,7 @@ package jp.coremind.view.implement.starling
         {
             super._initializeStatus();
             
-            _updateStatus(GROUP_PRESS, Status.UP);
+            controller.button.refresh(_reader.id);
         }
         
         /**
@@ -59,7 +60,7 @@ package jp.coremind.view.implement.starling
             _triggerRect.y = _touch.globalY - (_triggerRect.height >> 1);
             
             _hold = true;
-            _updateStatus(GROUP_PRESS, Status.DOWN);
+            controller.button.press(_reader.id);
         }
         
         override protected function moved():void
@@ -72,37 +73,27 @@ package jp.coremind.view.implement.starling
             
             _hold = bIntersects && bHitTest;
             _hold ?
-                _updateStatus(GROUP_PRESS, Status.DOWN):
-                _updateStatus(GROUP_PRESS, Status.UP);
+                controller.button.press(_reader.id):
+                controller.button.release(_reader.id);
         }
         
         override protected function ended():void
         {
-            if (_hold) _updateStatus(GROUP_PRESS, Status.CLICK);
-        }
-        
-        override protected function _updateStatus(statusGroup:String, statusValue:String):Boolean
-        {
-            var doApplyStatus:Boolean = super._updateStatus(statusGroup, statusValue);
-            
-            if (!doApplyStatus && statusValue　=== Status.CLICK)
-                _onStealthClick();
-            
-            return doApplyStatus;
+            if (_hold) controller.action(_reader.id);
         }
         
         override protected function _applyStatus(group:String, status:String):Boolean
         {
             switch (group)
             {
-                case GROUP_RELEASE:
+                case StatusGroup.RELEASE:
                     switch(status)
                     {
                         case Status.UP: _onUp(); return true;
                     }
                     break;
                 
-                case GROUP_PRESS:
+                case StatusGroup.PRESS:
                     switch(status)
                     {
                         case Status.DOWN : _onDown(); return true;
@@ -142,7 +133,7 @@ package jp.coremind.view.implement.starling
          */
         protected function _onClick():void
         {
-            //Log.info("_onClick");
+            controller.action(_reader.id);
         }
         
         /**

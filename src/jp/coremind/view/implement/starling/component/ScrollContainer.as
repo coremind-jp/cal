@@ -4,15 +4,14 @@ package jp.coremind.view.implement.starling.component
     import flash.geom.Rectangle;
     
     import jp.coremind.core.Application;
-    import jp.coremind.data.NumberTracker;
     import jp.coremind.event.ElementEvent;
+    import jp.coremind.utility.data.NumberTracker;
     import jp.coremind.view.abstract.IElementContainer;
+    import jp.coremind.view.abstract.component.Slider;
     import jp.coremind.view.implement.starling.ElementContainer;
     import jp.coremind.view.transition.Flick;
     
     import starling.events.Event;
-    import starling.events.Touch;
-    import jp.coremind.view.abstract.component.Slider;
     
     public class ScrollContainer extends ElementContainer
     {
@@ -32,21 +31,21 @@ package jp.coremind.view.implement.starling.component
         
         public function ScrollContainer(
             conatiner:IElementContainer,
-            containerWidth:Number,
-            containerHeight:Number)
+            maxWidth:Number,
+            maxHeight:Number)
         {
+            super(maxWidth, maxHeight);
+            
             addElement(_container = conatiner);
             
-            if (0 < containerWidth && 0 < containerHeight)
+            if (0 < maxWidth && 0 < maxHeight)
             {
                 _container.addListener(ElementEvent.UPDATE_SIZE, _onUpdateContentSize);
                 
-                clipRect   = new Rectangle(0, 0, containerWidth, containerHeight);
+                clipRect   = new Rectangle(0, 0, maxWidth, maxHeight);
                 _flick     = new Flick();
                 _flickArea = new Rectangle();
                 _drugSize  = new Point();
-                
-                reuseInstance();
                 initialize(null);
             }
             else
@@ -133,7 +132,7 @@ package jp.coremind.view.implement.starling.component
             if (_sliderY) _sliderY.update(y.rate);
         }
         
-        override protected function _onDown():void
+        override protected function began():void
         {
             globalToLocal(new Point(Application.stage.mouseX, Application.stage.mouseY), _POINT);
             

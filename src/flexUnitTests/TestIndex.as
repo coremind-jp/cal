@@ -2,7 +2,7 @@ package flexUnitTests
 {
     import flexunit.framework.Assert;
     
-    import jp.coremind.data.Index;
+    import jp.coremind.utility.data.Index;
     
     public class TestIndex
     {		

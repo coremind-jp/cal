@@ -9,8 +9,8 @@ package jp.coremind.core.routine
     import flash.net.URLLoaderDataFormat;
     import flash.utils.ByteArray;
     
-    import jp.coremind.core.Routine;
-    import jp.coremind.core.Thread;
+    import jp.coremind.utility.process.Routine;
+    import jp.coremind.utility.process.Thread;
     import jp.coremind.network.RequestConfigure;
     import jp.coremind.resource.IByteArrayContent;
     import jp.coremind.utility.Log;

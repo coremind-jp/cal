@@ -1,7 +1,7 @@
 package jp.coremind.view.abstract
 {
-    import jp.coremind.core.Routine;
-    import jp.coremind.core.Thread;
+    import jp.coremind.utility.process.Routine;
+    import jp.coremind.utility.process.Thread;
 
     public interface IView
     {

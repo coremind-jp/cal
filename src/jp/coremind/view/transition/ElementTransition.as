@@ -1,7 +1,7 @@
 package jp.coremind.view.transition
 {
-    import jp.coremind.core.Routine;
-    import jp.coremind.core.Thread;
+    import jp.coremind.utility.process.Routine;
+    import jp.coremind.utility.process.Thread;
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.abstract.IElementContainer;

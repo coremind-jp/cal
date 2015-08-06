@@ -1,8 +1,8 @@
 package jp.coremind.core.routine
 {
-    import jp.coremind.core.Routine;
-    import jp.coremind.core.Thread;
-    import jp.coremind.data.Progress;
+    import jp.coremind.utility.process.Routine;
+    import jp.coremind.utility.process.Thread;
+    import jp.coremind.utility.data.Progress;
 
     public class Sleep
     {

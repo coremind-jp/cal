@@ -3,7 +3,7 @@ package flexUnitTests
     import flexunit.framework.Assert;
     
     import jp.coremind.view.implement.flash.View;
-    import jp.coremind.view.implement.flash.ViewControl;
+    import jp.coremind.control.flash.ViewControl;
     
     public class TestViewControl
     {		

@@ -1,10 +1,11 @@
 package jp.coremind.view.abstract
 {
-    import jp.coremind.model.StorageAccessor;
+    import jp.coremind.control.Controller;
+    import jp.coremind.model.StorageModelReader;
 
     public interface IElement extends IDisplayObject
     {
-        function initialize(model:StorageAccessor):void
+        function initialize(reader:StorageModelReader):void;
         function destroy():void;
         
         /**
@@ -19,6 +20,7 @@ package jp.coremind.view.abstract
         
         function get elementWidth():Number;
         function get elementHeight():Number;
+        function get controller():Controller;
         
         function get addTransition():Function;
         function get mvoeTransition():Function;
@@ -30,7 +32,6 @@ package jp.coremind.view.abstract
         function removeListener(type:String, listener:Function):void
         function hasListener(type:String):void
         
-        function get storage():StorageAccessor;
         function get parentElement():IElementContainer;
         function refresh():void
     }

@@ -4,20 +4,22 @@ package jp.coremind.view.implement.starling.component
     import flash.geom.Rectangle;
     import flash.utils.Dictionary;
     
-    import jp.coremind.core.Process;
-    import jp.coremind.core.Routine;
-    import jp.coremind.core.Thread;
+    import jp.coremind.event.ElementEvent;
     import jp.coremind.model.Diff;
     import jp.coremind.model.ListDiff;
-    import jp.coremind.model.StorageAccessor;
+    import jp.coremind.model.Storage;
+    import jp.coremind.model.StorageModelReader;
     import jp.coremind.model.TransactionLog;
-    import jp.coremind.data.IRecycle;
+    import jp.coremind.utility.IRecycle;
     import jp.coremind.utility.InstancePool;
     import jp.coremind.utility.Log;
+    import jp.coremind.utility.process.Process;
+    import jp.coremind.utility.process.Routine;
+    import jp.coremind.utility.process.Thread;
     import jp.coremind.view.abstract.IElement;
-    import jp.coremind.view.layout.LayoutSimulation;
-    import jp.coremind.view.layout.ILayout;
     import jp.coremind.view.implement.starling.ElementContainer;
+    import jp.coremind.view.layout.ILayout;
+    import jp.coremind.view.layout.LayoutSimulation;
     
     /**
      * 
@@ -28,37 +30,29 @@ package jp.coremind.view.implement.starling.component
         Log.addCustomTag(TAG);
         
         private var
-            _childClass:Class,
             _layout:ILayout,
             _pool:InstancePool,
             _simulation:LayoutSimulation,
-            _bindedElements:Dictionary,
-            _childSize:Point;
+            _bindedElements:Dictionary;
         
-        public function ListContainer(childClass:Class, layout:ILayout)
+        public function ListContainer(layout:ILayout, containerWidth:Number = NaN, containerHeight:Number = NaN)
         {
-            _childClass     = childClass;
+            super(containerWidth, containerHeight);
+            
             _layout         = layout;
             _pool           = new InstancePool();
-            _simulation     = new LayoutSimulation();
             _bindedElements = new Dictionary(true);
-            
-            var child:IElement = new childClass();
-            _childSize = new Point(child.elementWidth, child.elementHeight);
-            child.destroy();
+            _simulation     = new LayoutSimulation();
         }
         
-        override public function initialize(storage:StorageAccessor):void
+        override public function initialize(reader:StorageModelReader):void
         {
-            super.initialize(storage);
+            super.initialize(reader);
             
-            var p:Point;
-            var list:Array = _storage.read();
+            var list:Array = _reader.read();
             for (var i:int = 0, len:int = list.length; i < len; i++) 
-            {
-                p = _layout.calcPosition(_childSize.x, _childSize.y, i);
-                _simulation.addChild(list[i], new Rectangle(p.x, p.y, _childSize.x, _childSize.y));
-            }
+                _simulation.addChild(list[i], _calcElementRect(i).clone());
+            _simulation.setDrawableArea(_maxWidth, _maxHeight);
             _simulation.refresh(x, y);
             
             var added:Dictionary = _simulation.added;
@@ -71,17 +65,17 @@ package jp.coremind.view.implement.starling.component
                 addElement(e);
             }
             
-            p = _layout.calcSize(_childSize.x, _childSize.y, len - 1);
-            _updateElementSize(p.x, p.y);
+            var r:Rectangle = _calcTotalRect(len - 1);
+            _updateElementSize(r.width, r.height);
         }
         
         override public function destroy():void
         {
-            _childClass = null;
-            _layout = null;
+            _layout.destroy();
+            
+            _pool.destroy();
             
             _simulation.destroy();
-            _pool.destroy();
             
             for (var p:* in _bindedElements) delete _bindedElements[p];
             
@@ -96,7 +90,7 @@ package jp.coremind.view.implement.starling.component
             var addThread:Thread  = new Thread("add");
             var len:int = diff.editedOrigin.length;
             var beforePosition:Dictionary;
-            var p:Point = _layout.calcSize(_childSize.x, _childSize.y, len == 0 ? 0: len - 1).clone();
+            var r:Rectangle = _calcTotalRect(len == 0 ? 0: len - 1).clone();
             
             if (len > 2500)//リスト長が2500以上の場合待機時間を設ける
                 process.pushThread(new Thread("sort waiting").pushRoutine(
@@ -120,7 +114,7 @@ package jp.coremind.view.implement.starling.component
                 .pushThread(moveThread, true, true)
                 .exec(function (process:Process):void
                 {
-                    _updateElementSize(p.x, p.y);
+                    _updateElementSize(r.width, r.height);
                     enablePointerDeviceControl();
                 });
         }
@@ -135,17 +129,9 @@ package jp.coremind.view.implement.starling.component
                 _simulation.removechild(diff.removed[i].value);
             
             for (i = 0, len = diff.added.length; i < len; i++)
-            {
-                var p:Point = _layout.calcPosition(_childSize.x, _childSize.y, editedOrigin.length - len + i);
-                _simulation.addChild(diff.added[i].value, new Rectangle(p.x, p.y, _childSize.x, _childSize.y));
-            }
-            
-            for (i = 0, len = editedOrigin.length; i < len; i++)
-            {
-                var e:IElement = _requestElement(editedOrigin[i]);
-                e.storage.updateLocalId(i.toString());
-                e.initialize(e.storage);//debug
-            }
+                _simulation.addChild(
+                    diff.added[i].value,
+                    _calcElementRect(editedOrigin.length - len + i).clone());
         }
         
         /**
@@ -216,7 +202,7 @@ package jp.coremind.view.implement.starling.component
         private function _updateElementPosition(diff:ListDiff):Dictionary
         {
             var beforePosition:Dictionary = new Dictionary(true);
-            var origin:Array = _storage.read();
+            var origin:Array = _reader.read();
             var edited:Array = diff.editedOrigin;
             var k:int = 0;
             
@@ -228,9 +214,9 @@ package jp.coremind.view.implement.starling.component
                 beforePosition[origin[i]] = { x:r.x, y:r.y };
                 
                 var j:int   = n == -1 ? 100000 + k++: diff.order.indexOf(n);
-                var p:Point = _layout.calcPosition(_childSize.x, _childSize.y, j);
-                r.x = p.x;
-                r.y = p.y;
+                var s:Rectangle = _calcElementRect(j);
+                r.x = s.x;
+                r.y = s.y;
             }
             _simulation.refresh(x, y);
             
@@ -326,12 +312,12 @@ package jp.coremind.view.implement.starling.component
             {
                 if (addElementList[i].value in _simulation.contains)
                 {
-                    var o:int      = addElementList[i].key;
-                    var e:IElement = _requestElement(addElementList[i].value);
-                    var p:Point    = _layout.calcPosition(e.elementWidth, e.elementHeight, o);
+                    var o:int       = addElementList[i].key;
+                    var e:IElement  = _requestElement(addElementList[i].value);
+                    var r:Rectangle = _calcElementRect(o);
                     
-                    e.x = p.x;
-                    e.y = p.y;
+                    e.x = r.x;
+                    e.y = r.y;
                     addThread.pushRoutine(e.addTransition(this, e));
                 }
             }
@@ -347,13 +333,13 @@ package jp.coremind.view.implement.starling.component
                 return _bindedElements[bindData];
             else
             {
-                var e:IElement = _pool.request(_childClass) as IElement;
-                var n:int = _storage.read().indexOf(bindData);
-                var localId:String = String(n == -1 ? _storage.read().length: n);
-                
-                e.initialize(_storage.createChild(String(localId)));
-                
-                return _bindedElements[bindData] = e;
+                var list:Array = _reader.read();
+                var n:int = list.indexOf(bindData);
+                var localId:String  = String(n == -1 ? list.length: n);
+                var globalId:String = _reader.id + "." + localId;
+                return _bindedElements[bindData] = _pool.request(
+                    _layout.getElementClass(n),
+                    Storage.requestModelReader(globalId, _reader.type));
             }
         }
         
@@ -378,6 +364,14 @@ package jp.coremind.view.implement.starling.component
         private function _hasElement(bindData:*):Boolean
         {
             return bindData in _bindedElements;
+        }
+        
+        private function _calcElementRect(index:int, length:int = 0):Rectangle {
+            return _layout.calcElementRect(elementWidth, elementHeight, index, length);
+        }
+        
+        private function _calcTotalRect(index:int, length:int = 0):Rectangle {
+            return _layout.calcTotalRect(elementWidth, elementHeight, index, length);
         }
     }
 }

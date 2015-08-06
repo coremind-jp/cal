@@ -2,7 +2,7 @@ package flexUnitTests
 {
     import flexunit.framework.Assert;
     
-    import jp.coremind.data.Paginate;
+    import jp.coremind.utility.data.Paginate;
     
     public class TestPaginate
     {		

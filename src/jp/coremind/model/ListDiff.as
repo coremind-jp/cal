@@ -34,6 +34,9 @@ package jp.coremind.model
             for (var i:int = 0; i < history.length; i++)
                 _applyTransactionLog(history[i]);
             
+            for (var j:int = removed.length - 1; 0 <= j; j--) 
+                _editedOrigin.splice(removed[j].index, 1);
+            
             //applyFilter
             if (filter is Function)
                 _applyFilter(filter, latestFilteringList);
@@ -108,7 +111,7 @@ package jp.coremind.model
                 if (log.index > -1)
                 {
                     removed.push(log);
-                    _editedOrigin.splice(log.index, 1);
+                    //spliceは全てのログのindexを割り出してから一括で行う
                 }
             }
         }

@@ -1,63 +1,47 @@
 package jp.coremind.view.implement.starling.component
 {
-    import jp.coremind.configure.StatusConfigure;
-    import jp.coremind.configure.UpdateRule;
-    import jp.coremind.utility.MultistageStatus;
-    import jp.coremind.utility.Status;
-    import jp.coremind.view.abstract.ISwitch;
+    import jp.coremind.model.StatusModelConfigure;
+    import jp.coremind.model.StatusConfigure;
+    import jp.coremind.model.StatusGroup;
+    import jp.coremind.model.UpdateRule;
+    import jp.coremind.utility.data.Status;
     import jp.coremind.view.implement.starling.MouseElement;
     
     /**
      * MouseElementクラスにスイッチ機能を加えたクラス.
      */
-    public class MouseSwitch extends MouseElement implements ISwitch
+    public class MouseSwitch extends MouseElement
     {
-        public static const GROUP_SELECT:String = "groupSelect";
+        override protected function get _statusModelConfigureKey():Class { return MouseSwitch }
         
-        private static const CONFIG_LIST:Array = MultistageStatus.margePriorityList(
-            MouseElement.CONFIG_LIST,
-            new StatusConfigure(GROUP_SELECT, UpdateRule.LESS_THAN_PRIORITY, 50, Status.DESELECT, true, [Status.DESELECT])
-        );
+        StatusModelConfigure.registry(
+            MouseSwitch,
+            StatusModelConfigure.marge(
+                MouseElement,
+                    new StatusConfigure(StatusGroup.SELECT, UpdateRule.LESS_THAN_PRIORITY, 50, Status.OFF, true, [Status.OFF])
+                ));
         
-        public function MouseSwitch(tapRange:Number=5, multistageStatusConfig:Array = null)
+        public function MouseSwitch(tapRange:Number=5)
         {
-            super(tapRange, multistageStatusConfig || CONFIG_LIST);
+            super(tapRange);
         }
         
-        public function select():void
+        override protected function _initializeStatus():void
         {
-            _updateStatus(GROUP_SELECT, Status.SELECT);
-        }
-        
-        public function deselect():void
-        {
-            _updateStatus(GROUP_SELECT, Status.DESELECT);
-        }
-        
-        public function isSelected():Boolean
-        {
-            return _status.getGroupStatus(GROUP_SELECT).equal(Status.SELECT);
-        }
-        
-        public function toggleSelect():void
-        {
-            isSelected() ? deselect(): select();
+            super._initializeStatus();
+            
+            controller.buttonSwitch.refresh(_reader.id);
         }
         
         override protected function _applyStatus(group:String, status:String):Boolean
         {
             switch (group)
             {
-                case GROUP_SELECT:
+                case StatusGroup.SELECT:
                     switch(status)
                     {
-                        case Status.SELECT:
-                            _onSelected();
-                            return true;
-                            
-                        case Status.DESELECT:
-                            _onDeselected();
-                            return true;
+                        case Status.ON:    _onSelected(); return true;
+                        case Status.OFF: _onDeselected(); return true;
                     }
             }
             return super._applyStatus(group, status);
@@ -65,12 +49,8 @@ package jp.coremind.view.implement.starling.component
         
         override protected function _onClick():void
         {
-            _updateStatus(GROUP_SELECT, Status.SELECT);
-        }
-        
-        override protected function _onStealthClick():void
-        {
-            toggleSelect();
+            controller.buttonSwitch.toggleSwitch(_reader.id);
+            super._onClick();
         }
         
         /**

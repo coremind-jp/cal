@@ -3,10 +3,10 @@ package flexUnitTests
     import flash.net.URLRequestMethod;
     import flash.net.URLVariables;
     
-    import jp.coremind.core.Routine;
-    import jp.coremind.core.Thread;
+    import jp.coremind.utility.process.Routine;
+    import jp.coremind.utility.process.Thread;
     import jp.coremind.core.routine.WebRequest;
-    import jp.coremind.data.HashList;
+    import jp.coremind.utility.data.HashList;
     import jp.coremind.network.RequestConfigure;
     import jp.coremind.resource.ContentParser;
     

@@ -7,11 +7,11 @@ package flexUnitTests
     
     import flexunit.framework.Assert;
     
-    import jp.coremind.core.Process;
-    import jp.coremind.core.Routine;
-    import jp.coremind.core.Thread;
+    import jp.coremind.utility.process.Process;
+    import jp.coremind.utility.process.Routine;
+    import jp.coremind.utility.process.Thread;
     import jp.coremind.utility.Log;
-    import jp.coremind.utility.Status;
+    import jp.coremind.utility.data.Status;
     
     import org.flexunit.assertThat;
     import org.flexunit.async.Async;

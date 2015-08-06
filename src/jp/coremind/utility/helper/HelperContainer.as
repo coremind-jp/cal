@@ -81,7 +81,7 @@ package jp.coremind.utility.helper
             return _binary.readObject();
         }
         
-        public function getClass(className:String):Class
+        public function getClassByName(className:String):Class
         {
             var _class:Class;
             
@@ -89,6 +89,14 @@ package jp.coremind.utility.helper
             catch (e:Error) { Log.error("undefined class.", className); }
             
             return _class;
+        }
+        
+        public function getClassByInstance(instance:*):Class
+        {
+            if (instance === null || instance === undefined)
+                return null;
+            
+            return (instance as Object).constructor;
         }
         
         public function bind(f:Function, ...rest):Function

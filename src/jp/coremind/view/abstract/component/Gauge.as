@@ -1,6 +1,6 @@
 package jp.coremind.view.abstract.component
 {
-    import jp.coremind.data.Progress;
+    import jp.coremind.utility.data.Progress;
     import jp.coremind.view.abstract.IProgressElement;
     
     /**

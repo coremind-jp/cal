@@ -1,7 +1,7 @@
 package flexUnitTests
 {
-    import jp.coremind.data.HashList;
-    import jp.coremind.data.ListFilter;
+    import jp.coremind.utility.data.HashList;
+    import jp.coremind.utility.data.ListFilter;
     
     import org.flexunit.Assert;
     import org.flexunit.asserts.assertTrue;

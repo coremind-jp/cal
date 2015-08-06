@@ -5,29 +5,25 @@ package jp.coremind.core
     import flash.display.Stage;
     import flash.events.Event;
     
-    import jp.coremind.configure.ApplicationConfigure;
+    import jp.coremind.control.flash.ViewControl;
+    import jp.coremind.control.staring.ViewControl;
     import jp.coremind.utility.Log;
-    import jp.coremind.view.implement.flash.ViewControl;
-    import jp.coremind.view.implement.starling.ViewControl;
     
     import starling.core.Starling;
-    import jp.coremind.model.StorageControl;
 
     public class Application
     {
         private static var _ENABLED_LOG:Boolean = false;
-        private static function enabledLog(boolean:Boolean):void
-        {
-            _ENABLED_LOG = boolean;
-        }
+        private static function enabledLog(boolean:Boolean):void { _ENABLED_LOG = boolean; }
         
-        private static var _VIEW_CONTROL_STARLING:jp.coremind.view.implement.starling.ViewControl;
-        public static function get contentView():jp.coremind.view.implement.starling.ViewControl { return _VIEW_CONTROL_STARLING; }
+        private static var _VIEW_CONTROL_STARLING:jp.coremind.control.staring.ViewControl;
+        public static function get contentView():jp.coremind.control.staring.ViewControl { return _VIEW_CONTROL_STARLING; }
         
-        private static var _VIEW_CONTROL_FLASH:jp.coremind.view.implement.flash.ViewControl;
-        public static function get uiView():jp.coremind.view.implement.flash.ViewControl { return _VIEW_CONTROL_FLASH; }
+        private static var _VIEW_CONTROL_FLASH:jp.coremind.control.flash.ViewControl;
+        public static function get uiView():jp.coremind.control.flash.ViewControl { return _VIEW_CONTROL_FLASH; }
         
         private static var _STAGE:Stage;
+        public static function get stage():Stage { return _STAGE; }
         public static function initialize(useStarling:Boolean, deploymentTarget:Sprite):void
         {
             if (ApplicationConfigure.NAVI_VALIDATOR)
@@ -42,10 +38,10 @@ package jp.coremind.core
                 return;
             }
             
-            _VIEW_CONTROL_FLASH = new jp.coremind.view.implement.flash.ViewControl();
+            _VIEW_CONTROL_FLASH = new jp.coremind.control.flash.ViewControl();
             
             if (useStarling)
-                _VIEW_CONTROL_STARLING = new jp.coremind.view.implement.starling.ViewControl();
+                _VIEW_CONTROL_STARLING = new jp.coremind.control.staring.ViewControl();
             
             var _bind:Function = function(e:Event = null):void
             {
@@ -69,12 +65,7 @@ package jp.coremind.core
                 $.event.anyone(deploymentTarget, [Event.ADDED_TO_STAGE], [_bind]);
         }
         
-        public static const storage:StorageControl = new StorageControl();
-        
-        public static function get stage():Stage { return _STAGE; }
-        
         private static const _DEBUG_SHAPE:Shape = new Shape();
-
         public static function get debugShape():Shape { return _DEBUG_SHAPE; }
     }
 }

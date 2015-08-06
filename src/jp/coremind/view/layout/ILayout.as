@@ -1,10 +1,23 @@
 package jp.coremind.view.layout
 {
-    import flash.geom.Point;
+    import flash.geom.Rectangle;
 
     public interface ILayout
     {
-        function calcPosition(width:Number, height:Number, index:int, length:int = 0):Point
-        function calcSize(width:Number, height:Number, index:int, length:int = 0):Point
+        function destroy():void;
+        
+        function getElementClass(index:int):Class;
+        
+        function calcElementRect(
+            parentWidth:Number,
+            parentHeight:Number,
+            index:int,
+            length:int = 0):Rectangle;
+        
+        function calcTotalRect(
+            parentWidth:Number,
+            parentHeight:Number,
+            index:int,
+            length:int = 0):Rectangle
     }
 }

@@ -1,36 +1,34 @@
 package jp.coremind.view.implement.starling
 {
-    import jp.coremind.configure.StatusConfigure;
-    import jp.coremind.configure.UpdateRule;
-    import jp.coremind.utility.MultistageStatus;
-    import jp.coremind.utility.Status;
+    import jp.coremind.model.StatusModelConfigure;
+    import jp.coremind.model.StatusConfigure;
+    import jp.coremind.model.StatusGroup;
+    import jp.coremind.model.UpdateRule;
+    import jp.coremind.utility.data.Status;
     
     import starling.events.TouchEvent;
 
     public class MouseElement extends TouchElement
     {
-        public static const CONFIG_LIST:Array = MultistageStatus.margePriorityList(
-            InteractiveElement.CONFIG_LIST,
-            new StatusConfigure(GROUP_PRESS, UpdateRule.LESS_THAN_PRIORITY, 25, Status.UP, false, [Status.CLICK, Status.UP]),
-            new StatusConfigure(GROUP_RELEASE, UpdateRule.ALWAYS, 0, Status.ROLL_OUT, true)
-        );
+        override protected function get _statusModelConfigureKey():Class { return MouseElement }
+        
+        StatusModelConfigure.registry(
+            MouseElement,
+            StatusModelConfigure.marge(
+                InteractiveElement,
+                    new StatusConfigure(StatusGroup.PRESS,   UpdateRule.LESS_THAN_PRIORITY, 75, Status.UP, false, [Status.CLICK, Status.UP]),
+                    new StatusConfigure(StatusGroup.RELEASE, UpdateRule.ALWAYS, 25, Status.ROLL_OUT, true)
+                ));
         
         private var
             _bHitTest:Boolean,
             _bHover:Boolean;
         
-        public function MouseElement(inflateSize:Number = 6, multistageStatusConfig:Array = null)
+        public function MouseElement(inflateSize:Number = 6)
         {
-            super(inflateSize, multistageStatusConfig || CONFIG_LIST);
+            super(inflateSize);
             
             _bHover = false;
-        }
-        
-        override protected function _initializeStatus():void
-        {
-            super._initializeStatus();
-            
-            _updateStatus(GROUP_RELEASE, Status.ROLL_OUT);
         }
         
         override protected function _onTouch(e:TouchEvent):void
@@ -39,7 +37,7 @@ package jp.coremind.view.implement.starling
             
             if (!_touch)
             {
-                if (_bHover) _updateStatus(GROUP_RELEASE, Status.ROLL_OUT);
+                if (_bHover) controller.button.rollOut(_reader.id);
                 _bHover = false;
             }
             else
@@ -52,7 +50,7 @@ package jp.coremind.view.implement.starling
             if (_bHover) return;
             
             _bHover = true;
-            _updateStatus(GROUP_RELEASE, Status.ROLL_OVER);
+            controller.button.rollOver(_reader.id);
         }
         
         override protected function began():void
@@ -61,7 +59,7 @@ package jp.coremind.view.implement.starling
             _triggerRect.y = _touch.globalY - (_triggerRect.height >> 1);
             
             _bHitTest = _hold = true;
-            _updateStatus(GROUP_PRESS, Status.DOWN);
+            controller.button.press(_reader.id);
         }
         
         override protected function moved():void
@@ -76,8 +74,10 @@ package jp.coremind.view.implement.starling
             var isClick:Boolean    = _bHitTest &&  _hold;
             
             isClick ?
-                _updateStatus(GROUP_PRESS, Status.DOWN):
-                _updateStatus(GROUP_PRESS, isRollOver ? Status.ROLL_OVER: Status.ROLL_OUT);
+                controller.button.press(_reader.id):
+                isRollOver ?
+                    controller.button.rollOver(_reader.id):
+                    controller.button.rollOut(_reader.id);
         }
         
         override protected function ended():void
@@ -89,13 +89,15 @@ package jp.coremind.view.implement.starling
             
             if (isClick)
             {
-                _updateStatus(GROUP_RELEASE, Status.ROLL_OVER);
-                _updateStatus(GROUP_PRESS, Status.CLICK);
+                controller.button.rollOver(_reader.id);
+                controller.action(_reader.id);
             }
             else
             {
-                _updateStatus(GROUP_RELEASE, isRollOver ? Status.ROLL_OVER: Status.ROLL_OUT);
-                _updateStatus(GROUP_PRESS, Status.UP);
+                isRollOver ?
+                    controller.button.rollOver(_reader.id):
+                    controller.button.rollOut(_reader.id);
+                controller.button.release(_reader.id);
             }
         }
         
@@ -103,19 +105,19 @@ package jp.coremind.view.implement.starling
         {
             switch (group)
             {
-                case GROUP_RELEASE:
+                case StatusGroup.RELEASE:
                     switch(status)
                     {
                         case Status.ROLL_OVER: _onRollOver(); return true;
-                        case Status.ROLL_OUT : _onRollOut(); return true;
+                        case Status.ROLL_OUT :  _onRollOut(); return true;
                     }
                     break;
                 
-                case GROUP_PRESS:
+                case StatusGroup.PRESS:
                     switch(status)
                     {
                         case Status.ROLL_OVER: _onRollOver(); return true;
-                        case Status.ROLL_OUT : _onRollOut(); return true;
+                        case Status.ROLL_OUT :  _onRollOut(); return true;
                     }
                     break;
             }

@@ -2,8 +2,8 @@ package jp.coremind.view.implement.flash
 {
     import flash.display.DisplayObject;
     
-    import jp.coremind.core.Routine;
-    import jp.coremind.core.Thread;
+    import jp.coremind.utility.process.Routine;
+    import jp.coremind.utility.process.Thread;
     import jp.coremind.view.transition.ViewTransition;
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IView;

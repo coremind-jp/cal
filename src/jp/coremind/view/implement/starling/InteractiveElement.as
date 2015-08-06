@@ -1,27 +1,28 @@
 package jp.coremind.view.implement.starling
 {
-    import jp.coremind.configure.StatusConfigure;
-    import jp.coremind.configure.UpdateRule;
-    import jp.coremind.model.StorageAccessor;
-    import jp.coremind.utility.Status;
-    import jp.coremind.view.abstract.IInteractiveElement;
+    import jp.coremind.model.StatusConfigure;
+    import jp.coremind.model.StatusGroup;
+    import jp.coremind.model.StatusModelConfigure;
+    import jp.coremind.model.StorageModelReader;
+    import jp.coremind.model.UpdateRule;
+    import jp.coremind.utility.data.Status;
     
     import starling.events.Touch;
     import starling.events.TouchEvent;
     
-    public class InteractiveElement extends StatefulElement implements IInteractiveElement
+    public class InteractiveElement extends StatefulElement
     {
-        public static const GROUP_LOCK:String = "groupLock";
-        public static const CONFIG_LIST:Array = [
-            new StatusConfigure(GROUP_LOCK, UpdateRule.LESS_THAN_PRIORITY, 100, Status.UNLOCK, true, [Status.UNLOCK])
-        ];
+        override protected function get _statusModelConfigureKey():Class { return InteractiveElement }
+        
+        StatusModelConfigure.registry(InteractiveElement, [
+            new StatusConfigure(StatusGroup.LOCK, UpdateRule.LESS_THAN_PRIORITY, 100, Status.UNLOCK, true, [Status.UNLOCK])
+        ]);
         
         protected var
             _touch:Touch;
         
-        public function InteractiveElement(multistageStatusConfig:Array = null)
+        public function InteractiveElement()
         {
-            super(multistageStatusConfig || CONFIG_LIST);
         }
         
         override public function destroy():void
@@ -33,40 +34,18 @@ package jp.coremind.view.implement.starling
             super.destroy();
         }
         
-        override public function initialize(storage:StorageAccessor):void
+        override public function initialize(reader:StorageModelReader):void
         {
-            super.initialize(storage);
+            super.initialize(reader);
             
             enablePointerDeviceControl();
-        }
-        
-        override public function reuseInstance():void
-        {
-            super.reuseInstance();
-            
-            _initializeStatus();
-        }
-        
-        override public function resetInstance():void
-        {
-            super.resetInstance();
         }
         
         override protected function _initializeStatus():void
         {
             super._initializeStatus();
             
-            enable();
-        }
-        
-        public function isEnable():Boolean
-        {
-            return !_status.equalGroup(GROUP_LOCK) || _status.equal(Status.UNLOCK);
-        }
-        
-        public function toggleEnable():void
-        {
-            isEnable() ? disable(): enable();
+            controller.pointerDevice.refresh(_reader.id);
         }
         
         override public function enablePointerDeviceControl():void
@@ -75,20 +54,10 @@ package jp.coremind.view.implement.starling
             addEventListener(TouchEvent.TOUCH, _onTouch);
         }
         
-        public function enable():void
-        {
-            _updateStatus(GROUP_LOCK, Status.UNLOCK);
-        }
-        
         override public function disablePointerDeviceControl():void
         {
             useHandCursor = touchable = false;
             removeEventListener(TouchEvent.TOUCH, _onTouch);
-        }
-        
-        public function disable():void
-        {
-            _updateStatus(GROUP_LOCK, Status.LOCK);
         }
         
         /**
@@ -119,7 +88,7 @@ package jp.coremind.view.implement.starling
         {
             switch (group)
             {
-                case GROUP_LOCK:
+                case StatusGroup.LOCK:
                     switch(status)
                     {
                         case Status.UNLOCK: _onEnable(); return true;

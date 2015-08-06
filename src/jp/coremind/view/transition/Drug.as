@@ -5,7 +5,7 @@ package jp.coremind.view.transition
     import flash.geom.Rectangle;
     
     import jp.coremind.core.Application;
-    import jp.coremind.data.NumberTracker;
+    import jp.coremind.utility.data.NumberTracker;
     
     /**
      * ドラッグの座標計算を行うクラス.

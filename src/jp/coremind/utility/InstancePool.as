@@ -1,7 +1,8 @@
 package jp.coremind.utility
 {
     import flash.utils.Dictionary;
-    import jp.coremind.data.IRecycle;
+    
+    import jp.coremind.model.StorageModelReader;
 
     /**
      * IRecyleインターフェースを実装したクラスインスタンスをプールするクラス.
@@ -33,13 +34,13 @@ package jp.coremind.utility
          * プールから利用可能なインスタンスを取得する.
          * プールに利用可能なインスタンスがない場合内部で生成される。
          */
-        public function request(klass:Class):IRecycle
+        public function request(klass:Class, reader:StorageModelReader = null):IRecycle
         {
             var pool:Array = _getPool(klass);
             var instance:IRecycle = pool.length > 0 ? pool.shift(): new klass();
             
             Log.custom(TAG, "create", klass);
-            instance.reuseInstance();
+            instance.initialize(reader);
             
             return instance;
         }
@@ -50,7 +51,7 @@ package jp.coremind.utility
          */
         public function trash(instance:IRecycle):void
         {
-            instance.resetInstance();
+            instance.reset();
             
             var klass:Class = (instance as Object).constructor;
             Log.custom(TAG, "delete", klass);

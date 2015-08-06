@@ -1,7 +1,7 @@
 package jp.coremind.view.transition
 {
-    import jp.coremind.core.Routine;
-    import jp.coremind.core.Thread;
+    import jp.coremind.utility.process.Routine;
+    import jp.coremind.utility.process.Thread;
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IView;
     import jp.coremind.view.abstract.IViewContainer;
@@ -14,7 +14,6 @@ package jp.coremind.view.transition
         {
             return function(p:Routine, t:Thread):void
             {
-                Log.info(container, view);
                 if (container && view)
                 {
                     container.addView(view);

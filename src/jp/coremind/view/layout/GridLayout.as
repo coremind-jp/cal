@@ -1,70 +1,80 @@
 package jp.coremind.view.layout
 {
-    import flash.geom.Point;
+    import flash.geom.Rectangle;
     
-    import jp.coremind.core.Direction;
 
-    public class GridLayout implements ILayout
+    public class GridLayout extends FixedElementClassLayout implements ILayout
     {
         private var
             _variableDirection:String,
             _marginX:int,
             _marginY:int,
-            _stack:int,
-            _point:Point;
+            _stack:int;
         
         public function GridLayout(
+            elementClass:Class,
             variableDirection:String,
             marginX:int = 0,
             marginY:int = 0,
             stack:int = 1,
-            point:Point = null)
+            temporaryRect:Rectangle = null)
         {
+            super(elementClass, temporaryRect);
+            
             _variableDirection = variableDirection;
             _marginX = marginX;
             _marginY = marginY;
             _stack = stack < 1 ? 1: stack;
-            _point = point;
         }
         
-        public function calcPosition(width:Number, height:Number, index:int, length:int = 0):Point
+        public function calcElementRect(
+            parentWidth:Number,
+            parentHeight:Number,
+            index:int,
+            length:int = 0):Rectangle
         {
             var iValiable:int = index / _stack;
             var iFixed:int    = index % _stack;
-            var p:Point       = _point || new Point();
+            var r:Rectangle   = _rect || new Rectangle();
             
-            if (_variableDirection == Direction.X)
-            {
-                p.x = (width  + _marginX) * iValiable;
-                p.y = (height + _marginY) * iFixed;
-            }
-            else
-            {
-                p.x = (width  + _marginX) * iFixed;
-                p.y = (height + _marginY) * iValiable;
-            }
+            _variableDirection == Direction.X ?
+                
+                r.setTo(
+                    (_elementWidth  + _marginX) * iValiable,
+                    (_elementHeight + _marginY) * iFixed,
+                    _elementWidth, _elementHeight):
+                
+                r.setTo(
+                    (_elementWidth  + _marginX) * iFixed,
+                    (_elementHeight + _marginY) * iValiable,
+                    _elementWidth, _elementHeight);
             
-            return p;
+            return r;
         }
         
-        public function calcSize(width:Number, height:Number, index:int, length:int = 0):Point
+        public function calcTotalRect(
+            parentWidth:Number,
+            parentHeight:Number,
+            index:int,
+            length:int = 0):Rectangle
         {
             var iValiable:int = index / _stack;
             var iFixed:int    = 1 <= iValiable ? (_stack - 1) % _stack: index % _stack;
-            var p:Point       = _point || new Point();
+            var r:Rectangle   = _rect || new Rectangle();
             
+            r.setEmpty();
             if (_variableDirection == Direction.X)
             {
-                p.x = (width  + _marginX) * iValiable + width;
-                p.y = (height + _marginY) * _stack    + height;
+                r.width  = (_elementWidth  + _marginX) * iValiable + _elementWidth;
+                r.height = (_elementHeight + _marginY) * _stack    + _elementHeight;
             }
             else
             {
-                p.x = (width  + _marginX) * iFixed    + width;
-                p.y = (height + _marginY) * iValiable + height;
+                r.width  = (_elementWidth  + _marginX) * iFixed    + _elementWidth;
+                r.height = (_elementHeight + _marginY) * iValiable + _elementHeight;
             }
             
-            return p;
+            return r;
         }
     }
 }

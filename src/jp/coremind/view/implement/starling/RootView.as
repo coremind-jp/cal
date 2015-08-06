@@ -1,5 +1,6 @@
 package jp.coremind.view.implement.starling
 {
+
     public class RootView extends View
     {
         private static var INSTANCE:RootView;
