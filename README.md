@@ -1,2 +1,2 @@
-# cmal
+# cal
 Coremind Air Library
