@@ -1,6 +1,6 @@
 package jp.coremind.view.abstract.component
 {
-    import jp.coremind.view.abstract.IDisplayObject;
+    import jp.coremind.asset.GridAsset;
     import jp.coremind.view.abstract.IStretchBox;
 
     /**
@@ -19,13 +19,13 @@ package jp.coremind.view.abstract.component
         
         public function Grid9()
         {
-            _top     = new Grid3X();
-            _vCenter = new Grid3X();
-            _bottom  = new Grid3X();
+            _top     = new Grid3X(GridAsset.GRID9_LINE_HEAD);
+            _vCenter = new Grid3X(GridAsset.GRID9_LINE_BODY);
+            _bottom  = new Grid3X(GridAsset.GRID9_LINE_TAIL);
             
-            _left    = new Grid3Y();
-            _hCenter = new Grid3Y();
-            _right   = new Grid3Y();
+            _left    = new Grid3Y(GridAsset.GRID9_LINE_HEAD);
+            _hCenter = new Grid3Y(GridAsset.GRID9_LINE_BODY);
+            _right   = new Grid3Y(GridAsset.GRID9_LINE_TAIL);
         }
         
         public function destroy():void
@@ -53,19 +53,17 @@ package jp.coremind.view.abstract.component
          * @param   bottom      下に配置されるDisplayObject(可変長)
          * @param   bottomRight 右下に配置されるDisplayObject(固定長)
          */
-        public function setResource(
-            parent:IDisplayObject,
-            topLeft:IDisplayObject,    top:IDisplayObject,    topRight:IDisplayObject,
-            left:IDisplayObject,       body:IDisplayObject,   right:IDisplayObject,
-            bottomLeft:IDisplayObject, bottom:IDisplayObject, bottomRight:IDisplayObject):void
+        public function setAsset(asset:GridAsset):Grid9
         {
-                _top.setResource(parent,    topLeft,    top,    topRight);
-            _vCenter.setResource(parent,       left,   body,       right);
-             _bottom.setResource(parent, bottomLeft, bottom, bottomRight);
+                _top.setAsset(asset);
+            _vCenter.setAsset(asset);
+             _bottom.setAsset(asset);
             
-               _left.setResource(parent,    topLeft,   left,  bottomLeft);
-            _hCenter.setResource(parent,        top,   body,      bottom);
-              _right.setResource(parent,   topRight,  right, bottomRight);
+               _left.setAsset(asset);
+            _hCenter.setAsset(asset);
+              _right.setAsset(asset);
+              
+            return this;
         }
         
         /**

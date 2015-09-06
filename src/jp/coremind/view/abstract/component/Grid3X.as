@@ -1,11 +1,7 @@
 package jp.coremind.view.abstract.component
 {
-    import flash.geom.Point;
-    import flash.geom.Rectangle;
-    
-    import jp.coremind.resource.Color;
-    import jp.coremind.resource.EmbedResource;
-    import jp.coremind.view.abstract.IDisplayObject;
+    import jp.coremind.asset.GridAsset;
+    import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IStretchBar;
     import jp.coremind.view.layout.Direction;
     
@@ -14,11 +10,30 @@ package jp.coremind.view.abstract.component
      */
     public class Grid3X extends Grid3 implements IStretchBar
     {
-        override public function setResource(parent:IDisplayObject, head:IDisplayObject, body:IDisplayObject, tail:IDisplayObject):void
+        public function Grid3X(line:int = GridAsset.GRID3_LINE)
         {
-            super.setResource(parent, body, head, tail);
+            if (line === GridAsset.GRID3_LINE)
+            {
+                _headIndex = 0;
+                _bodyIndex = 1;
+                _tailIndex = 2;
+            }
+            else
+            {
+                _headIndex = line * 3;
+                _bodyIndex = line * 3 + 1;
+                _tailIndex = line * 3 + 2;
+            }
+        }
+        
+        override public function setAsset(asset:GridAsset):Grid3
+        {
+            super.setAsset(asset);
+            
             _headSize = _head.width;
             _tailSize = _tail.width;
+            
+            return this;
         }
         
         public function get direction():String { return Direction.X; }
@@ -33,18 +48,18 @@ package jp.coremind.view.abstract.component
             _body.x     = _headSize;
             _body.width = bodySize;
             
-            _tail.x     = _headSize + bodySize;
-            _size       = _tail.x + _tailSize;
+            _tail.x = _headSize + bodySize;
+            _size         = _tail.x + _tailSize;
         }
         
         override public function get position():Number
         {
-            return _parent.x;
+            return _asset.x;
         }
         
         override public function set position(value:Number):void
         {
-            _parent.x = (value + .5)|0;
+            _asset.x = (value + .5)|0;
         }
     }
 }

@@ -1,7 +1,7 @@
 package jp.coremind.view.builder
 {
-    import jp.coremind.resource.Color;
-    import jp.coremind.resource.EmbedResource;
+    import jp.coremind.asset.Color;
+    import jp.coremind.asset.EmbedAsset;
     import jp.coremind.utility.Log;
     import jp.coremind.view.layout.Align;
     import jp.coremind.view.layout.Size;
@@ -18,7 +18,7 @@ package jp.coremind.view.builder
         
         public function build(name:String, actualParentWidth:int, actualParentHeight:int):DisplayObject
         {
-            var image:Image = EmbedResource.createColorImage(
+            var image:Image = EmbedAsset.createColorImage(
                 Color.TRANSPARENT,
                  _width.calc(actualParentWidth),
                 _height.calc(actualParentHeight));

@@ -8,7 +8,6 @@ package jp.coremind.view.implement.starling
     import jp.coremind.model.IStorageListener;
     import jp.coremind.model.StorageModelReader;
     import jp.coremind.utility.IRecycle;
-    import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.abstract.IElementContainer;
     import jp.coremind.view.abstract.IStretchBox;
@@ -154,7 +153,7 @@ package jp.coremind.view.implement.starling
         {
             _elementWidth  = _layoutCalculator.width.calc(actualParentWidth);
             _elementHeight = _layoutCalculator.height.calc(actualParentHeight);
-            Log.info("initializeElementSize", _elementWidth, _elementHeight, this, _reader.id);
+            //Log.info("initializeElementSize", _elementWidth, _elementHeight, this, _reader.id);
             
             _isCreatedChilren ?
                 _partsLayout.refresh():
@@ -167,7 +166,7 @@ package jp.coremind.view.implement.starling
         
         protected function _buildParts():void
         {
-            Log.info("Element call _buildParts elementSize =", _elementWidth, _elementHeight);
+            //Log.info("Element call _buildParts elementSize =", _elementWidth, _elementHeight);
             var builder:IDisplayObjectBuilder;
             var child:DisplayObject;
             var _class:Class = $.getClassByInstance(this);

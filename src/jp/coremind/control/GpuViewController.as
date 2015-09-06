@@ -4,8 +4,8 @@ package jp.coremind.control
     import flash.geom.Rectangle;
     
     import jp.coremind.core.Application;
-    import jp.coremind.resource.Color;
-    import jp.coremind.resource.EmbedResource;
+    import jp.coremind.asset.Color;
+    import jp.coremind.asset.EmbedAsset;
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.ViewLayer;
     import jp.coremind.view.abstract.ViewProcessor;
@@ -39,16 +39,16 @@ package jp.coremind.control
                 _root = instance;
                 _root.alpha = .99999999;
                 
-                EmbedResource.addCircleSource();
+                EmbedAsset.addCircleSource();
                 
-                EmbedResource.createColorChart(
+                EmbedAsset.createColorChart(
                     Color.BLUE,
                     Color.RED,
                     Color.GREEN,
                     Color.VIOLET,
                     Color.WHITE,
                     Color.GRAY);
-                EmbedResource.initialize();
+                EmbedAsset.initialize();
                 
                 for (var i:int = 0; i < ViewLayer.LENGTH; i++) 
                     _viewProcessorList[i] = new ViewProcessor(_root.addChild(new RootView()) as RootView);

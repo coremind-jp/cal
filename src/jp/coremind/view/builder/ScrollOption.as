@@ -1,6 +1,5 @@
 package jp.coremind.view.builder
 {
-    import jp.coremind.view.abstract.IDisplayObject;
     import jp.coremind.view.abstract.component.Grid3;
     import jp.coremind.view.abstract.component.Grid3X;
     import jp.coremind.view.abstract.component.Slider;
@@ -9,35 +8,24 @@ package jp.coremind.view.builder
     import jp.coremind.view.layout.Align;
     import jp.coremind.view.layout.Size;
     
-    import starling.display.DisplayObject;
-    
     public class ScrollOption
     {
         private var
             _grid3:Grid3,
             _horizontal:Align,
             _vertical:Align,
-            _scrollLength:Size,
-            _headImage:IDisplayObject,
-            _bodyImage:IDisplayObject,
-            _tailImage:IDisplayObject;
+            _scrollLength:Size;
         
         public function ScrollOption(
             grid3:Grid3,
             horizontal:Align,
             vertical:Align,
-            scrollLength:Size,
-            headImage:IDisplayObject,
-            bodyImage:IDisplayObject,
-            tailImage:IDisplayObject)
+            scrollLength:Size)
         {
             _grid3 = grid3;
             _horizontal = horizontal;
             _vertical = vertical;
             _scrollLength = scrollLength;
-            _bodyImage = bodyImage;
-            _headImage = headImage;
-            _tailImage = tailImage;
         }
         
         public function build(scrollContainer:ScrollContainer):void
@@ -45,25 +33,18 @@ package jp.coremind.view.builder
             var w:Number = scrollContainer.maxWidth;
             var h:Number = scrollContainer.maxHeight;
             
-            var sliderContainer:Sprite = new Sprite();
-            sliderContainer.addChild(_bodyImage as DisplayObject);
-            sliderContainer.addChild(_headImage as DisplayObject);
-            sliderContainer.addChild(_tailImage as DisplayObject);
-            
-            _grid3.setResource(sliderContainer, _headImage, _bodyImage, _tailImage);
-            
-            scrollContainer.addChild(sliderContainer);
-            
             if (_grid3 is Grid3X)
             {
                 scrollContainer.sliderX = new Slider(_grid3, _scrollLength.calc(w), _horizontal.calc(w, 5));
-                sliderContainer.y = _vertical.calc(h, sliderContainer.height);
+                _grid3.asset.y = _vertical.calc(h, _grid3.asset.height);
             }
             else
             {
                 scrollContainer.sliderY = new Slider(_grid3, _scrollLength.calc(h), _vertical.calc(h, 5));
-                sliderContainer.x = _horizontal.calc(w, 0);
+                _grid3.asset.x = _horizontal.calc(w, 0);
             }
+            
+            scrollContainer.addChild(_grid3.asset as Sprite);
         }
     }
 }

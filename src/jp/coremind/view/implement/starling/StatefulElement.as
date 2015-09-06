@@ -3,10 +3,9 @@ package jp.coremind.view.implement.starling
     import jp.coremind.model.ElementModelAccessor;
     import jp.coremind.model.StatusModel;
     import jp.coremind.model.StatusModelConfigure;
-    import jp.coremind.utility.Log;
     import jp.coremind.view.builder.IBackgroundBuilder;
+    import jp.coremind.view.interaction.StatefulElementInteractionListener;
     import jp.coremind.view.layout.LayoutCalculator;
-    import jp.coremind.view.parts.StatefulElementResourcePack;
     
     /**
      * Elementクラスに状態機能を加えたクラス.
@@ -17,16 +16,12 @@ package jp.coremind.view.implement.starling
         
         StatusModelConfigure.registry(StatefulElement, []);
         
-        protected var _resourcePack:StatefulElementResourcePack;
-        
         public function StatefulElement(
             layoutCalculator:LayoutCalculator,
             controllerClass:Class = null,
             backgroundBuilder:IBackgroundBuilder = null)
         {
             super(layoutCalculator, controllerClass, backgroundBuilder);
-            
-            _resourcePack = new StatefulElementResourcePack();
         }
         
         override public function initialize(storageId:String = null):void
@@ -38,7 +33,6 @@ package jp.coremind.view.implement.starling
                 var ema:ElementModelAccessor = _reader.getElementModelAccessor(_elementId);
                 ema.addListener(StatusModel, _applyStatus);
                 ema.addListener(StatusModel, _applyResouce);
-                //_initializeStatus();
             }
         }
         
@@ -47,11 +41,12 @@ package jp.coremind.view.implement.starling
             super.initializeElementSize(actualParentWidth, actualParentHeight);
             
             _initializeStatus();
-            
+            /*
             var a:Array = [];
             for (var k:int = 0; k < numChildren; k++) 
                 a.push(getChildAt(k).name, getChildAt(k).width, getChildAt(k).height);
             Log.info("Element Initialized!", a.join(","));
+            */
         }
         
         override protected function _initializeRuntimeModel():void
@@ -75,7 +70,9 @@ package jp.coremind.view.implement.starling
         
         private function _applyResouce(group:String, status:String):void
         {
-            _resourcePack.apply(group, status, this);
+            StatefulElementInteractionListener
+                .request($.getClassByInstance(this))
+                .apply(group, status, this);
         }
         
         override public function reset():void

@@ -2,6 +2,7 @@ package jp.coremind.view.abstract.component
 {
     import flash.geom.Point;
     
+    import jp.coremind.asset.GridAsset;
     import jp.coremind.view.abstract.IDisplayObject;
 
     /**
@@ -15,16 +16,19 @@ package jp.coremind.view.abstract.component
             _size:Number,
             _headSize:Number,
             _tailSize:Number,
-            
-            _parent:IDisplayObject,
-            _head:IDisplayObject,
-            _body:IDisplayObject,
-            _tail:IDisplayObject;
+            _headIndex:int,
+            _bodyIndex:int,
+            _tailIndex:int,
+            _asset:GridAsset;
         
         public function Grid3()
         {
             _size = _headSize = _tailSize = 0;
         }
+        
+        protected function get _head():IDisplayObject { return _asset.getChildAt(_headIndex) as IDisplayObject; }
+        protected function get _body():IDisplayObject { return _asset.getChildAt(_bodyIndex) as IDisplayObject; }
+        protected function get _tail():IDisplayObject { return _asset.getChildAt(_tailIndex) as IDisplayObject; }
         
         /**
          * 関連付けをする.
@@ -34,17 +38,16 @@ package jp.coremind.view.abstract.component
          * @param   body    headとtailの間に配置されるDisplayObject(可変長)
          * @param   tail    可変長方向の末尾に配置されるDisplayObject(固定長)
          */
-        public function setResource(parent:IDisplayObject, body:IDisplayObject, head:IDisplayObject, tail:IDisplayObject):void
+        public function setAsset(asset:GridAsset):Grid3
         {
-            _parent = parent;
-            _body = body;
-            _head = head;
-            _tail = tail;
+            _asset = asset;
+            
+            return this;
         }
         
-        public function destroy():void
+        public function destroy(withReference:Boolean = true):void
         {
-            _parent = _head = _body = _tail = null;
+            _asset = null;
         }
         
         /**
@@ -77,18 +80,11 @@ package jp.coremind.view.abstract.component
          */
         public function get tailSize():Number { return _tailSize; }
         /**
-         * setResourceメソッドのparentパラメータに渡したDisplayObjectの可視状態を取得する.
-         */
-        public function set visible(value:Boolean):void
-        {
-            _parent.visible = value;
-        }
-        /**
          * setResourceメソッドのparentパラメータに渡したDisplayObjectの可視状態を設定する.
          */
-        public function get visible():Boolean
+        public function get asset():IDisplayObject
         {
-            return _parent.visible;
+            return _asset;
         }
     }
 }

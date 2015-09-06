@@ -14,7 +14,7 @@ package jp.coremind.view.implement.starling.component
     import jp.coremind.view.implement.starling.ElementContainer;
     import jp.coremind.view.layout.Align;
     import jp.coremind.view.layout.LayoutCalculator;
-    import jp.coremind.view.transition.Flick;
+    import jp.coremind.view.interaction.Flick;
     
     import starling.events.Event;
     

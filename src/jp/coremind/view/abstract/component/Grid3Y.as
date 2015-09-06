@@ -1,18 +1,38 @@
 package jp.coremind.view.abstract.component
 {
-    import jp.coremind.view.abstract.IDisplayObject;
+    import jp.coremind.asset.GridAsset;
+    import jp.coremind.view.abstract.IStretchBar;
     import jp.coremind.view.layout.Direction;
     
     /**
      * Grid3クラスの可変長方向をY軸基準で実装したクラス.
      */
-    public class Grid3Y extends Grid3
+    public class Grid3Y extends Grid3 implements IStretchBar
     {
-        override public function setResource(parent:IDisplayObject, head:IDisplayObject, body:IDisplayObject, tail:IDisplayObject):void
+        public function Grid3Y(line:int = GridAsset.GRID3_LINE)
         {
-            super.setResource(parent, body, head, tail);
+            if (line === GridAsset.GRID3_LINE)
+            {
+                _headIndex = 0;
+                _bodyIndex = 1;
+                _tailIndex = 2;
+            }
+            else
+            {
+                _headIndex = 0 + line;
+                _bodyIndex = 3 + line;
+                _tailIndex = 6 + line;
+            }
+        }
+        
+        override public function setAsset(asset:GridAsset):Grid3
+        {
+            super.setAsset(asset);
+            
             _headSize = _head.height;
             _tailSize = _tail.height;
+            
+            return this;
         }
         
         public function get direction():String { return Direction.Y; }
@@ -27,18 +47,18 @@ package jp.coremind.view.abstract.component
             _body.y      = _headSize;
             _body.height = bodySize;
             
-            _tail.y      = _headSize + bodySize;
-            _size        = _tail.y + _tailSize;
+            _tail.y = _headSize + bodySize;
+            _size   = _tail.y + _tailSize;
         }
         
         override public function get position():Number
         {
-            return _parent.y;
+            return _asset.y;
         }
         
         override public function set position(value:Number):void
         {
-            _parent.y = (value + .5)|0;
+            _asset.y = (value + .5)|0;
         }
     }
 }

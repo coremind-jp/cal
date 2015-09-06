@@ -38,7 +38,7 @@ package jp.coremind.view.abstract.component
             _progress.updateByRate(percentage);
             
             if (_autoHide)
-                _grid.visible = 0 < percentage;
+                _grid.asset.visible = 0 < percentage;
             
             _grid.size = _progress.now + _grid.tailSize;
         }

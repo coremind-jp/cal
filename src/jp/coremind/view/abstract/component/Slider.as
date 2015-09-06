@@ -46,8 +46,8 @@ package jp.coremind.view.abstract.component
             _containerSize = containerSize;
             _percentage    = _containerSize / pageSize;
             
-            _grid.visible  = _percentage < 1;
-            _grid.size     = _size * _percentage;
+            _grid.asset.visible = _percentage < 1;
+            _grid.size          = _size * _percentage;
             
             _progress.setRange(0, _containerSize - _grid.size, false);
         }
