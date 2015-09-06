@@ -20,8 +20,9 @@ package jp.coremind.view.abstract
         function set name(v:String):void
         function get name():String
         
+        function getElementIndex(child:IElement):int;
+        
         function get applicableHistory():Boolean;
-        function get naviConfigure():Object;
         
         function initialize(p:Routine, t:Thread):void;
         function get addTransition():Function;

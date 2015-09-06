@@ -1,11 +1,18 @@
 package jp.coremind.view.abstract.component
 {
+    import flash.geom.Point;
+    import flash.geom.Rectangle;
+    
+    import jp.coremind.resource.Color;
+    import jp.coremind.resource.EmbedResource;
     import jp.coremind.view.abstract.IDisplayObject;
+    import jp.coremind.view.abstract.IStretchBar;
+    import jp.coremind.view.layout.Direction;
     
     /**
      * Grid3クラスの可変長方向をX軸基準で実装したクラス.
      */
-    public class Grid3X extends Grid3
+    public class Grid3X extends Grid3 implements IStretchBar
     {
         override public function setResource(parent:IDisplayObject, head:IDisplayObject, body:IDisplayObject, tail:IDisplayObject):void
         {
@@ -13,6 +20,8 @@ package jp.coremind.view.abstract.component
             _headSize = _head.width;
             _tailSize = _tail.width;
         }
+        
+        public function get direction():String { return Direction.X; }
         
         override public function set size(value:Number):void
         {

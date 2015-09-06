@@ -1,7 +1,7 @@
 package jp.coremind.utility.helper
 {
-    import jp.coremind.utility.data.HashList;
     import jp.coremind.utility.Log;
+    import jp.coremind.utility.data.HashList;
 
     public class HashHelper
     {
@@ -95,6 +95,22 @@ package jp.coremind.utility.helper
                     write(o[_key] = {}, _hierarchy.join("."), value):
                     o[_key] = value;
             }
+        }
+        
+        public function isDefined(o:Object, path:String):Boolean
+        {
+            var _hierarchy:Array = path.split(".");
+            var _key:String;
+            
+            while (_hierarchy.length > 0)
+            {
+                _key = _hierarchy.shift();
+                
+                if (_key in o) o = o[_key];
+                else return false;
+            }
+            
+            return true;
         }
         
         public function update(paste:Object, copy:Object):void

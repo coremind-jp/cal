@@ -2,9 +2,6 @@ package jp.coremind.utility.data
 {
     import jp.coremind.utility.Log;
     
-    /**
-     * 任意進捗量を操作するクラス.
-     */
     public class Progress
     {
         public var enabledRound:Boolean;
@@ -14,6 +11,9 @@ package jp.coremind.utility.data
             _max:Number,
             _now:Number;
             
+        /**
+         * 任意進捗量を操作するクラス.
+         */
         public function Progress()
         {
             enabledRound = true;
@@ -28,8 +28,7 @@ package jp.coremind.utility.data
         {
             if (max < min)
             {
-                if (invalidReport)
-                    Log.info("invalid value. (Progress) min:"+min+" max:"+max);
+                if (invalidReport) Log.info("invalid value. (Progress) min:"+min+" max:"+max);
                 _min = 0;
                 _max = 0;
             }

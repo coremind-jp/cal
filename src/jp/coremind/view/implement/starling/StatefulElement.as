@@ -1,8 +1,12 @@
 package jp.coremind.view.implement.starling
 {
+    import jp.coremind.model.ElementModelAccessor;
     import jp.coremind.model.StatusModel;
     import jp.coremind.model.StatusModelConfigure;
-    import jp.coremind.model.StorageModelReader;
+    import jp.coremind.utility.Log;
+    import jp.coremind.view.builder.IBackgroundBuilder;
+    import jp.coremind.view.layout.LayoutCalculator;
+    import jp.coremind.view.parts.StatefulElementResourcePack;
     
     /**
      * Elementクラスに状態機能を加えたクラス.
@@ -13,25 +17,47 @@ package jp.coremind.view.implement.starling
         
         StatusModelConfigure.registry(StatefulElement, []);
         
-        public function StatefulElement()
+        protected var _resourcePack:StatefulElementResourcePack;
+        
+        public function StatefulElement(
+            layoutCalculator:LayoutCalculator,
+            controllerClass:Class = null,
+            backgroundBuilder:IBackgroundBuilder = null)
         {
+            super(layoutCalculator, controllerClass, backgroundBuilder);
+            
+            _resourcePack = new StatefulElementResourcePack();
         }
         
-        override public function initialize(reader:StorageModelReader):void
+        override public function initialize(storageId:String = null):void
         {
-            super.initialize(reader);
+            super.initialize(storageId);
             
             if (_reader)
             {
-                _reader.runtime.addListener(StatusModel, _applyStatus);
-                _initializeStatus();
+                var ema:ElementModelAccessor = _reader.getElementModelAccessor(_elementId);
+                ema.addListener(StatusModel, _applyStatus);
+                ema.addListener(StatusModel, _applyResouce);
+                //_initializeStatus();
             }
+        }
+        
+        override public function initializeElementSize(actualParentWidth:Number, actualParentHeight:Number):void
+        {
+            super.initializeElementSize(actualParentWidth, actualParentHeight);
+            
+            _initializeStatus();
+            
+            var a:Array = [];
+            for (var k:int = 0; k < numChildren; k++) 
+                a.push(getChildAt(k).name, getChildAt(k).width, getChildAt(k).height);
+            Log.info("Element Initialized!", a.join(","));
         }
         
         override protected function _initializeRuntimeModel():void
         {
-            if (_reader.runtime.isUndefined(StatusModel))
-                _reader.runtime.addModel(StatusModel, StatusModel.create(_statusModelConfigureKey));
+            var ema:ElementModelAccessor = _reader.getElementModelAccessor(_elementId);
+            if (ema.isUndefined(StatusModel)) ema.addModel(StatusModel.create(_statusModelConfigureKey));
         }
         
         /**
@@ -47,20 +73,33 @@ package jp.coremind.view.implement.starling
             return false;
         }
         
+        private function _applyResouce(group:String, status:String):void
+        {
+            _resourcePack.apply(group, status, this);
+        }
+        
         override public function reset():void
         {
             if (_reader)
-                _reader.runtime.removeListener(StatusModel, _applyStatus);
+            {
+                var ema:ElementModelAccessor = _reader.getElementModelAccessor(_elementId);
+                ema.removeListener(StatusModel, _applyStatus);
+                ema.removeListener(StatusModel, _applyResouce);
+            }
             
             super.reset();
         }
         
-        override public function destroy():void
+        override public function destroy(withReference:Boolean = false):void
         {
             if (_reader)
-                _reader.runtime.removeListener(StatusModel, _applyStatus);
+            {
+                var ema:ElementModelAccessor = _reader.getElementModelAccessor(_elementId);
+                ema.removeListener(StatusModel, _applyStatus);
+                ema.removeListener(StatusModel, _applyResouce);
+            }
             
-            super.destroy();
+            super.destroy(withReference);
         }
     }
 }

@@ -6,7 +6,7 @@ package jp.coremind.model
     import jp.coremind.utility.data.HashList;
     import jp.coremind.utility.data.Status;
 
-    public class StatusModel extends RuntimeModel implements IRuntimeModel
+    public class StatusModel extends ElementModel implements IElementModel
     {
         public static const TAG:String = "[StatusModel]";
         Log.addCustomTag(TAG);
@@ -51,12 +51,15 @@ package jp.coremind.model
             }
         }
         
-        public function destroy():void
+        override public function destroy():void
         {
+            Log.info("StatusModel destroy");
+            
             _sortedConfigList.destory();
             
-            for (var p:String in _statusList)
-                delete _statusList[p];
+            for (var p:String in _statusList) delete _statusList[p];
+            
+            super.destroy();
         }
         
         public function get headStatus():String
@@ -162,7 +165,7 @@ package jp.coremind.model
                 for (var i:int = 0, len:int = updateLog.length; _isUpdating && i < len; i++)
                 {
                     //Log.info("dispatch", updateLog[i]);
-                    _dispatch(updateLog[i], getGroupStatus(updateLog[i]).value);
+                    dispatch(updateLog[i], getGroupStatus(updateLog[i]).value);
                 }
                 
                 _isUpdating = false;

@@ -3,9 +3,12 @@ package jp.coremind.view.implement.starling
     import jp.coremind.model.StatusConfigure;
     import jp.coremind.model.StatusGroup;
     import jp.coremind.model.StatusModelConfigure;
-    import jp.coremind.model.StorageModelReader;
     import jp.coremind.model.UpdateRule;
+    import jp.coremind.utility.Log;
     import jp.coremind.utility.data.Status;
+    import jp.coremind.view.builder.IBackgroundBuilder;
+    import jp.coremind.view.layout.Align;
+    import jp.coremind.view.layout.LayoutCalculator;
     
     import starling.events.Touch;
     import starling.events.TouchEvent;
@@ -21,22 +24,26 @@ package jp.coremind.view.implement.starling
         protected var
             _touch:Touch;
         
-        public function InteractiveElement()
+        public function InteractiveElement(
+            layoutCalculator:LayoutCalculator,
+            controllerClass:Class = null,
+            backgroundBuilder:IBackgroundBuilder = null)
         {
+            super(layoutCalculator, controllerClass, backgroundBuilder);
         }
         
-        override public function destroy():void
+        override public function destroy(withReference:Boolean = false):void
         {
-            _touch = null;
+            Log.info("destroy interactive", _touch);
             
             disablePointerDeviceControl();
             
-            super.destroy();
+            super.destroy(withReference);
         }
         
-        override public function initialize(reader:StorageModelReader):void
+        override public function initialize(storageId:String = null):void
         {
-            super.initialize(reader);
+            super.initialize(storageId);
             
             enablePointerDeviceControl();
         }
@@ -45,7 +52,7 @@ package jp.coremind.view.implement.starling
         {
             super._initializeStatus();
             
-            controller.pointerDevice.refresh(_reader.id);
+            controller.pointerDevice.refresh(_reader.id, _elementId);
         }
         
         override public function enablePointerDeviceControl():void
@@ -66,7 +73,12 @@ package jp.coremind.view.implement.starling
         protected function _onTouch(e:TouchEvent):void
         {
             _touch = e.getTouch(this);
-            if (_touch) this[_touch.phase]();
+            
+            if (_touch)
+            {
+                this[_touch.phase]();
+                _touch = null;
+            }
         }
         
         /** TouchPhase.HOVERハンドリング */

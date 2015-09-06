@@ -1,69 +1,119 @@
 package jp.coremind.model
 {
+    import flash.utils.Dictionary;
+    
+    import jp.coremind.utility.Log;
+    
     /**
      * Storageクラスに格納されているデータの読み出しと変更監視の制御するクラス.
      */
-    public class StorageModelReader implements IModel
+    public class StorageModelReader extends StorageAccessor implements IModel
     {
+        public static const LISTENER_PRIORITY_ELEMENT             :int = 0;
+        public static const LISTENER_PRIORITY_GRID_LAYOUT         :int = 100;
+        public static const LISTENER_PRIORITY_LIST_ELEMENT_FACTORY:int = 200;
+        
         internal var
             _origin:*;
         
         protected var
             _id:String,
             _type:String,
-            _runtime:RuntimeModelAccessor,
-            _listeners:Vector.<IStorageListener>;
+            _elementModelList:Dictionary,
+            _priorityList:Dictionary,
+            _listenerList:Vector.<IStorageListener>;
         
         public function StorageModelReader(id:String, type:String = StorageType.HASH)
         {
-            _id        = id;
-            _type      = type;
-            _runtime   = new RuntimeModelAccessor(id);
-            _listeners = new <IStorageListener>[];
+            _id               = id;
+            _type             = type;
+            _priorityList     = new Dictionary(true);
+            _elementModelList = new Dictionary(true);
+            _listenerList     = new <IStorageListener>[];
         }
         
         public function destroy():void
         {
+            var p:*;
+            
             _origin = null;
             
-            _listeners.length = 0;
+            for (p in _elementModelList)
+            {
+                var accessor:ElementModelAccessor = _elementModelList[p];
+                
+                delete _elementModelList[p];
+                
+                accessor.destroy();
+            }
             
-            _runtime.removeAllModel(_id);
-            _runtime.destroy();
+            for (p in _priorityList)  delete _priorityList[p];
+            
+            _listenerList.length = 0;
         }
         
+        /** reader alias */
         public function get id():String                    { return _id; }
         public function get type():String                  { return _type; }
-        public function get runtime():RuntimeModelAccessor { return _runtime; }
-        public function read():* { return _origin ? _origin: _origin = Storage.read(this); }
+        public function read():* { return _origin ? _origin: _origin = _storage.read(this); }
+        public function getElementModelAccessor(id:*):ElementModelAccessor
+        {
+            if (id is ElementModelId)
+                return id in _elementModelList ?
+                    _elementModelList[id]:
+                    _elementModelList[id] = new ElementModelAccessor(_id);
+            else
+            {
+                for (var id:ElementModelId in _elementModelList)
+                    if (id.equal(id))
+                        return _elementModelList[id];
+                return null;
+            }
+        }
+        /** reader alias */
         
         public function hasListener():Boolean
         {
-            return _listeners.length != 0;
+            Log.info(_listenerList.length, _listenerList, id);
+            return _listenerList.length != 0;
         }
         
-        public function addListener(listener:IStorageListener):void
+        public function addListener(listener:IStorageListener, priority:int = 0):void
         {
-            var n:int = _listeners.indexOf(listener);
-            if (n == -1) _listeners.push(listener);
+            if (listener in _priorityList) return;
+            
+            _priorityList[listener] = priority;
+            for (var i:int = 0, len:int = _listenerList.length; i < len; i++) 
+            {
+                if (_priorityList[_listenerList[i]] < priority)
+                {
+                    _listenerList.splice(i, 0, listener);
+                    return;
+                }
+            }
+            
+            _listenerList.push(listener);
         }
         
         public function removeListener(listener:IStorageListener):void
         {
-            var n:int = _listeners.indexOf(listener);
-            if (n != -1) _listeners.splice(n, 1);
+            if (listener in _priorityList)
+            {
+                delete _priorityList[listener];
+                _listenerList.splice(_listenerList.indexOf(listener), 1);
+            }
         }
         
         public function dispatchByPreview(diff:Diff):void
         {
-            for (var i:int = 0; i < _listeners.length; i++) 
-                _listeners[i].preview(diff);
+            for (var i:int = 0; i < _listenerList.length; i++) 
+                _listenerList[i].preview(diff);
         }
         
         public function dispatchByCommit(diff:Diff):void
         {
-            for (var i:int = 0; i < _listeners.length; i++) 
-                _listeners[i].commit(diff);
+            for (var i:int = 0; i < _listenerList.length; i++) 
+                _listenerList[i].commit(diff);
         }
     }
 }

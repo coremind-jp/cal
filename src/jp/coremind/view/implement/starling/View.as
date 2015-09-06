@@ -1,75 +1,105 @@
 package jp.coremind.view.implement.starling
 {
+    import jp.coremind.core.Application;
+    import jp.coremind.utility.Log;
     import jp.coremind.utility.process.Routine;
     import jp.coremind.utility.process.Thread;
-    import jp.coremind.view.transition.ViewTransition;
-    import jp.coremind.utility.Log;
+    import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.abstract.IView;
-    import jp.coremind.view.abstract.IViewContainer;
+    import jp.coremind.view.transition.ViewTransition;
     
     import starling.display.DisplayObject;
     import starling.display.Sprite;
     
-    public class View extends Sprite implements IViewContainer
+    public class View extends Sprite implements IView
     {
-        public function get naviConfigure():Object  { return {}; }
-        public function get viewConfigure():Object  { return {}; }
         public function get applicableHistory():Boolean  { return true; }
         
+        /**
+         * 画面表示オブジェクトクラス.
+         * 画面のルートでViewControllerから制御される。
+         */
         public function View()
         {
-            Log.info(name+" "+ this +" "+" create");
+            Log.info("create view", viewName);
         }
         
-        public function addView(view:IView):void         { addChild(view as DisplayObject); }
-        public function removeView(view:IView):void      { removeChild(view as DisplayObject); }
-        public function containsView(view:IView):Boolean { return super.contains(view as DisplayObject); }
-        public function getViewIndexByClass(cls:Class):int
+        protected function get viewName():String
         {
-            for (var i:int = numChildren - 1; 0 <= i; i--) 
-                if (Object(getChildAt(i)).constructor === cls)
-                    return i;
-            return -1;
+            return null;
         }
-        public function getViewAt(i:int):IView
+        
+        public function getElementIndex(element:IElement):int
         {
-            return 0 <= i && i < numChildren ? getChildAt(i) as IView: null;
+            return getChildIndex(element as DisplayObject);
+        }
+        
+        public function swapElement(element1:IElement, element2:IElement):void
+        {
+            return swapChildren(element1 as DisplayObject, element2 as DisplayObject);
         }
         
         public function initialize(r:Routine, t:Thread):void
         {
-            r.scceeded();
+            if (viewName)
+            {
+                _buildElement(Application.elementBluePrint.createContentList(viewName));
+                r.scceeded();
+            }
+            else r.failed("'viewName' is null. please set value.");
         }
+        
+        protected function _buildElement(list:Array):void
+        {
+            var w:Number = Application.VIEW_PORT.width;
+            var h:Number = Application.VIEW_PORT.height;
+            
+            for (var i:int = 0; i < list.length; i++) 
+            {
+                var name:String = list[i];
+                Log.info("build Element", name, Application.elementBluePrint);
+                addChild(Application.elementBluePrint.createBuilder(name).build(name, w, h));
+            }
+        }
+        
         public function get addTransition():Function { return ViewTransition.FAST_ADD; }
         
         public function focusInPreProcess(r:Routine, t:Thread):void
         {
-            Log.info(name+"focusInPreProcess");
+            Log.info(viewName, "focusInPreProcess");
             r.scceeded();
         }
         public function get focusInTransition():Function    { return ViewTransition.SKIP; }
         public function focusInPostProcess(r:Routine, t:Thread):void
         {
-            Log.info(name+"focusInPostProcess");
+            Log.info(viewName, "focusInPostProcess");
             r.scceeded();
         }
         
         public function focusOutPreProcess(r:Routine, t:Thread):void
         {
-            Log.info(name+"focusOutPreProcess");
+            Log.info(viewName, "focusOutPreProcess");
             r.scceeded();
         }
         public function get focusOutTransition():Function { return ViewTransition.SKIP; }
         public function focusOutPostProcess(r:Routine, t:Thread):void
         {
-            Log.info(name+"focusOutPostProcess");
+            Log.info(viewName, "focusOutPostProcess");
             r.scceeded();
         }
         
         public function get removeTransition():Function { return ViewTransition.FAST_REMOVE; }
         public function destroy(r:Routine, t:Thread):void
         {
-            Log.info(name+"destroy");
+            Log.info(viewName, "destroy");
+            
+            while (numChildren > 0)
+            {
+                var child:IElement = removeChildAt(0, true) as IElement;
+                Log.info("isIElement?", Boolean(child));
+                if (child) child.destroy(true);
+            }
+            
             r.scceeded();
         }
     }

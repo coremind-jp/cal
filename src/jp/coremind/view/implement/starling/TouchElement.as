@@ -3,11 +3,13 @@ package jp.coremind.view.implement.starling
     import flash.geom.Point;
     import flash.geom.Rectangle;
     
-    import jp.coremind.model.StatusModelConfigure;
     import jp.coremind.model.StatusConfigure;
     import jp.coremind.model.StatusGroup;
+    import jp.coremind.model.StatusModelConfigure;
     import jp.coremind.model.UpdateRule;
     import jp.coremind.utility.data.Status;
+    import jp.coremind.view.builder.IBackgroundBuilder;
+    import jp.coremind.view.layout.LayoutCalculator;
 
     public class TouchElement extends InteractiveElement
     {
@@ -29,10 +31,15 @@ package jp.coremind.view.implement.starling
             _triggerRect:Rectangle,
             _hold:Boolean;
             
-        public function TouchElement(inflateSize:Number = 6)
+        public function TouchElement(
+            layoutCalculator:LayoutCalculator,
+            controllerClass:Class = null,
+            backgroundBuilder:IBackgroundBuilder = null)
         {
+            super(layoutCalculator, controllerClass, backgroundBuilder);
+            
             _triggerRect = new Rectangle();
-            inflateClickRange(inflateSize, inflateSize);
+            inflateClickRange(6, 6);
             
             _hold = false;
         }
@@ -41,7 +48,7 @@ package jp.coremind.view.implement.starling
         {
             super._initializeStatus();
             
-            controller.button.refresh(_reader.id);
+            controller.button.refresh(_reader.id, _elementId);
         }
         
         /**
@@ -60,7 +67,7 @@ package jp.coremind.view.implement.starling
             _triggerRect.y = _touch.globalY - (_triggerRect.height >> 1);
             
             _hold = true;
-            controller.button.press(_reader.id);
+            controller.button.press(_reader.id, _elementId);
         }
         
         override protected function moved():void
@@ -73,13 +80,13 @@ package jp.coremind.view.implement.starling
             
             _hold = bIntersects && bHitTest;
             _hold ?
-                controller.button.press(_reader.id):
-                controller.button.release(_reader.id);
+                controller.button.press(_reader.id, _elementId):
+                controller.button.release(_reader.id, _elementId);
         }
         
         override protected function ended():void
         {
-            if (_hold) controller.action(_reader.id);
+            if (_hold) controller.action(_reader.id, _elementId);
         }
         
         override protected function _applyStatus(group:String, status:String):Boolean
@@ -89,6 +96,7 @@ package jp.coremind.view.implement.starling
                 case StatusGroup.RELEASE:
                     switch(status)
                     {
+                        case Status.ROLL_OUT:
                         case Status.UP: _onUp(); return true;
                     }
                     break;
@@ -98,7 +106,8 @@ package jp.coremind.view.implement.starling
                     {
                         case Status.DOWN : _onDown(); return true;
                         case Status.UP   : _onUp(); return true;
-                        case Status.CLICK: _onClick(); return true;
+                        case Status.CLICK: _onClick();
+                            return true;
                     }
                     break;
             }
@@ -133,17 +142,7 @@ package jp.coremind.view.implement.starling
          */
         protected function _onClick():void
         {
-            controller.action(_reader.id);
-        }
-        
-        /**
-         * statusオブジェクトが以下の状態に変わったときに呼び出されるメソッド.
-         * group : 任意
-         * value : Status.CLICK
-         */
-        protected function _onStealthClick():void
-        {
-            //Log.info("_onStealthClick");
+            //Log.info("_onClick");
         }
     }
 }

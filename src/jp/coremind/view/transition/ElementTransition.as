@@ -14,7 +14,7 @@ package jp.coremind.view.transition
      */
     public class ElementTransition
     {
-        private static const TIME:Number = .15;
+        private static const TIME:Number = 1.0;
         private static const _SKIP:Function = function(p:Routine, t:Thread):void { p.scceeded(); };
         
         public static function FAST_ADD(container:IElementContainer, element:IElement, fromX:Number = NaN, fromY:Number = NaN, toX:Number = NaN, toY:Number = NaN):Function
@@ -87,7 +87,7 @@ package jp.coremind.view.transition
         {
             if (!element)
             {
-                Log.warning("undefined element. element:" + element.name);
+                Log.warning("undefined element.");
                 return _SKIP;
             }
             
@@ -103,7 +103,7 @@ package jp.coremind.view.transition
         {
             if (!element)
             {
-                Log.warning("undefined element. element:" + element.name);
+                Log.warning("undefined element.");
                 return _SKIP;
             }
             
@@ -125,7 +125,7 @@ package jp.coremind.view.transition
         {
             if (!element)
             {
-                Log.warning("undefined element. element:" + element.name);
+                Log.warning("undefined element.");
                 return _SKIP;
             }
             
@@ -140,7 +140,7 @@ package jp.coremind.view.transition
         {
             if (!element)
             {
-                Log.warning("undefined element. element:" + element.name);
+                Log.warning("undefined element.");
                 return _SKIP;
             }
             

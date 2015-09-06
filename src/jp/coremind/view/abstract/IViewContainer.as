@@ -1,6 +1,9 @@
 package jp.coremind.view.abstract
 {
-    public interface IViewContainer extends IView
+    /**
+     * ViewContainerクラスで利用するインターフェース.
+     */
+    public interface IViewContainer
     {
         function get numChildren():int
         function addView(view:IView):void

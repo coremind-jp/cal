@@ -1,121 +1,104 @@
 package jp.coremind.view.implement.starling.component
 {
-    import flash.geom.Point;
     import flash.geom.Rectangle;
     import flash.utils.Dictionary;
     
-    import jp.coremind.event.ElementEvent;
     import jp.coremind.model.Diff;
     import jp.coremind.model.ListDiff;
-    import jp.coremind.model.Storage;
-    import jp.coremind.model.StorageModelReader;
     import jp.coremind.model.TransactionLog;
-    import jp.coremind.utility.IRecycle;
-    import jp.coremind.utility.InstancePool;
     import jp.coremind.utility.Log;
+    import jp.coremind.utility.data.Status;
     import jp.coremind.utility.process.Process;
     import jp.coremind.utility.process.Routine;
     import jp.coremind.utility.process.Thread;
+    import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.implement.starling.ElementContainer;
+    import jp.coremind.view.layout.Align;
     import jp.coremind.view.layout.ILayout;
+    import jp.coremind.view.layout.LayoutCalculator;
     import jp.coremind.view.layout.LayoutSimulation;
     
-    /**
-     * 
-     */
     public class ListContainer extends ElementContainer
     {
         public static const TAG:String = "[ListContainer]";
-        Log.addCustomTag(TAG);
+        //Log.addCustomTag(TAG);
+        
+        private static const PREVIEW_PROCESS:String = "ListContainer::Preview";
+        private static const REFRESH_PROCESS:String = "ListContainer::Refresh";
         
         private var
             _layout:ILayout,
-            _pool:InstancePool,
-            _simulation:LayoutSimulation,
-            _bindedElements:Dictionary;
+            _simulation:LayoutSimulation;
         
-        public function ListContainer(layout:ILayout, containerWidth:Number = NaN, containerHeight:Number = NaN)
+        /**
+         * 配列データをリスト表示オブジェクトとして表示するコンテナクラス.
+         */
+        public function ListContainer(
+            layout:ILayout,
+            layoutCalculator:LayoutCalculator,
+            controllerClass:Class = null,
+            backgroundBuilder:IBackgroundBuilder = null)
         {
-            super(containerWidth, containerHeight);
+            super(layoutCalculator, controllerClass, backgroundBuilder);
             
-            _layout         = layout;
-            _pool           = new InstancePool();
-            _bindedElements = new Dictionary(true);
-            _simulation     = new LayoutSimulation();
+            _layout = layout;
+            _simulation = new LayoutSimulation();
         }
         
-        override public function initialize(reader:StorageModelReader):void
+        override public function initialize(storageId:String = null):void
         {
-            super.initialize(reader);
+            super.initialize(storageId);
             
-            var list:Array = _reader.read();
-            for (var i:int = 0, len:int = list.length; i < len; i++) 
-                _simulation.addChild(list[i], _calcElementRect(i).clone());
-            _simulation.setDrawableArea(_maxWidth, _maxHeight);
-            _simulation.refresh(x, y);
-            
-            var added:Dictionary = _simulation.added;
-            for (var key:* in added)
-            {
-                var rect:Rectangle = added[key];
-                var e:IElement = _requestElement(key);
-                e.x = rect.x;
-                e.y = rect.y;
-                addElement(e);
-            }
-            
-            var r:Rectangle = _calcTotalRect(len - 1);
-            _updateElementSize(r.width, r.height);
+            _layout.initialize(_reader);
         }
         
-        override public function destroy():void
+        override public function destroy(withReference:Boolean = false):void
         {
-            _layout.destroy();
-            
-            _pool.destroy();
+            Log.info("destory ListContainer", withReference);
             
             _simulation.destroy();
             
-            for (var p:* in _bindedElements) delete _bindedElements[p];
+            if (withReference)
+                _layout.destroy(withReference);
+            _layout = null;
             
-            super.destroy();
+            super.destroy(withReference);
         }
         
         override public function preview(plainDiff:Diff):void
         {
+            var previewProcess:String = name + " " + PREVIEW_PROCESS;
             var diff:ListDiff     = plainDiff as ListDiff;
-            var process:Process   = new Process(name + " (ListContainer::preview).");
             var moveThread:Thread = new Thread("move");
             var addThread:Thread  = new Thread("add");
             var len:int = diff.editedOrigin.length;
             var beforePosition:Dictionary;
-            var r:Rectangle = _calcTotalRect(len == 0 ? 0: len - 1).clone();
+            var r:Rectangle = _layout.calcTotalRect(_maxWidth, _maxHeight, len == 0 ? 0: len).clone();
             
-            if (len > 2500)//リスト長が2500以上の場合待機時間を設ける
-                process.pushThread(new Thread("sort waiting").pushRoutine(
-                    $.loop.highResolution.createWaitProcess(len / 20)//リスト長の20分の1を待機時間にする
-                ), false, false)
-            
-            disablePointerDeviceControl();
+            if (len > 500)//リスト長が2500以上の場合待機時間を設ける
+                controller.syncProcess.pushThread(
+                    previewProcess, new Thread("sort waiting").pushRoutine(
+                        $.loop.highResolution.createWaitProcess(len / 30)//リスト長の20分の1を待機時間にする
+                    ),
+                    false,
+                    false);
             
             beforePosition = _updateElementPosition(diff);
             
-            _applyRemoveDiff(diff.removed, process);
+            _applyRemoveDiff(diff.removed, previewProcess);
             
-            _applyFilteringDiff(diff.filtered, process);
+            _applyFilteringDiff(diff.filtered, previewProcess);
             
-            _refreshElementOrder(diff, beforePosition, moveThread, addThread, process);
+            _refreshElementOrder(diff, beforePosition, moveThread, addThread, previewProcess);
             
             _applyAddDiff(diff.added, addThread, len);
             
-            process
-                .pushThread(addThread,  true, true)
-                .pushThread(moveThread, true, true)
-                .exec(function (process:Process):void
-                {
-                    _updateElementSize(r.width, r.height);
-                    enablePointerDeviceControl();
+            controller.syncProcess
+                .pushThread(previewProcess, addThread,  true, true)
+                .pushThread(previewProcess, moveThread, true, true)
+                .exec(previewProcess, function (p:Process):void {
+                    if (p.result === Status.SCCEEDED) updateElementSize(r.width, r.height);
                 });
         }
         
@@ -129,23 +112,57 @@ package jp.coremind.view.implement.starling.component
                 _simulation.removechild(diff.removed[i].value);
             
             for (i = 0, len = diff.added.length; i < len; i++)
-                _simulation.addChild(
-                    diff.added[i].value,
-                    _calcElementRect(editedOrigin.length - len + i).clone());
+                _simulation.addChild(diff.added[i].value, _layout.calcElementRect(_maxWidth, _maxHeight, editedOrigin.length - len + i).clone());
         }
         
-        /**
-         * このコンテナのLayoutSimulationインスタンスを取得する.
-         */
-        public function get layoutSimulation():LayoutSimulation
+        override public function initializeChildrenLayout():void
         {
-            return _simulation;
+            _simulation.setDrawableArea(_maxWidth, _maxHeight);
+            
+            var list:Array = _reader.read();
+            for (var i:int = 0, len:int = list.length; i < len; i++) 
+                _simulation.addChild(list[i], _layout.calcElementRect(_maxWidth, _maxHeight, i).clone());
+            _refreshSimulationPosition(x, y);
+            
+            var added:Dictionary = _simulation.added;
+            for (var key:* in added)
+            {
+                var rect:Rectangle = added[key];
+                var e:IElement = _layout.requestElement(rect.width, rect.height, key);
+                e.x = rect.x;
+                e.y = rect.y;
+                addElement(e);
+            }
+            
+            var r:Rectangle = _layout.calcTotalRect(_maxWidth, _maxHeight, len);
+            updateElementSize(r.width, r.height);
         }
         
-        override public function refresh():void
+        override public function refreshChildrenLayout():void
         {
-            if (_requireRefresh())
-                _refresh();
+            if (!_requireRefresh()) return;
+            
+            var e:IElement;
+            var to:Rectangle;
+            var data:*;
+            
+            for (data in _simulation.removed) 
+            {
+                if (_layout.hasCache(data))
+                {
+                    removeElement(_layout.requestElement(0, 0, data));
+                    _layout.requestRecycle(data);
+                }
+            }
+            
+            for (data in _simulation.added) 
+            {
+                to = _simulation.added[data];
+                e  = _layout.requestElement(to.width, to.height, data);
+                e.x = to.x;
+                e.y = to.y;
+                addElement(e);
+            }
         }
         
         /**
@@ -156,43 +173,11 @@ package jp.coremind.view.implement.starling.component
             var invokable:Boolean = false;
             var data:*;
             
-            _simulation.refresh(x, y);
+            _refreshSimulationPosition(x, y);
             
             for (data in _simulation.added)   { return true; }
             for (data in _simulation.removed) { return true; }
             return false;
-        }
-        
-        /**
-         * LayoutSimulationインスタンスに従い内包する子の描画状態を更新する.
-         */
-        private function _refresh():void
-        {
-            var process:Process   = new Process(name + " (ListContainer::refresh)");
-            var addThread:Thread  = new Thread("add");
-            var e:IElement;
-            var to:Rectangle;
-            var data:*;
-            
-            for (data in _simulation.removed) 
-            {
-                if (!_hasElement(data)) continue;
-                
-                e  = _requestElement(data);
-                process.pushThread(new Thread("remove"+e)
-                    .pushRoutine(e.removeTransition(this, e))
-                    .pushRoutine(_trashRoutine(data)),
-                    false, true);
-            }
-            
-            for (data in _simulation.added) 
-            {
-                e  = _requestElement(data);
-                to = _simulation.added[data];
-                addThread.pushRoutine(e.addTransition(this, e, to.x, to.y));
-            }
-            
-            process.pushThread(addThread, true, true).exec();
         }
         
         /**
@@ -213,12 +198,12 @@ package jp.coremind.view.implement.starling.component
                 
                 beforePosition[origin[i]] = { x:r.x, y:r.y };
                 
-                var j:int   = n == -1 ? 100000 + k++: diff.order.indexOf(n);
-                var s:Rectangle = _calcElementRect(j);
+                var j:int = n == -1 ? n: diff.order.indexOf(n);
+                var s:Rectangle = _layout.calcElementRect(_maxWidth, _maxHeight, j);
                 r.x = s.x;
                 r.y = s.y;
             }
-            _simulation.refresh(x, y);
+            _refreshSimulationPosition(x, y);
             
             return beforePosition;
         }
@@ -226,16 +211,16 @@ package jp.coremind.view.implement.starling.component
         /**
          * 差分(削除分)を画面に適用する.
          */
-        private function _applyRemoveDiff(removeElementList:Vector.<TransactionLog>, p:Process):void
+        private function _applyRemoveDiff(removeElementList:Vector.<TransactionLog>, processName:String):void
         {
             for (var i:int = 0, len:int = removeElementList.length; i < len; i++) 
             {
-                if (_hasElement(removeElementList[i].value))
+                if (_layout.hasCache(removeElementList[i].value))
                 {
-                    var e:IElement = _requestElement(removeElementList[i].value);
-                    p.pushThread(new Thread("remove"+e)
+                    var e:IElement = _layout.requestElement(0, 0, removeElementList[i].value);
+                    controller.syncProcess.pushThread(processName, new Thread("remove"+e)
                         .pushRoutine(e.removeTransition(this, e))
-                        .pushRoutine(_trashRoutine(removeElementList[i].value)),
+                        .pushRoutine(_createRecycleRoutine(removeElementList[i].value)),
                         false, true);
                 }
             }
@@ -244,16 +229,16 @@ package jp.coremind.view.implement.starling.component
         /**
          * 差分(フィルタリング対象分)を画面に適用する.
          */
-        private function _applyFilteringDiff(filteringList:Array, p:Process):void
+        private function _applyFilteringDiff(filteringList:Array, processName:String):void
         {
             for (var i:int = 0, len:int = filteringList.length; i < len; i++) 
             {
-                if (_hasElement(filteringList[i]))
+                if (_layout.hasCache(filteringList[i]))
                 {
-                    var e:IElement = _requestElement(filteringList[i]);
-                    p.pushThread(new Thread("remove"+e)
+                    var e:IElement = _layout.requestElement(0, 0, filteringList[i]);
+                    controller.syncProcess.pushThread(processName, new Thread("remove"+e)
                         .pushRoutine(e.removeTransition(this, e))
-                        .pushRoutine(_trashRoutine(filteringList[i])),
+                        .pushRoutine(_createRecycleRoutine(filteringList[i])),
                         false, true);
                 }
             }
@@ -262,7 +247,7 @@ package jp.coremind.view.implement.starling.component
         /**
          * 差分(並び替え)を画面に適用する.
          */
-        private function _refreshElementOrder(diff:ListDiff, beforePosition:Dictionary, moveThread:Thread, addThread:Thread, p:Process):void
+        private function _refreshElementOrder(diff:ListDiff, beforePosition:Dictionary, moveThread:Thread, addThread:Thread, processName:String):void
         {
             var editedOrigin:Array = diff.editedOrigin;
             for (var i:int = 0, len:int = editedOrigin.length; i < len; i++) 
@@ -275,7 +260,7 @@ package jp.coremind.view.implement.starling.component
                 if (data in _simulation.added)
                 {
                     to = _simulation.added[data];
-                    e  = _requestElement(data);
+                    e  = _layout.requestElement(to.width, to.height, data);
                     //このエレメントはフィルタリング解除されて追加されたか？
                     diff.filteringRestored.indexOf(data) == -1 ?
                         //そうでなければ、並び替え前の位置から移動してきたように見せる
@@ -287,17 +272,17 @@ package jp.coremind.view.implement.starling.component
                 if (data in _simulation.moved)
                 {
                     to = _simulation.moved[data];
-                    e  = _requestElement(data);
+                    e  = _layout.requestElement(to.width, to.height, data);
                     moveThread.pushRoutine(e.mvoeTransition(e, to.x, to.y));
                 }
                 else
-                if (data in _simulation.removed && _hasElement(data))
+                if (data in _simulation.removed && _layout.hasCache(data))
                 {
                     to = _simulation.removed[data];
-                    e  = _requestElement(data);
-                    p.pushThread(new Thread("remove"+e)
+                    e  = _layout.requestElement(0, 0, data);
+                    controller.syncProcess.pushThread(processName, new Thread("remove"+e)
                         .pushRoutine(e.removeTransition(this, e, to.x, to.y))
-                        .pushRoutine(_trashRoutine(data)),
+                        .pushRoutine(_createRecycleRoutine(data)),
                         false, true);
                 }
             }
@@ -313,8 +298,8 @@ package jp.coremind.view.implement.starling.component
                 if (addElementList[i].value in _simulation.contains)
                 {
                     var o:int       = addElementList[i].key;
-                    var e:IElement  = _requestElement(addElementList[i].value);
-                    var r:Rectangle = _calcElementRect(o);
+                    var r:Rectangle = _layout.calcElementRect(_maxWidth, _maxHeight, o);
+                    var e:IElement  = _layout.requestElement(r.width, r.height, addElementList[i].value);
                     
                     e.x = r.x;
                     e.y = r.y;
@@ -324,54 +309,19 @@ package jp.coremind.view.implement.starling.component
         }
         
         /**
-         * データに紐付くエレメントを取得する.
-         * 存在しない場合、暗黙的に新たにエレメントインスタンスが生成される。
-         */
-        private function _requestElement(bindData:*):IElement
-        {
-            if (_hasElement(bindData))
-                return _bindedElements[bindData];
-            else
-            {
-                var list:Array = _reader.read();
-                var n:int = list.indexOf(bindData);
-                var localId:String  = String(n == -1 ? list.length: n);
-                var globalId:String = _reader.id + "." + localId;
-                return _bindedElements[bindData] = _pool.request(
-                    _layout.getElementClass(n),
-                    Storage.requestModelReader(globalId, _reader.type));
-            }
-        }
-        
-        /**
          * データとエレメントの紐付けを破棄し参照を外す.
          */
-        private function _trashRoutine(bindData:*):Function
+        private function _createRecycleRoutine(data:*):Function
         {
-            return function(r:Routine, t:Thread):void
-            {
-                var e:IElement = _bindedElements[bindData];
-                delete _bindedElements[bindData];
-                
-                _pool.trash(e as IRecycle);
-                r.scceeded("trash Instance");
+            return function(r:Routine, t:Thread):void {
+                _layout.requestRecycle(data);
+                r.scceeded();
             };
         }
         
-        /**
-         * データに紐付くエレメントが存在するかを示す値を返す.
-         */
-        private function _hasElement(bindData:*):Boolean
+        private function _refreshSimulationPosition(x:Number, y:Number):void
         {
-            return bindData in _bindedElements;
-        }
-        
-        private function _calcElementRect(index:int, length:int = 0):Rectangle {
-            return _layout.calcElementRect(elementWidth, elementHeight, index, length);
-        }
-        
-        private function _calcTotalRect(index:int, length:int = 0):Rectangle {
-            return _layout.calcTotalRect(elementWidth, elementHeight, index, length);
+            parent && parent is ScrollContainer ? _simulation.refresh(x, y): _simulation.refresh(0, 0);
         }
     }
 }

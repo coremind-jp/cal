@@ -1,10 +1,8 @@
 package jp.coremind.view.abstract.component
 {
+    import jp.coremind.utility.Log;
     import jp.coremind.utility.data.Progress;
     
-    /**
-     * 
-     */
     public class Slider
     {
         private var
@@ -16,6 +14,7 @@ package jp.coremind.view.abstract.component
             _containerSize:Number;
         
         /**
+         * Grid3を継承したクラスインスタンスを利用したスライド制御クラス.
          * @param   grid3       スライダーとなるグラフィックリソース
          * @param   size        スライダーの稼動範囲
          * @param   position    スライド方向の初期座標
@@ -30,8 +29,10 @@ package jp.coremind.view.abstract.component
             _progress.enabledRound = false;
         }
         
-        public function destroy():void
+        public function destroy(withReference:Boolean):void
         {
+            if (withReference) _grid.destroy();
+            
             _grid = null;
         }
         

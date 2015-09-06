@@ -10,18 +10,18 @@ package flexUnitTests
     
     public class TestMultistageStatus
     {		
-        var stats:StatusModel;
+        private var _stats:StatusModel;
         
         [Before]
         public function setUp():void
         {
-            stats = new StatusModel();
+            _stats = new StatusModel();
         }
         
         [After]
         public function tearDown():void
         {
-            stats.destroy();
+            _stats.destroy();
         }
         
         [BeforeClass]
@@ -38,54 +38,54 @@ package flexUnitTests
         public function testEqual():void
         {/*
             //初期追加
-            stats.createGroup("test10" ,  10, ["test10decrement"]);
-            stats.createGroup("test100", 100, ["test100decrement"]);
-            stats.createGroup("test50" ,  50, ["test50decrement"]);
+            _stats.createGroup("test10" ,  10, ["test10decrement"]);
+            _stats.createGroup("test100", 100, ["test100decrement"]);
+            _stats.createGroup("test50" ,  50, ["test50decrement"]);
             
-            assertThat(stats.equal(Status.IDLING), equalTo(true));
-            assertThat(stats.headGroup, equalTo("test10"));
+            assertThat(_stats.equal(Status.IDLING), equalTo(true));
+            assertThat(_stats.headGroup, equalTo("test10"));
             
             //既存のpriorityよりも高いpriorityグループのステータスを設定したらそのグループがアクティブになる
-            stats.update("test100", "init100");
+            _stats.update("test100", "init100");
             
-            assertThat(stats.equal("init100"), equalTo(true));
-            assertThat(stats.headGroup, equalTo("test100"));
+            assertThat(_stats.equal("init100"), equalTo(true));
+            assertThat(_stats.headGroup, equalTo("test100"));
             
             //現在アクティブになっているステータスが保持するpriorityよりも低いpriorityグループのステータスを設定してもそのグループはアクティブにならない
             //ただし、ステータスの更新自体は行われている(この場合test10のステータスはinit10になっている)
             //(ignorepriorityがtrue時のみ)
-            stats.update("test10", "init10");
+            _stats.update("test10", "init10");
             
-            assertThat(stats.equal("init100"), equalTo(true));
-            assertThat(stats.headGroup, equalTo("test100"));
+            assertThat(_stats.equal("init100"), equalTo(true));
+            assertThat(_stats.headGroup, equalTo("test100"));
             
             //createGroupの第三引数に与えたステータスにマッチした値がupdateで設定された場合、
             //一つしたのグループがアクティブになる
-            var v:Vector.<String> = stats.update("test100", "test100decrement");
+            var v:Vector.<String> = _stats.update("test100", "test100decrement");
             
-            assertThat(stats.headGroup, equalTo("test50"));
-            assertThat(stats.equal(Status.IDLING), equalTo(true));
+            assertThat(_stats.headGroup, equalTo("test50"));
+            assertThat(_stats.equal(Status.IDLING), equalTo(true));
             assertThat(v.length, equalTo(2));
             assertThat(v[0], equalTo("test100"));
             assertThat(v[1], equalTo("test50"));
             
-            stats.update("test50", "test50decrement");
+            _stats.update("test50", "test50decrement");
             
-            assertThat(stats.headGroup, equalTo("test10"));
-            //assertThat(stats.equal("init10"), equalTo(true));//Status.IDLINGではなく、67行目で更新したinit10になっていることを確認
-            assertThat(stats.equal("idling"), equalTo(true));//Status.IDLINGではなく、67行目で更新したinit10になっていることを確認
+            assertThat(_stats.headGroup, equalTo("test10"));
+            //assertThat(_stats.equal("init10"), equalTo(true));//Status.IDLINGではなく、67行目で更新したinit10になっていることを確認
+            assertThat(_stats.equal("idling"), equalTo(true));//Status.IDLINGではなく、67行目で更新したinit10になっていることを確認
             
             //仮に一番下のグループのステータスにdecrementStatusが設定されていてもグループに変化は起きない
-            stats.update("test10", "test10decrement");
+            _stats.update("test10", "test10decrement");
             
-            assertThat(stats.headGroup, equalTo("test10"));
-            assertThat(stats.equal("test10decrement"), equalTo(true));//※ステータスはinit10からtest10decrementに変わっている
+            assertThat(_stats.headGroup, equalTo("test10"));
+            assertThat(_stats.equal("test10decrement"), equalTo(true));//※ステータスはinit10からtest10decrementに変わっている
             
-            stats.update("test50", "move50");
-            assertThat(stats.headGroup, equalTo("test50"));
-            assertThat(stats.equal("move50"), equalTo(true));
+            _stats.update("test50", "move50");
+            assertThat(_stats.headGroup, equalTo("test50"));
+            assertThat(_stats.equal("move50"), equalTo(true));
             
-            stats.createGroup("test200", 200, []);*/
+            _stats.createGroup("test200", 200, []);*/
         }
     }
 }

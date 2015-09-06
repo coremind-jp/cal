@@ -9,6 +9,11 @@ package jp.coremind.model
             reset();
         }
         
+        public function isDefined(id:String):Boolean
+        {
+            return $.hash.isDefined(_storage, id);
+        }
+        
         public function reset():void
         {
             _storage = {};

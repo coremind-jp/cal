@@ -1,11 +1,12 @@
 package jp.coremind.view.abstract.component
 {
     import jp.coremind.view.abstract.IDisplayObject;
+    import jp.coremind.view.abstract.IStretchBox;
 
     /**
      * Grid3クラスを応用した9Grid表現クラス.
      */
-    public class Grid9
+    public class Grid9 implements IStretchBox
     {
         private var
             _top:Grid3X,

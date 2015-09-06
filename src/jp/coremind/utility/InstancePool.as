@@ -1,8 +1,6 @@
 package jp.coremind.utility
 {
     import flash.utils.Dictionary;
-    
-    import jp.coremind.model.StorageModelReader;
 
     /**
      * IRecyleインターフェースを実装したクラスインスタンスをプールするクラス.
@@ -23,6 +21,7 @@ package jp.coremind.utility
         
         public function destroy():void
         {
+            Log.custom(TAG, "destroy");
             for (var key:Class in _pool)
             {
                 release(key);
@@ -32,15 +31,15 @@ package jp.coremind.utility
         
         /**
          * プールから利用可能なインスタンスを取得する.
-         * プールに利用可能なインスタンスがない場合内部で生成される。
+         * プールに利用可能なインスタンスがない場合nullを返す。
          */
-        public function request(klass:Class, reader:StorageModelReader = null):IRecycle
+        public function request(klass:Class, ...params):IRecycle
         {
             var pool:Array = _getPool(klass);
-            var instance:IRecycle = pool.length > 0 ? pool.shift(): new klass();
+            var hasPool:Boolean = pool.length > 0;
+            var instance:IRecycle = hasPool ? pool.shift(): null;
             
-            Log.custom(TAG, "create", klass);
-            instance.initialize(reader);
+            Log.custom(TAG, "request", klass, "recycle ?", hasPool);
             
             return instance;
         }
@@ -49,12 +48,14 @@ package jp.coremind.utility
          * 不要になったインスタンスをプールへ入れる.
          * requestメソッド呼び出し時に再び使用される。
          */
-        public function trash(instance:IRecycle):void
+        public function recycle(instance:IRecycle):void
         {
             instance.reset();
             
-            var klass:Class = (instance as Object).constructor;
-            Log.custom(TAG, "delete", klass);
+            var klass:Class = $.getClassByInstance(instance);
+            
+            Log.custom(TAG, "recycle", klass);
+            
             _getPool(klass).push(instance);
         }
         

@@ -2,100 +2,113 @@ package jp.coremind.view.layout
 {
     import flash.geom.Rectangle;
     
+    import jp.coremind.core.Application;
+    import jp.coremind.model.StorageModelReader;
     import jp.coremind.utility.Log;
+    import jp.coremind.view.abstract.IElement;
+    import jp.coremind.view.builder.IDisplayObjectBuilder;
+    import jp.coremind.view.builder.IElementBluePrint;
+    import jp.coremind.view.builder.ListElementFactory;
 
-    public class FlexibleLayout extends AbstractLayout implements ILayout
+    public class FlexibleLayout implements ILayout
     {
         private var
-            _elementClassList:Vector.<Class>,
-            _xList:Vector.<IPosition>,
-            _yList:Vector.<IPosition>;
+            _builderList:Vector.<String>,
+            _elementfactory:ListElementFactory, 
+            _rect:Rectangle;
         
         public function FlexibleLayout(temporaryRect:Rectangle = null)
         {
-            super(temporaryRect);
+            _elementfactory = new ListElementFactory();
             
-            _elementClassList = new <Class>[];
-            _xList = new <IPosition>[];
-            _yList = new <IPosition>[];
+            _rect = temporaryRect;
+            
+            _builderList = new <String>[];
         }
         
-        override public function destroy():void
+        public function destroy(withReference:Boolean = false):void
         {
-            _elementClassList.length = 0;
-            _xList.length = _yList.length = 0;
+            _builderList.length = 0;
             
-            super.destroy();
+            _rect = null;
+            
+            if (withReference)
+                _elementfactory.destroy();
+            
+            _elementfactory = null;
         }
         
-        public function appendElement(elementClass:Class, x:IPosition, y:IPosition):FlexibleLayout
+        public function requestElement(actualParentWidth:int, actualParentHeight:int, modelData:*, index:int = -1, length:int = -1):IElement
         {
-            _elementClassList.push(elementClass);
-            _xList.push(x);
-            _yList.push(y);
+            return _elementfactory.request(actualParentWidth, actualParentHeight, modelData, index, length);
+        }
+        
+        public function requestRecycle(modelData:*):void
+        {
+            _elementfactory.recycle(modelData);
+        }
+        
+        public function hasCache(modelData:*):Boolean
+        {
+            return _elementfactory.hasElement(modelData);
+        }
+        
+        public function initialize(reader:StorageModelReader):void
+        {
             
+        }
+        
+        public function appendElement(builder:IElementBluePrint):FlexibleLayout
+        {
+            _builderList.push(builder);
             return this;
         }
         
-        public function getElementClass(index:int):Class
-        {
-            if (0 <= index && index < _elementClassList.length)
-                return _elementClassList[index];
-            else
-            {
-                Log.error("[FlexibleElementClassLayout]", index, " is undefined.");
-                return null;
-            }
-        }
-        
-        public function calcElementRect(
-            parentWidth:Number,
-            parentHeight:Number,
-            index:int,
-            length:int = 0):Rectangle
-        {
-            var e:Class = getElementClass(index);
-            if (e)
-            {
-                var childW:Number = ElementSize.getWidth(e, 0);
-                var childH:Number = ElementSize.getHeight(e, 0);
-                var r:Rectangle   = _rect || new Rectangle();
-                
-                r.setTo(_xList[index].calc(parentWidth), _yList[index].calc(parentHeight), childW, childH);
-                
-                return r;
-            }
-            else
-                return _rect || new Rectangle();
-        }
-        
-        public function calcTotalRect(
-            parentWidth:Number,
-            parentHeight:Number,
-            index:int,
-            length:int = 0):Rectangle
+        public function calcTotalRect(actualParentWidth:int, actualParentHeight:int, length:int = 0):Rectangle
         {
             var temp:Rectangle = _rect;
-            var _lowX:Number  = 0;
-            var _lowY:Number  = 0;
-            var _highX:Number = 0;
-            var _highY:Number = 0;
+            var _minX:Number  = 0;
+            var _minY:Number  = 0;
+            var _maxX:Number = 0;
+            var _maxY:Number = 0;
             
             _rect = new Rectangle();
-            for (var i:int, len:int = _elementClassList.length; i < len; i++)
+            for (var i:int, len:int = _builderList.length; i < len; i++)
             {
-                calcElementRect(parentWidth, parentHeight, index, length);
-                if (_rect.x < _lowX)      _lowX  = _rect.x;
-                if (_rect.y < _lowY)      _lowY  = _rect.y;
-                if (_highX  < _rect.left) _highX = _rect.left;
-                if (_highY  < _rect.y)    _highY = _rect.bottom;
+                calcElementRect(actualParentWidth, actualParentHeight, i, length);
+                if (_rect.x < _minX)     _minX  = _rect.x;
+                if (_rect.y < _minY)     _minY  = _rect.y;
+                if (_maxX  < _rect.left) _maxX = _rect.left;
+                if (_maxY  < _rect.y)    _maxY = _rect.bottom;
             }
             _rect = temp;
             
-            var r:Rectangle = _rect || new Rectangle();
-            r.setTo(0, 0, _highX - _lowX, _highY - _lowY);
+            var result:Rectangle = _rect || new Rectangle();
+            result.setTo(0, 0, _maxX - _minX, _maxY - _minY);
             
-            return r;
+            return result;
+        }
+        
+        public function calcElementRect(actualParentWidth:int, actualParentHeight:int, index:int, length:int = 0):Rectangle
+        {
+            var builder:IDisplayObjectBuilder = _getBuilder(index);
+            var result:Rectangle = _rect || new Rectangle();
+            
+            if (builder)
+                builder.requestLayoutCalculator().exportRectangle(actualParentWidth, actualParentHeight, result);
+            
+            return result;
+        }
+        
+        private function _getBuilder(index:int):IDisplayObjectBuilder
+        {
+            if (0 <= index && index < _builderList.length)
+                return Application.elementBluePrint.createBuilder(_builderList[index]);
+            else
+            {
+                Log.error("[FlexibleLayout]", index, " is undefined.");
+                return null;
+            }
         }
     }
 }

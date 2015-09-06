@@ -2,7 +2,7 @@ package jp.coremind.model
 {
     import jp.coremind.utility.Log;
 
-    public class StorageModel implements IModel
+    public class StorageModel extends StorageAccessor implements IModel
     {
         public static const TAG:String = "StorageAccessor";
         Log.addCustomTag(TAG);
@@ -19,7 +19,7 @@ package jp.coremind.model
         
         public function StorageModel(id:String, type:String = StorageType.HASH, initialValue:* = null)
         {
-            _reader      = Storage.requestModelReader(id, type, initialValue);
+            _reader      = _storage.requestModelReader(id, type, initialValue);
             _filter      = null;
             _sortNames   = null;
             _sortOptions = 0;
@@ -34,14 +34,23 @@ package jp.coremind.model
             _filter = null;
             
             _history.length = 0;
+            
+            if (_latestFiltered)
+                _latestFiltered.length = 0;
+            _latestFiltered = null;
         }
         
-        public function get id():String                    { return _reader.id; }
-        public function get type():String                  { return _reader.type; }
-        public function get runtime():RuntimeModelAccessor { return _reader.runtime; }
-        public function read():*                           { return _reader.read(); }
-        
         public function get transaction():Boolean { return _transaction; }
+        
+        public function get id():String           { return _reader.id; }
+        public function get type():String         { return _reader.type; }
+        public function read():*                  { return _reader.read(); }
+        public function getElementModel(elementId:ElementModelId, modelClass:Class):IElementModel
+        {
+            return _reader
+                .getElementModelAccessor(elementId)
+                .getModel(modelClass);
+        }
         
         public function filter(f:Function):void
         {
@@ -80,11 +89,6 @@ package jp.coremind.model
             _transaction ?
                 _dispatch(_notifyListener, false):
                 commit(true);
-        }
-        
-        public function getRuntimeModel(modelClass:Class):IRuntimeModel
-        {
-            return _reader.runtime.getModel(modelClass);
         }
         
         public function addValue(value:*, key:* = null):void
@@ -151,7 +155,7 @@ package jp.coremind.model
                 
                 diff.build(origin, _history);
                 
-                Storage.update(this, _reader._origin = diff.editedOrigin);
+                _storage.update(this, _reader._origin = diff.editedOrigin);
                 
                 _deleteStorageModel(diff);
                 
@@ -165,7 +169,7 @@ package jp.coremind.model
             
             if (listDiff)
                 for (var i:int = 0; i < listDiff.removed.length; i++) 
-                    Storage.de1ete(_reader.id+"."+listDiff.removed[i].index, _reader.type);
+                    _storage.de1ete(_reader.id+"."+listDiff.removed[i].index, _reader.type);
         }
     }
 }

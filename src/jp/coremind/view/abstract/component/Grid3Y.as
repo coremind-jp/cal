@@ -1,6 +1,7 @@
 package jp.coremind.view.abstract.component
 {
     import jp.coremind.view.abstract.IDisplayObject;
+    import jp.coremind.view.layout.Direction;
     
     /**
      * Grid3クラスの可変長方向をY軸基準で実装したクラス.
@@ -13,6 +14,8 @@ package jp.coremind.view.abstract.component
             _headSize = _head.height;
             _tailSize = _tail.height;
         }
+        
+        public function get direction():String { return Direction.Y; }
         
         override public function set size(value:Number):void
         {
@@ -35,7 +38,7 @@ package jp.coremind.view.abstract.component
         
         override public function set position(value:Number):void
         {
-            _parent.y = (value + .5)|0;;
+            _parent.y = (value + .5)|0;
         }
     }
 }

@@ -1,10 +1,11 @@
 package jp.coremind.view.implement.starling.component
 {
-    import jp.coremind.model.StatusModelConfigure;
     import jp.coremind.model.StatusConfigure;
     import jp.coremind.model.StatusGroup;
+    import jp.coremind.model.StatusModelConfigure;
     import jp.coremind.model.UpdateRule;
     import jp.coremind.utility.data.Status;
+    import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.implement.starling.TouchElement;
 
     /**
@@ -18,19 +19,19 @@ package jp.coremind.view.implement.starling.component
             TouchSwitch,
             StatusModelConfigure.marge(
                 TouchElement,
-                    new StatusConfigure(StatusGroup.SELECT, UpdateRule.LESS_THAN_PRIORITY, 50, Status.OFF, true, [Status.ON])
+                    new StatusConfigure(StatusGroup.SELECT, UpdateRule.LESS_THAN_PRIORITY, 50, Status.OFF, true, [Status.OFF])
                 ));
         
-        public function TouchSwitch(tapRange:Number=5)
+        public function TouchSwitch(tapRange:Number=5, controllerClass:Class = null, backgroundBuilder:IBackgroundBuilder = null)
         {
-            super(tapRange);
+            super(tapRange, controllerClass, backgroundBuilder);
         }
         
         override protected function _initializeStatus():void
         {
             super._initializeStatus();
             
-            controller.buttonSwitch.refresh(_reader.id);
+            controller.buttonSwitch.refresh(_reader.id, _elementId);
         }
         
         override protected function _applyStatus(group:String, status:String):Boolean
@@ -49,7 +50,7 @@ package jp.coremind.view.implement.starling.component
         
         override protected function _onClick():void
         {
-            controller.buttonSwitch.toggleSwitch(_reader.id);
+            controller.buttonSwitch.toggleSwitch(_reader.id, _elementId);
         }
         
         /**

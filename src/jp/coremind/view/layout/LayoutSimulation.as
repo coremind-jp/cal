@@ -6,10 +6,6 @@ package jp.coremind.view.layout
     
     import jp.coremind.core.Application;
     
-    /**
-     * 描画領域を定義し、データとRectangleを紐付け、それらが交わった(描画対象可否)を判定するクラス.
-     * リスト長が膨大で描画インスタンスを一度に生成できない場合に利用し実体として生成するインスタンスを一定数に抑えるのが目的。
-     */
     public class LayoutSimulation
     {
         private var
@@ -23,11 +19,15 @@ package jp.coremind.view.layout
             _move:Dictionary,
             _remove:Dictionary;
             
+        /**
+         * 描画領域を定義し、データとRectangleを紐付け、それらが交わったか(描画対象可否)を判定するクラス.
+         * リスト長が膨大で描画インスタンスを一度に生成できない場合に利用し実体として生成するインスタンスを一定数に抑えるのが目的。
+         */
         public function LayoutSimulation()
         {
             _contains     = new Dictionary(true);
             _children     = new Dictionary(true);
-            _drawableArea = new Point(Application.stage.stageWidth, Application.stage.stageHeight);
+            _drawableArea = new Point(Application.VIEW_PORT.width, Application.VIEW_PORT.height);
             _hitbox       = new Rectangle(Number.MAX_VALUE, Number.MAX_VALUE, _drawableArea.x, _drawableArea.y);
         }
         

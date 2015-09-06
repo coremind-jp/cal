@@ -1,11 +1,13 @@
 package jp.coremind.view.implement.starling.component
 {
-    import jp.coremind.model.StatusModelConfigure;
     import jp.coremind.model.StatusConfigure;
     import jp.coremind.model.StatusGroup;
+    import jp.coremind.model.StatusModelConfigure;
     import jp.coremind.model.UpdateRule;
     import jp.coremind.utility.data.Status;
+    import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.implement.starling.MouseElement;
+    import jp.coremind.view.layout.LayoutCalculator;
     
     /**
      * MouseElementクラスにスイッチ機能を加えたクラス.
@@ -21,16 +23,19 @@ package jp.coremind.view.implement.starling.component
                     new StatusConfigure(StatusGroup.SELECT, UpdateRule.LESS_THAN_PRIORITY, 50, Status.OFF, true, [Status.OFF])
                 ));
         
-        public function MouseSwitch(tapRange:Number=5)
+        public function MouseSwitch(
+            layoutCalculator:LayoutCalculator,
+            controllerClass:Class = null,
+            backgroundBuilder:IBackgroundBuilder = null)
         {
-            super(tapRange);
+            super(layoutCalculator, controllerClass, backgroundBuilder);
         }
         
         override protected function _initializeStatus():void
         {
             super._initializeStatus();
             
-            controller.buttonSwitch.refresh(_reader.id);
+            controller.buttonSwitch.refresh(_reader.id, _elementId);
         }
         
         override protected function _applyStatus(group:String, status:String):Boolean
@@ -49,7 +54,7 @@ package jp.coremind.view.implement.starling.component
         
         override protected function _onClick():void
         {
-            controller.buttonSwitch.toggleSwitch(_reader.id);
+            controller.buttonSwitch.toggleSwitch(_reader.id, _elementId);
             super._onClick();
         }
         

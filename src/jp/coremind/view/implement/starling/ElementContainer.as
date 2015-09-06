@@ -1,35 +1,42 @@
 package jp.coremind.view.implement.starling
 {
-    import jp.coremind.core.Application;
     import jp.coremind.event.ElementEvent;
     import jp.coremind.utility.Log;
+    import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.abstract.IElementContainer;
+    import jp.coremind.view.layout.LayoutCalculator;
     
     import starling.display.DisplayObject;
     
     public class ElementContainer extends InteractiveElement implements IElementContainer
     {
         protected var
-            _elementWidth:Number,
-            _elementHeight:Number,
             _maxWidth:Number,
             _maxHeight:Number;
         
-        public function ElementContainer(maxWidth:Number = NaN, maxHeight:Number = NaN)
+        public function ElementContainer(
+            layoutCalculator:LayoutCalculator,
+            controllerClass:Class = null,
+            backgroundBuilder:IBackgroundBuilder = null)
         {
-            super();
-            
-            _elementWidth  = _maxWidth  = isNaN(maxWidth)  ? Application.stage.stageWidth : maxWidth;
-            _elementHeight = _maxHeight = isNaN(maxHeight) ? Application.stage.stageHeight: maxHeight;
+            super(layoutCalculator, controllerClass, backgroundBuilder);
         }
         
-        override protected function _updateElementSize(w:Number, h:Number):void
+        override public function destroy(withReference:Boolean = false):void
         {
-            _elementWidth  = w;
-            _elementHeight = h;
-            dispatchEventWith(ElementEvent.UPDATE_SIZE);
+            Log.info("destroy ElementContainer", withReference);
+            
+            while (numChildren > 0)
+            {
+                var child:IElement = removeChildAt(0, true) as IElement;
+                if (child) child.destroy(withReference);
+            }
+            
+            super.destroy(withReference);
         }
+        
+        public function refreshChildrenLayout():void {}
         
         public function addElement(element:IElement):IElement
         {
@@ -46,20 +53,40 @@ package jp.coremind.view.implement.starling
             return contains(element as DisplayObject);
         }
         
-        public function getElementByPath(path:String):IElement
+        public function get maxWidth():Number  { return _maxWidth;  };
+        public function get maxHeight():Number { return _maxHeight; };
+        public function initializeChildrenLayout():void {}
+        
+        override public function updateElementSize(elementWidth:Number, elementHeight:Number):void
         {
-            var e:IElement = getChildByPath(path) as IElement;
-            if (e) return e;
-            else
+            if (_elementWidth != elementWidth || _elementHeight != elementHeight)
             {
-                Log.error("[ElementContainer] failed getElementByPath.", path, "is not IElement Object.");
-                return null;
+                _elementWidth  = elementWidth;
+                _elementHeight = elementHeight;
+                
+                _partsLayout.refresh();
+                
+                dispatchEventWith(ElementEvent.UPDATE_SIZE);
             }
         }
         
-        override public function get elementWidth():Number    { return _elementWidth; }
-        override public function get elementHeight():Number   { return _elementHeight; }
-        public function get maxWidth():Number  { return _maxWidth;  };
-        public function get maxHeight():Number { return _maxHeight; };
+        override public function initializeElementSize(actualParentWidth:Number, actualParentHeight:Number):void
+        {
+            _maxWidth  = _layoutCalculator.width.calc(actualParentWidth);
+            _maxHeight = _layoutCalculator.height.calc(actualParentHeight);
+            
+            _refreshBackground();
+            
+            initializeChildrenLayout();
+        }
+        
+        override protected function _refreshBackground():void
+        {
+            if (_background)
+            {
+                _background.width  = _maxWidth;
+                _background.height = _maxHeight;
+            }
+        }
     }
 }

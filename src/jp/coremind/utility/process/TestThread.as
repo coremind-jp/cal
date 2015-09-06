@@ -142,7 +142,7 @@ package jp.coremind.utility.process
                 })
                 .pushRoutine(function(r:Routine, t:Thread):void
                 {
-                    //pallarelの場合callbackが呼ばれるまで他のRoutineの結果は取得できない
+                    //parallelの場合callbackが呼ばれるまで他のRoutineの結果は取得できない
                     setTimeout(function():void {
                         r.writeData("key2", "res2 value");
                         r.scceeded();

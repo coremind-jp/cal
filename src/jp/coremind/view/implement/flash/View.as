@@ -2,15 +2,17 @@ package jp.coremind.view.implement.flash
 {
     import flash.display.DisplayObject;
     
+    import jp.coremind.core.Application;
+    import jp.coremind.utility.Log;
     import jp.coremind.utility.process.Routine;
     import jp.coremind.utility.process.Thread;
-    import jp.coremind.view.transition.ViewTransition;
-    import jp.coremind.utility.Log;
+    import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.abstract.IView;
-    import jp.coremind.view.abstract.IViewContainer;
     import jp.coremind.view.implement.flash.buildin.Sprite;
+    import jp.coremind.view.implement.starling.component.ScrollContainer;
+    import jp.coremind.view.transition.ViewTransition;
     
-    public class View extends Sprite implements IViewContainer
+    public class View extends Sprite implements IView
     {
         public function get naviConfigure():Object  { return {}; }
         public function get viewConfigure():Object  { return {}; }
@@ -21,26 +23,53 @@ package jp.coremind.view.implement.flash
             Log.info(name+" "+ this +" "+" create");
         }
         
-        public function addView(view:IView):void         { super.addChild(view as DisplayObject); }
-        public function removeView(view:IView):void      { super.removeChild(view as DisplayObject); }
-        public function containsView(view:IView):Boolean { return super.contains(view as DisplayObject); }
-        public function getViewIndexByClass(cls:Class):int
+        protected function get viewName():String
         {
-            for (var i:int = numChildren - 1; 0 <= i; i--) 
-                if (Object(getChildAt(i)).constructor === cls)
-                    return i;
-            return -1;
+            return null;
         }
-        public function getViewAt(i:int):IView
+        
+        public function getElementIndex(element:IElement):int
         {
-            return 0 <= i && i < numChildren ? getChildAt(i) as IView: null;
+            return getChildIndex(element as DisplayObject);
+        }
+        
+        public function swapElement(element1:IElement, element2:IElement):void
+        {
+            return swapChildren(element1 as DisplayObject, element2 as DisplayObject);
         }
         
         public function initialize(r:Routine, t:Thread):void
         {
-            Log.info("init");
-            r.scceeded();
+            if (viewName)
+            {
+                _buildBluePrint(Application.elementBluePrint.createNavigationList(viewName));
+                r.scceeded();
+            }
+            else r.failed("'viewName' is null. please set value.");
         }
+        
+        protected function _buildBluePrint(list:Array):void
+        {
+            var w:Number = Application.VIEW_PORT.width;
+            var h:Number = Application.VIEW_PORT.height;
+            
+            for (var i:int = 0; i < list.length; i++) 
+            {
+                var name:String = list[i];
+                /** TODO FlashAPI用Builderがまだない */
+                //addChild(Application.elementBuilder.createBuilder(name).build(name, w, h));
+            }
+        }
+        
+        protected function _initializeStorageModel(r:Routine, element:IElement):void
+        {
+            var storageId:String = element.controller.initializeStorageModel(element.name);
+            
+            storageId === null ?
+                r.failed("undefined StorageConfigure. instance '"+element.name+"'"):
+                element.initialize(storageId);
+        }
+        
         public function get addTransition():Function { return ViewTransition.FAST_ADD; }
         
         public function focusInPreProcess(r:Routine, t:Thread):void

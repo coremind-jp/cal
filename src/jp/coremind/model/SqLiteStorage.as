@@ -6,6 +6,11 @@ package jp.coremind.model
         {
         }
         
+        public function isDefined(id:String):Boolean
+        {
+            return false;
+        }
+        
         public function create(id:String, value:*):void
         {
         }

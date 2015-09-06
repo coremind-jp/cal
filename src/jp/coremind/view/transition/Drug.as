@@ -1,7 +1,6 @@
 package jp.coremind.view.transition
 {
     import flash.events.MouseEvent;
-    import flash.geom.Point;
     import flash.geom.Rectangle;
     
     import jp.coremind.core.Application;
@@ -78,8 +77,8 @@ package jp.coremind.view.transition
         {
             _createTracker(offset, drugArea);
             
-            _trackX.initialize(Application.stage.mouseX);
-            _trackY.initialize(Application.stage.mouseY);
+            _trackX.initialize(Application.pointerX);
+            _trackY.initialize(Application.pointerY);
             
             if (callback is Function) callback(_trackX, _trackY);
         }
@@ -100,7 +99,7 @@ package jp.coremind.view.transition
         
         protected function _onUpdate(elapsed:int):Boolean
         {
-            return _update(Application.stage.mouseX, Application.stage.mouseY);
+            return _update(Application.pointerX, Application.pointerY);
         }
         
         /**
@@ -110,8 +109,8 @@ package jp.coremind.view.transition
         {
             if (!_druging) return true;
 
-            x = _applyOutOfRangeResistance(x, _trackX, Application.stage.stageWidth);
-            y = _applyOutOfRangeResistance(y, _trackY, Application.stage.stageHeight);
+            x = _applyOutOfRangeResistance(x, _trackX, Application.VIEW_PORT.width);
+            y = _applyOutOfRangeResistance(y, _trackY, Application.VIEW_PORT.height);
             
             if (_isAdsorb(_trackX.start - x, _trackY.start - y))
             {

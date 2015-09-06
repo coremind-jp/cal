@@ -1,6 +1,7 @@
 package jp.coremind.view.transition
 {
     import jp.coremind.core.Application;
+    import jp.coremind.utility.Log;
     import jp.coremind.utility.data.NumberTracker;
     
     /**

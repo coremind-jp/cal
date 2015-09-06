@@ -1,11 +1,14 @@
 package jp.coremind.utility
 {
-    import jp.coremind.model.StorageModelReader;
-
+    /**
+     * インスタンスの再利用インターフェース
+     */
     public interface IRecycle
     {
-        function initialize(reader:StorageModelReader):void;
+        /** 破棄する. */
+        function destroy(withReference:Boolean = false):void;
+        
+        /** 状態をリセットし再利用可能にする. */
         function reset():void;
-        function destroy():void;
     }
 }

@@ -38,7 +38,6 @@ package jp.coremind.view.implement.starling.buildin
             
             bmpd.draw(S);
             G.clear();
-            
             return Texture.fromBitmapData(bmpd, false);
         }
         

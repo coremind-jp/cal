@@ -1,13 +1,15 @@
 package jp.coremind.view.implement.starling
 {
-    import jp.coremind.model.StatusModelConfigure;
     import jp.coremind.model.StatusConfigure;
     import jp.coremind.model.StatusGroup;
+    import jp.coremind.model.StatusModelConfigure;
     import jp.coremind.model.UpdateRule;
     import jp.coremind.utility.data.Status;
+    import jp.coremind.view.builder.IBackgroundBuilder;
+    import jp.coremind.view.layout.LayoutCalculator;
     
     import starling.events.TouchEvent;
-
+    
     public class MouseElement extends TouchElement
     {
         override protected function get _statusModelConfigureKey():Class { return MouseElement }
@@ -24,9 +26,12 @@ package jp.coremind.view.implement.starling
             _bHitTest:Boolean,
             _bHover:Boolean;
         
-        public function MouseElement(inflateSize:Number = 6)
+        public function MouseElement(
+            layoutCalculator:LayoutCalculator,
+            controllerClass:Class = null,
+            backgroundBuilder:IBackgroundBuilder = null)
         {
-            super(inflateSize);
+            super(layoutCalculator, controllerClass, backgroundBuilder);
             
             _bHover = false;
         }
@@ -37,12 +42,15 @@ package jp.coremind.view.implement.starling
             
             if (!_touch)
             {
-                if (_bHover) controller.button.rollOut(_reader.id);
+                if (_bHover) controller.button.rollOut(_reader.id, _elementId);
                 _bHover = false;
             }
             else
             if (this[_touch.phase] is Function)
+            {
                 this[_touch.phase]();
+                _touch = null;
+            }
         }
         
         override protected function hover():void
@@ -50,7 +58,7 @@ package jp.coremind.view.implement.starling
             if (_bHover) return;
             
             _bHover = true;
-            controller.button.rollOver(_reader.id);
+            controller.button.rollOver(_reader.id, _elementId);
         }
         
         override protected function began():void
@@ -59,7 +67,7 @@ package jp.coremind.view.implement.starling
             _triggerRect.y = _touch.globalY - (_triggerRect.height >> 1);
             
             _bHitTest = _hold = true;
-            controller.button.press(_reader.id);
+            controller.button.press(_reader.id, _elementId);
         }
         
         override protected function moved():void
@@ -74,10 +82,10 @@ package jp.coremind.view.implement.starling
             var isClick:Boolean    = _bHitTest &&  _hold;
             
             isClick ?
-                controller.button.press(_reader.id):
+                controller.button.press(_reader.id, _elementId):
                 isRollOver ?
-                    controller.button.rollOver(_reader.id):
-                    controller.button.rollOut(_reader.id);
+                    controller.button.rollOver(_reader.id, _elementId):
+                    controller.button.rollOut(_reader.id, _elementId);
         }
         
         override protected function ended():void
@@ -89,15 +97,18 @@ package jp.coremind.view.implement.starling
             
             if (isClick)
             {
-                controller.button.rollOver(_reader.id);
-                controller.action(_reader.id);
+                controller.action(_reader.id, _elementId);
+                
+                controller.syncProcess.isRunning() ?
+                    controller.button.rollOut(_reader.id, _elementId):
+                    controller.button.rollOver(_reader.id, _elementId);
             }
             else
             {
                 isRollOver ?
-                    controller.button.rollOver(_reader.id):
-                    controller.button.rollOut(_reader.id);
-                controller.button.release(_reader.id);
+                    controller.button.rollOver(_reader.id, _elementId):
+                    controller.button.rollOut(_reader.id, _elementId);
+                controller.button.release(_reader.id, _elementId);
             }
         }
         

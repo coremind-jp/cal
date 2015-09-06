@@ -1,5 +1,7 @@
 package jp.coremind.view.abstract.component
 {
+    import flash.geom.Point;
+    
     import jp.coremind.view.abstract.IDisplayObject;
 
     /**
@@ -7,6 +9,8 @@ package jp.coremind.view.abstract.component
      */
     public class Grid3
     {
+        private static const _POINT:Point = new Point();
+        
         protected var
             _size:Number,
             _headSize:Number,
@@ -33,8 +37,8 @@ package jp.coremind.view.abstract.component
         public function setResource(parent:IDisplayObject, body:IDisplayObject, head:IDisplayObject, tail:IDisplayObject):void
         {
             _parent = parent;
-            _head = head;
             _body = body;
+            _head = head;
             _tail = tail;
         }
         
