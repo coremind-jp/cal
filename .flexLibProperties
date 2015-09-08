@@ -82,7 +82,7 @@
     <classEntry path="jp.coremind.utility.InstancePool"/>
     <classEntry path="jp.coremind.utility.IRecycle"/>
     <classEntry path="jp.coremind.view.implement.starling.Element"/>
-    <classEntry path="jp.coremind.view.implement.starling.ElementContainer"/>
+    <classEntry path="jp.coremind.view.implement.starling.Container"/>
     <classEntry path="jp.coremind.view.implement.starling.component.ListContainer"/>
     <classEntry path="jp.coremind.view.layout.LayoutSimulation"/>
     <classEntry path="jp.coremind.view.implement.starling.component.ScrollContainer"/>
@@ -137,7 +137,6 @@
     <classEntry path="jp.coremind.model.StorageConfigure"/>
     <classEntry path="jp.coremind.view.builder.ScrollOption"/>
     <classEntry path="jp.coremind.view.abstract.IElementSwitch"/>
-    <classEntry path="jp.coremind.view.layout.Grid"/>
     <classEntry path="jp.coremind.view.builder.ListElementFactory"/>
     <classEntry path="jp.coremind.asset.EmbedAsset"/>
     <classEntry path="jp.coremind.view.implement.flash.RootView"/>
@@ -162,14 +161,13 @@
     <classEntry path="jp.coremind.view.abstract.IStretchBar"/>
     <classEntry path="jp.coremind.view.abstract.IStretchBox"/>
     <classEntry path="jp.coremind.asset.CircleTexture"/>
-    <classEntry path="jp.coremind.view.builder.BackgroundOption"/>
     <classEntry path="jp.coremind.view.builder.IBackgroundBuilder"/>
-    <classEntry path="jp.coremind.view.abstract.component.RectangleBackground"/>
+    <classEntry path="jp.coremind.view.abstract.component.RoundRectBackground"/>
     <classEntry path="jp.coremind.view.implement.starling.StretchImage"/>
     <classEntry path="jp.coremind.view.layout.Align"/>
     <classEntry path="jp.coremind.view.builder.IDisplayObjectBuilder"/>
     <classEntry path="jp.coremind.view.builder.ElementBuilder"/>
-    <classEntry path="jp.coremind.view.builder.ContainerElementBuilder"/>
+    <classEntry path="jp.coremind.view.builder.ContainerBuilder"/>
     <classEntry path="jp.coremind.view.layout.Size"/>
     <classEntry path="jp.coremind.view.layout.LayoutCalculator"/>
     <classEntry path="jp.coremind.view.builder.ImageBuilder"/>
@@ -182,6 +180,10 @@
     <classEntry path="jp.coremind.asset.GridAsset"/>
     <classEntry path="jp.coremind.asset.Grid3ImageAsset"/>
     <classEntry path="jp.coremind.asset.Grid9ImageAsset"/>
+    <classEntry path="jp.coremind.view.interaction.Grid9TextureInteraction"/>
+    <classEntry path="jp.coremind.view.builder.Grid9ImageBuilder"/>
+    <classEntry path="jp.coremind.view.builder.RoundRectBuilder"/>
+    <classEntry path="jp.coremind.view.interaction.RoundRectInteraction"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

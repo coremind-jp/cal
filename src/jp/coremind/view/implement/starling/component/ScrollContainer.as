@@ -11,14 +11,14 @@ package jp.coremind.view.implement.starling.component
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.abstract.IElementContainer;
     import jp.coremind.view.abstract.component.Slider;
-    import jp.coremind.view.implement.starling.ElementContainer;
+    import jp.coremind.view.implement.starling.Container;
     import jp.coremind.view.layout.Align;
     import jp.coremind.view.layout.LayoutCalculator;
     import jp.coremind.view.interaction.Flick;
     
     import starling.events.Event;
     
-    public class ScrollContainer extends ElementContainer
+    public class ScrollContainer extends Container
     {
         private static const _POINT:Point = new Point();
         private static const _OFFSET:Rectangle = new Rectangle();

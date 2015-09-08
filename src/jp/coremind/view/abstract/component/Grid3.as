@@ -79,9 +79,7 @@ package jp.coremind.view.abstract.component
          * setResourceメソッドのtailパラメータに渡したDisplayObjectのサイズを取得する.
          */
         public function get tailSize():Number { return _tailSize; }
-        /**
-         * setResourceメソッドのparentパラメータに渡したDisplayObjectの可視状態を設定する.
-         */
+        
         public function get asset():IDisplayObject
         {
             return _asset;

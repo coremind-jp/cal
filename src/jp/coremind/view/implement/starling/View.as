@@ -58,7 +58,7 @@ package jp.coremind.view.implement.starling
             {
                 var name:String = list[i];
                 Log.info("build Element", name, Application.elementBluePrint);
-                addChild(Application.elementBluePrint.createBuilder(name).build(name, w, h));
+                addChild(Application.elementBluePrint.createBuilder(name).build(name, w, h) as DisplayObject);
             }
         }
         

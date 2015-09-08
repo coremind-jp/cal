@@ -50,7 +50,7 @@ package jp.coremind.view.implement.starling
                 else
                 {
                     addChildAt(
-                        Application.elementBluePrint.createBuilder(navigationName).build(navigationName, w, h),
+                        Application.elementBluePrint.createBuilder(navigationName).build(navigationName, w, h) as DisplayObject,
                         i++);
                 }
                 

@@ -1,11 +1,10 @@
 package jp.coremind.view.builder
 {
     import jp.coremind.utility.Log;
+    import jp.coremind.view.abstract.IBox;
     import jp.coremind.view.implement.starling.buildin.TextField;
     import jp.coremind.view.layout.Align;
     import jp.coremind.view.layout.Size;
-    
-    import starling.display.DisplayObject;
     
     public class TextFieldBuilder extends BuildinDisplayObjectBuilder implements IDisplayObjectBuilder
     {
@@ -26,7 +25,7 @@ package jp.coremind.view.builder
             _bold = bold;
         }
         
-        public function build(name:String, actualParentWidth:int, actualParentHeight:int):DisplayObject
+        public function build(name:String, actualParentWidth:int, actualParentHeight:int):IBox
         {
             var tf:TextField = new TextField(
                 _width.calc(actualParentWidth),

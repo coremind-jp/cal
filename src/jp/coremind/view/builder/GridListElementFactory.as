@@ -3,8 +3,6 @@ package jp.coremind.view.builder
     import jp.coremind.model.Diff;
     import jp.coremind.model.ListDiff;
     import jp.coremind.model.StorageModelReader;
-    import jp.coremind.view.abstract.IElement;
-    import jp.coremind.view.layout.LayoutCalculator;
     
     /**
      */
@@ -44,16 +42,6 @@ package jp.coremind.view.builder
             _densityList.length = 0;
             for (var i:int = 0, len:int = dataList.length; i < len; i++)
                 _pushDensity(_densityList, dataList[ diff.order[i] ], i, len);
-        }
-        
-        override public function elementInitializer(element:IElement, builder:ElementBuilder, actualParentWidth:int, actualParentHeight:int, modelData:*, index:int, length:int):void
-        {
-            var calculator:LayoutCalculator = builder.requestLayoutCalculator();
-            
-            element.initialize(_reader.id + "." + index);
-            element.initializeElementSize(
-                calculator.width.calc(actualParentWidth),
-                calculator.height.calc(actualParentHeight));
         }
         
         /**

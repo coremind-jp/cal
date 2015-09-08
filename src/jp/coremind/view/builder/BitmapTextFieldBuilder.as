@@ -1,11 +1,10 @@
 package jp.coremind.view.builder
 {
     import jp.coremind.utility.Log;
+    import jp.coremind.view.abstract.IBox;
     import jp.coremind.view.implement.starling.buildin.Sprite;
     import jp.coremind.view.layout.Align;
     import jp.coremind.view.layout.Size;
-    
-    import starling.display.DisplayObject;
     
     public class BitmapTextFieldBuilder extends BuildinDisplayObjectBuilder implements IDisplayObjectBuilder
     {
@@ -14,12 +13,11 @@ package jp.coremind.view.builder
             super(width, height, horizontalAlign, verticalAlign);
         }
         
-        public function build(name:String, actualParentWidth:int, actualParentHeight:int):DisplayObject
+        public function build(name:String, actualParentWidth:int, actualParentHeight:int):IBox
         {
             var sprite:Sprite = new Sprite();
             
             sprite.name = name;
-            //sprite.touchable = false;
             Log.info("builded BitmapTextField", sprite.width, sprite.height);
             
             return sprite;

@@ -66,7 +66,9 @@ package jp.coremind.utility
         public function release(klass:Class):void
         {
             Log.custom(TAG, "release", klass);
+            
             var pool:Array = _getPool(klass);
+            
             while (pool.length > 0) (pool.pop() as IRecycle).destroy();
         }
         

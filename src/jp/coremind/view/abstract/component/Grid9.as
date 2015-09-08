@@ -1,12 +1,14 @@
 package jp.coremind.view.abstract.component
 {
     import jp.coremind.asset.GridAsset;
+    import jp.coremind.view.abstract.IBox;
+    import jp.coremind.view.abstract.IDisplayObject;
     import jp.coremind.view.abstract.IStretchBox;
 
     /**
      * Grid3クラスを応用した9Grid表現クラス.
      */
-    public class Grid9 implements IStretchBox
+    public class Grid9 implements IStretchBox, IBox
     {
         private var
             _top:Grid3X,
@@ -65,6 +67,35 @@ package jp.coremind.view.abstract.component
               
             return this;
         }
+        
+        public function get asset():IDisplayObject
+        {
+            return _top.asset;
+        }
+        
+        public function set x(value:Number):void
+        {
+            _top.asset.x = value;
+        }
+        public function get x():Number
+        {
+            return _top.asset.x;
+        }
+        
+        public function set y(value:Number):void
+        {
+            _top.asset.y = value;
+        }
+        public function get y():Number
+        {
+            return _top.asset.y;
+        }
+        
+        public function set scaleX(value:Number):void {}
+        public function get scaleX():Number { return 1; }
+        
+        public function set scaleY(value:Number):void {}
+        public function get scaleY():Number { return 1; }
         
         /**
          * このオブジェクトの高さを設定する.

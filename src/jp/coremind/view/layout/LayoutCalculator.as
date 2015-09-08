@@ -2,7 +2,7 @@ package jp.coremind.view.layout
 {
     import flash.geom.Rectangle;
     
-    import starling.display.DisplayObject;
+    import jp.coremind.view.abstract.IBox;
 
     public class LayoutCalculator
     {
@@ -30,7 +30,7 @@ package jp.coremind.view.layout
             _horizontalAlign = _verticalAlign = null;
         }
         
-        public function applyDisplayObject(displayObject:DisplayObject, actualParentWidth:int, actualParentHeight:int):void
+        public function applyDisplayObject(displayObject:IBox, actualParentWidth:int, actualParentHeight:int):void
         {
             displayObject.width  = _width.calc(actualParentWidth);
             displayObject.height = _height.calc(actualParentHeight);

@@ -3,6 +3,7 @@ package jp.coremind.view.abstract
     public interface IStretchBox
     {
         function destroy():void;
+        
         function get width():Number;
         function set width(value:Number):void;
         

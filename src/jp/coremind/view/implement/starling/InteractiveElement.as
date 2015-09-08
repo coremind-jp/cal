@@ -7,7 +7,6 @@ package jp.coremind.view.implement.starling
     import jp.coremind.utility.Log;
     import jp.coremind.utility.data.Status;
     import jp.coremind.view.builder.IBackgroundBuilder;
-    import jp.coremind.view.layout.Align;
     import jp.coremind.view.layout.LayoutCalculator;
     
     import starling.events.Touch;

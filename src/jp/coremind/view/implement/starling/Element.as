@@ -8,9 +8,11 @@ package jp.coremind.view.implement.starling
     import jp.coremind.model.IStorageListener;
     import jp.coremind.model.StorageModelReader;
     import jp.coremind.utility.IRecycle;
+    import jp.coremind.view.abstract.IBox;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.abstract.IElementContainer;
     import jp.coremind.view.abstract.IStretchBox;
+    import jp.coremind.view.abstract.component.Grid9;
     import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.builder.IDisplayObjectBuilder;
     import jp.coremind.view.implement.starling.buildin.Sprite;
@@ -153,7 +155,6 @@ package jp.coremind.view.implement.starling
         {
             _elementWidth  = _layoutCalculator.width.calc(actualParentWidth);
             _elementHeight = _layoutCalculator.height.calc(actualParentHeight);
-            //Log.info("initializeElementSize", _elementWidth, _elementHeight, this, _reader.id);
             
             _isCreatedChilren ?
                 _partsLayout.refresh():
@@ -168,14 +169,16 @@ package jp.coremind.view.implement.starling
         {
             //Log.info("Element call _buildParts elementSize =", _elementWidth, _elementHeight);
             var builder:IDisplayObjectBuilder;
-            var child:DisplayObject;
+            var child:IBox;
             var _class:Class = $.getClassByInstance(this);
             
             var displayObjectPartsList:Array = Application.partsBlulePrint.createPartsList(_class);
             for (var i:int, iLen:int = displayObjectPartsList.length; i < iLen; i++) 
             {
                 builder = Application.partsBlulePrint.createBuilder(displayObjectPartsList[i]);
-                child   = addChild(builder.build(displayObjectPartsList[i], _elementWidth, _elementHeight));
+                child   = builder.build(displayObjectPartsList[i], _elementWidth, _elementHeight);
+                addParts(child is Grid9 ? (child as Grid9).asset: child);
+                
                 _partsLayout.setCalculator(child, builder.requestLayoutCalculator());
             }
             
@@ -183,7 +186,9 @@ package jp.coremind.view.implement.starling
             for (var j:int, jLen:int = elementPartsList.length; j < jLen; j++) 
             {
                 builder = Application.elementBluePrint.createBuilder(elementPartsList[j]);
-                child   = addChild(builder.build(elementPartsList[i], _elementWidth, _elementHeight));
+                child   = builder.build(elementPartsList[i], _elementWidth, _elementHeight);
+                addParts(child);
+                
                 _partsLayout.setCalculator(child, builder.requestLayoutCalculator());
             }
             

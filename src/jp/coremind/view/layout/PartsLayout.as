@@ -3,9 +3,8 @@ package jp.coremind.view.layout
     import flash.utils.Dictionary;
     
     import jp.coremind.utility.IRecycle;
+    import jp.coremind.view.abstract.IBox;
     import jp.coremind.view.abstract.IElement;
-    
-    import starling.display.DisplayObject;
 
     public class PartsLayout
     {
@@ -24,7 +23,7 @@ package jp.coremind.view.layout
             
             if (_children)
             {
-                for (var p:DisplayObject in _children)
+                for (var p:IBox in _children)
                 {
                     var element:IElement = _children[p] as IElement;
                     if (element) element.destroy(true);
@@ -34,14 +33,10 @@ package jp.coremind.view.layout
             }
         }
         
-        public function setCalculator(child:*, calculator:LayoutCalculator):void
+        public function setCalculator(child:IBox, calculator:LayoutCalculator):void
         {
-            if (!_children)
-                 _children = new Dictionary(true);
-            
-            child in _children ?
-                _children[child]:
-                _children[child] = calculator;
+            if (!_children) _children = new Dictionary(false);
+            _children[child] = calculator;
         }
         
         public function bindStorageId(storageId:String):void
@@ -61,7 +56,7 @@ package jp.coremind.view.layout
         public function refresh():void
         {
             if (_children)
-                for (var child:* in _children)
+                for (var child:IBox in _children)
                     (_children[child] as LayoutCalculator).applyDisplayObject(
                         child,
                         _element.elementWidth,

@@ -1,5 +1,7 @@
 package jp.coremind.model
 {
+    import jp.coremind.utility.Log;
+
     public class StorageConfigure
     {
         private var
@@ -10,6 +12,7 @@ package jp.coremind.model
         
         public function StorageConfigure(elementName:String, storageId:String, initialValue:* = null, storageType:String = StorageType.HASH)
         {
+            Log.info("Create StorageConfigure", elementName, storageId);
             _elementName  = elementName;
             _storageId    = storageId;
             _initialValue = initialValue || {};

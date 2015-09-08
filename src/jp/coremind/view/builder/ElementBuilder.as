@@ -1,15 +1,11 @@
 package jp.coremind.view.builder
 {
-    import flash.geom.Rectangle;
-    
     import jp.coremind.utility.Log;
-    import jp.coremind.utility.process.Routine;
+    import jp.coremind.view.abstract.IBox;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.layout.Align;
     import jp.coremind.view.layout.LayoutCalculator;
     import jp.coremind.view.layout.Size;
-    
-    import starling.display.DisplayObject;
 
     public class ElementBuilder implements IDisplayObjectBuilder
     {
@@ -42,7 +38,7 @@ package jp.coremind.view.builder
             return this;
         }
         
-        public function build(name:String, actualParentWidth:int, actualParentHeight:int):DisplayObject
+        public function build(name:String, actualParentWidth:int, actualParentHeight:int):IBox
         {
             Log.info("ElementBuilder build", name);
             
@@ -60,7 +56,7 @@ package jp.coremind.view.builder
             element.x = _layoutCalculator.horizontalAlign.calc(actualParentWidth, element.elementWidth);
             element.y = _layoutCalculator.verticalAlign.calc(actualParentHeight, element.elementHeight);
             
-            return element as DisplayObject;
+            return element;
         }
         
         public function buildForListElement():IElement

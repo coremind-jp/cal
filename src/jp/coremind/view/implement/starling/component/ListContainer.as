@@ -11,15 +11,14 @@ package jp.coremind.view.implement.starling.component
     import jp.coremind.utility.process.Process;
     import jp.coremind.utility.process.Routine;
     import jp.coremind.utility.process.Thread;
-    import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.abstract.IElement;
-    import jp.coremind.view.implement.starling.ElementContainer;
-    import jp.coremind.view.layout.Align;
+    import jp.coremind.view.builder.IBackgroundBuilder;
+    import jp.coremind.view.implement.starling.Container;
     import jp.coremind.view.layout.ILayout;
     import jp.coremind.view.layout.LayoutCalculator;
     import jp.coremind.view.layout.LayoutSimulation;
     
-    public class ListContainer extends ElementContainer
+    public class ListContainer extends Container
     {
         public static const TAG:String = "[ListContainer]";
         //Log.addCustomTag(TAG);
@@ -76,7 +75,7 @@ package jp.coremind.view.implement.starling.component
             var beforePosition:Dictionary;
             var r:Rectangle = _layout.calcTotalRect(_maxWidth, _maxHeight, len == 0 ? 0: len).clone();
             
-            if (len > 500)//リスト長が2500以上の場合待機時間を設ける
+            if (len > 500)//リスト長が500以上の場合待機時間を設ける
                 controller.syncProcess.pushThread(
                     previewProcess, new Thread("sort waiting").pushRoutine(
                         $.loop.highResolution.createWaitProcess(len / 30)//リスト長の20分の1を待機時間にする

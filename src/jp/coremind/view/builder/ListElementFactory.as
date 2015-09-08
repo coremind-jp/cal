@@ -8,7 +8,6 @@ package jp.coremind.view.builder
     import jp.coremind.model.StorageModelReader;
     import jp.coremind.utility.IRecycle;
     import jp.coremind.utility.InstancePool;
-    import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.layout.LayoutCalculator;
     
@@ -22,16 +21,16 @@ package jp.coremind.view.builder
     public class ListElementFactory implements IStorageListener
     {
         protected var
-            _builderCache:Object,
             _reader:StorageModelReader,
             _pool:InstancePool,
-            _createdInstance:Dictionary;
+            _createdInstance:Dictionary,
+            _builderCache:Object;/** こまめにElementが追加削除を繰り返す場合Builder取得(呼び出し時に生成している)コストが高くなるので一度使ったbuilderはキャッシュしておく */
 
         public function ListElementFactory()
         {
-            _builderCache    = {};
             _pool            = new InstancePool();
             _createdInstance = new Dictionary(true);
+            _builderCache    = {};
         }
         
         public function destroy():void
@@ -41,9 +40,9 @@ package jp.coremind.view.builder
             
             _pool.destroy();
             
-            for (var p:* in _builderCache) delete _builderCache[p];
-            
             for (var q:* in _createdInstance) delete _createdInstance[q];
+            
+            for (var p:* in _builderCache) delete _builderCache[p];
         }
         
         public function initialize(reader:StorageModelReader):void
@@ -75,8 +74,11 @@ package jp.coremind.view.builder
             var l:Array = _reader.read();
             if (length == -1) length = l.length;
             
-            var n:int = l.indexOf(modelData);
-            if (index == -1) index = n == -1 ? length: n;
+            if (index == -1)
+            {
+                var n:int = l.indexOf(modelData);
+                index = n == -1 ? length: n;
+            }
             
             var builderName:String = getBuilderName(modelData, index, length);
             

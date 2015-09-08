@@ -3,11 +3,10 @@ package jp.coremind.view.builder
     import jp.coremind.asset.Color;
     import jp.coremind.asset.EmbedAsset;
     import jp.coremind.utility.Log;
+    import jp.coremind.view.abstract.IBox;
+    import jp.coremind.view.implement.starling.buildin.Image;
     import jp.coremind.view.layout.Align;
     import jp.coremind.view.layout.Size;
-    
-    import starling.display.DisplayObject;
-    import starling.display.Image;
     
     public class ImageBuilder extends BuildinDisplayObjectBuilder implements IDisplayObjectBuilder
     {
@@ -16,7 +15,7 @@ package jp.coremind.view.builder
             super(width, height, horizontalAlign, verticalAlign);
         }
         
-        public function build(name:String, actualParentWidth:int, actualParentHeight:int):DisplayObject
+        public function build(name:String, actualParentWidth:int, actualParentHeight:int):IBox
         {
             var image:Image = EmbedAsset.createColorImage(
                 Color.TRANSPARENT,

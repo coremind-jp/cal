@@ -1,5 +1,7 @@
 package jp.coremind.utility
 {
+    import flash.utils.Dictionary;
+
     public class Log
     {
         public static var STACK_TRACE_NUM:int  = 25;
@@ -57,9 +59,10 @@ package jp.coremind.utility
         private static function _toString(value:*, indent:String = ""):String
         {
             return $.isPrimitive(value) ? value:
-                $.isArray(value) ? LINE_BREAK + _dumpArray(value, indent + INDENT):
-                _isObject(value) ? LINE_BREAK + _dumpHash(value, indent + INDENT):
-                value === null ? "null":
+                $.isArray(value)    ? LINE_BREAK + _dumpArray(value, indent + INDENT):
+                _isObject(value)    ? LINE_BREAK +  _dumpHash(value, indent + INDENT):
+                value is Dictionary ? LINE_BREAK +  _dumpHash(value, indent + INDENT):
+                value === null      ? "null":
                 value === undefined ? "undefined":
                 value;
         }
@@ -73,7 +76,7 @@ package jp.coremind.utility
         {
             var _result:Array = [];
             
-            for (var p:String in hash)
+            for (var p:* in hash)
                 _result.push(indent + "["+p+"] " + _toString(hash[p], indent));
             
             return _result.join(LINE_BREAK);

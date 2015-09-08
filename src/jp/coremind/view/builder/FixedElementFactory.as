@@ -2,7 +2,6 @@ package jp.coremind.view.builder
 {
     import jp.coremind.core.Application;
     import jp.coremind.utility.IRecycle;
-    import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IElement;
     
     /**
@@ -18,9 +17,15 @@ package jp.coremind.view.builder
         public function FixedElementFactory(elementBuilderName:String, horizontalDensity = 1, verticalDensity = 1)
         {
             _builder = Application.elementBluePrint.createBuilder(elementBuilderName) as ElementBuilder;
-            Log.info("new FixedElementFactory", elementBuilderName, _builder);
             _horizontalDensity = horizontalDensity;
             _verticalDensity   = verticalDensity;
+        }
+        
+        override public function destroy():void
+        {
+            _builder = null;
+            
+            super.destroy();
         }
         
         /**
@@ -37,8 +42,11 @@ package jp.coremind.view.builder
             var l:Array = _reader.read();
             if (length == -1) length = l.length;
             
-            var n:int = l.indexOf(modelData);
-            if (index == -1) index = n == -1 ? length: n;
+            if (index == -1)
+            {
+                var n:int = l.indexOf(modelData);
+                index = n == -1 ? length: n;
+            }
             
             var e:IElement = _createdInstance[modelData] = r ? r as IElement: _builder.buildForListElement();
             elementInitializer(e, _builder, actualParentWidth, actualParentHeight, modelData, index, length);
