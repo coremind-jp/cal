@@ -4,7 +4,9 @@ package jp.coremind.configure
 
     public interface IPartsBluePrint
     {
-        function createPartsList(elementClass:Class):Array;
+        function createPartsListByClass(cls:Class):Array;
+        
+        function createPartsListByName(name:String):Array;
         
         function createBuilder(name:String):IDisplayObjectBuilder;
     }

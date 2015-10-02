@@ -37,7 +37,6 @@
     <classEntry path="jp.coremind.event.ViewTransitionEvent"/>
     <classEntry path="jp.coremind.model.transaction.Diff"/>
     <classEntry path="jp.coremind.model.ElementModel"/>
-    <classEntry path="jp.coremind.core.ElementModelAccessor"/>
     <classEntry path="jp.coremind.model.transaction.HashDiff"/>
     <classEntry path="jp.coremind.storage.HashStorage"/>
     <classEntry path="jp.coremind.model.IElementModel"/>

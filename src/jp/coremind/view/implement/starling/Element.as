@@ -216,7 +216,7 @@ package jp.coremind.view.implement.starling
         
         public function ready():void
         {
-            Log.custom(TAG, "ready", "\nname:", name, "\nelementId:", elementId, "\nstorageId:", _reader.id, "\ncontroller:", controller);
+            //Log.custom(TAG, "ready", "\nname:", name, "\nelementId:", elementId, "\nstorageId:", _reader.id, "\ncontroller:", controller);
         }
     }
 }

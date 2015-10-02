@@ -37,7 +37,7 @@ package jp.coremind.control
         }
         
         /**　Processクラスのexecメソッドと動議　*/
-        public function exec(processName:String, callback:Function = null):void
+        public function run(processName:String, callback:Function = null):void
         {
             if (processName in _processList)
             {
@@ -47,12 +47,18 @@ package jp.coremind.control
                 delete _processList[processName];
                 
                 if (_numRunning++ == 0)
-                    ViewAccessor.disablePointerDevice();
+                {
+                    starling.disablePointerDevice();
+                    flash.disablePointerDevice();
+                }
                 
                 p.exec(function(res:Process):void
                 {
                     if (--_numRunning == 0)
-                        ViewAccessor.enablePointerDevice();
+                    {
+                        starling.enablePointerDevice();
+                        flash.enablePointerDevice();
+                    }
                     
                     if (callback is Function)
                         callback(res);

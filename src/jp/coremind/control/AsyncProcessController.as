@@ -13,7 +13,7 @@ package jp.coremind.control
             _runningProcess = new <String>[];
         }
         
-        override public function exec(processName:String, callback:Function=null):void
+        override public function run(processName:String, callback:Function=null):void
         {
             if (processName in _processList && _runningProcess.indexOf(processName) == -1)
             {

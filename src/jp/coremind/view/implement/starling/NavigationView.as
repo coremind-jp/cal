@@ -34,7 +34,7 @@ package jp.coremind.view.implement.starling
             _addNavigationParts(pId, destroyList, e.next);
             _removeNavigationParts(pId, destroyList);
             
-            Controller.getInstance().syncProcess.exec(pId, function(p:Process):void
+            Controller.getInstance().syncProcess.run(pId, function(p:Process):void
             {
                 while (destroyList.length > 0) 
                 {

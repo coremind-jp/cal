@@ -1,6 +1,7 @@
 package jp.coremind.view.layout
 {
     import flash.utils.Dictionary;
+    import flash.utils.getQualifiedClassName;
     
     import jp.coremind.configure.IElementBluePrint;
     import jp.coremind.configure.IPartsBluePrint;
@@ -47,7 +48,13 @@ package jp.coremind.view.layout
         public function buildParts():void
         {
             Log.custom(TAG, _element.storageId, "buildParts", _element);
-            var bluePrintKey:Class = $.getClassByInstance(_element);
+            
+            var element:String   = "jp.coremind.view.implement.starling.Element";
+            var container:String = "jp.coremind.view.implement.starling.Container";
+            var actual:String    = getQualifiedClassName(_element);
+            var bluePrintKey:* = actual === element || actual === container ?
+                _element.name:
+                $.getClassByInstance(_element);
             
             _buildBuildinParts(bluePrintKey);
             
@@ -61,9 +68,11 @@ package jp.coremind.view.layout
             
             var builder:IDisplayObjectBuilder;
             var child:IBox;
-            
             var bluePrint:IPartsBluePrint = Application.configure.partsBluePrint;
-            var partsList:Array = bluePrint.createPartsList(bluePrintKey);
+            var partsList:Array = bluePrintKey is String ?
+                bluePrint.createPartsListByName(bluePrintKey):
+                bluePrint.createPartsListByClass(bluePrintKey);
+            
             for (var i:int, len:int = partsList.length; i < len; i++) 
             {
                 builder = bluePrint.createBuilder(partsList[i]);
@@ -80,9 +89,11 @@ package jp.coremind.view.layout
             
             var builder:IDisplayObjectBuilder;
             var child:IBox;
-            
             var bluePrint:IElementBluePrint = Application.configure.elementBluePrint;
-            var partsList:Array = bluePrint.createPartsList(bluePrintKey);
+            var partsList:Array = bluePrintKey is String ?
+                bluePrint.createPartsListByName(bluePrintKey):
+                bluePrint.createPartsListByClass(bluePrintKey);
+            
             for (var i:int, len:int = partsList.length; i < len; i++) 
             {
                 builder = bluePrint.createBuilder(partsList[i]);

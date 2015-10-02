@@ -157,7 +157,7 @@ package jp.coremind.view.implement.starling.component
             controller.syncProcess
                 .pushThread(pId, addThread,  true, true)
                 .pushThread(pId, moveThread, true, true)
-                .exec(pId, function (p:Process):void {
+                .run(pId, function (p:Process):void {
                     if (p.result === Status.SCCEEDED) updateElementSize(r.width, r.height);
                 });
         }

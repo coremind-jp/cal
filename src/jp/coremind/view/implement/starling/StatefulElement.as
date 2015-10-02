@@ -31,11 +31,6 @@ package jp.coremind.view.implement.starling
             
             _elementModel.getModule(StatusModel).addListener(_applyStatus);
             _elementModel.getModule(StatusModel).addListener(_applyResouce);
-        }
-        
-        override protected function _onLoadStorageReader(id:String):void
-        {
-            super._onLoadStorageReader(id);
             
             _initializeStatus();
         }

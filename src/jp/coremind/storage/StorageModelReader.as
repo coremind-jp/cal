@@ -2,8 +2,6 @@ package jp.coremind.storage
 {
     import flash.utils.Dictionary;
     
-    import jp.coremind.utility.Log;
-    import jp.coremind.core.ElementModelAccessor;
     import jp.coremind.core.StorageAccessor;
     import jp.coremind.model.transaction.Diff;
     
@@ -23,7 +21,6 @@ package jp.coremind.storage
             _id:String,
             _type:String,
             _priorityList:Dictionary,
-            _elementModelList:Dictionary,
             _listenerList:Vector.<IStorageListener>;
         
         public function StorageModelReader(id:String, type:String = StorageType.HASH)
@@ -31,7 +28,6 @@ package jp.coremind.storage
             _id               = id;
             _type             = type;
             _priorityList     = new Dictionary(true);
-            _elementModelList = new Dictionary(true);
             _listenerList     = new <IStorageListener>[];
         }
         
@@ -40,15 +36,6 @@ package jp.coremind.storage
             var p:*;
             
             _origin = null;
-            
-            for (p in _elementModelList)
-            {
-                var accessor:ElementModelAccessor = _elementModelList[p];
-                
-                delete _elementModelList[p];
-                
-                accessor.destroy();
-            }
             
             for (p in _priorityList)  delete _priorityList[p];
             

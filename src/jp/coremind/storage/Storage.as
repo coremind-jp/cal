@@ -129,13 +129,14 @@ package jp.coremind.storage
         public function de1ete(id:String, storageType:String = StorageType.HASH):void
         {
             var reader:StorageModelReader, model:StorageModel, eModel:ElementModel;
+            Log.custom(TAG, "delete ", id);
             
             if (id in _modelCache)
             {
                 model = _modelCache[id];
                 delete _modelCache[id];
                 
-                Log.custom(TAG, "de1ete StorageModel("+id+")", model, _modelCache[id]);
+                Log.custom(TAG, "\tStorageModel");
                 model.destroy();
             }
             
@@ -144,7 +145,7 @@ package jp.coremind.storage
                 reader = _readerCache[id];
                 delete _readerCache[id];
                 
-                Log.custom(TAG, "de1ete StorageModelReader("+id+")", reader, _readerCache[id]);
+                Log.custom(TAG, "\tStorageModelReader");
                 reader.destroy();
             }
             
@@ -153,7 +154,7 @@ package jp.coremind.storage
                 eModel = _elementModelCache[id];
                 delete _elementModelCache[id];
                 
-                Log.custom(TAG, "de1ete StorageModelReader("+id+")", reader, _readerCache[id]);
+                Log.custom(TAG, "\tElementModel");
                 eModel.destroy();
             }
         }

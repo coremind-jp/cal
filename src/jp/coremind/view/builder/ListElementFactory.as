@@ -86,11 +86,7 @@ package jp.coremind.view.builder
                 
                 var  element:IElement = _pool.request(builder.elementClass) as IElement;
                 if (!element) element = builder.buildForListElement();
-                
                 element.initialize(actualParentWidth, actualParentHeight, _reader.id + "." + index);
-//                element.initializeElementSize(
-//                    calculator.width.calc(actualParentWidth),
-//                    calculator.height.calc(actualParentHeight));
                 
                 _createdInstance[modelData] = element;
             }

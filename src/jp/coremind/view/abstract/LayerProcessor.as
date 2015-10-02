@@ -136,7 +136,7 @@ package jp.coremind.view.abstract
         private function _exec(pId:String, prev:String, next:String):void
         {
             //complete handler
-            controller.syncProcess.exec(pId, function(p:Process):void
+            controller.syncProcess.run(pId, function(p:Process):void
             {
                 _dispatchEvent(ViewTransitionEvent.END_TRANSITION, null, prev, next);
             });

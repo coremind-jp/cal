@@ -73,7 +73,6 @@ package jp.coremind.view.implement.starling
             for (var i:int = 0; i < list.length; i++) 
             {
                 var name:String = list[i];
-                Log.custom(TAG, "build Element", name);
                 addDisplay(bluePrint.createBuilder(name).build(name, w, h) as IDisplayObject);
             }
         }

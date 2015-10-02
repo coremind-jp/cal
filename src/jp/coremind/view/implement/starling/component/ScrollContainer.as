@@ -40,14 +40,15 @@ package jp.coremind.view.implement.starling.component
             backgroundBuilder:IBackgroundBuilder = null)
         {
             super(layoutCalculator, backgroundBuilder);
+            touchHandling = true;
         }
         
         public function wrap(element:IContainer):void
         {
             _container = element;
             
-            touchHandling = true;
             name = _container.name + "ScrollWrapper";
+            
             _flick     = new Flick();
             _flickArea = new Rectangle();
             _drugSize  = new Point();

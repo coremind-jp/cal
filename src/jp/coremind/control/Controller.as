@@ -22,9 +22,7 @@ package jp.coremind.control
                 _CONTROLLER_LIST[controlClass] = new controlClass(viewModel);
         }
         
-        private var
-            
-            _viewModel:ViewModel;
+        private var _viewModel:ViewModel;
         
         public function Controller(viewModel:ViewModel = null)
         {
@@ -42,18 +40,18 @@ package jp.coremind.control
          * @param   elementId       呼び出しもとのElementオブジェクトが保持するElementModelIdオブジェクト
          * @param   ...params       拡張パラメータ
          */
-        public function doClickHandler(method:String, elementId:String, ...params):void
+        public function exec(method:String, ...params):void
         {
-            if (method in this && this[method] is Function)
-            {
-                params.unshift(elementId);
-                this[method].apply(null, params);
-            }
-            else Log.warning(
-                "undefined Controller method.", this,
+            method in this && this[method] is Function ?
+                this[method].apply(params):
+                Log.warning("undefined Controller method.", this,
                 "\n[undefined method]", method,
-                "\n[dispatchedElement]", elementId,
                 "\n[params]", params);
+        }
+        
+        public function onClick(elementId:String, ...params):void
+        {
+            Log.info("onClick", elementId, params);
         }
         
         /**

@@ -69,7 +69,7 @@ package jp.coremind.view.interaction
                     interaction.apply(parent);
             }
             
-            if (callExec) parent.controller.asyncProcess.exec(parent.storageId+key);
+            if (callExec) parent.controller.asyncProcess.run(parent.storageId+key);
         }
         
         private function _getListenerList(key:String):Vector.<IStatefulElementInteraction>

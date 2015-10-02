@@ -27,18 +27,6 @@ package jp.coremind.core
             _FLASH_VIEW.initialize(stage, onComplete);
         }
         
-        public static function enablePointerDevice():void
-        {
-            _STARLING_VIEW.enablePointerDevice();
-            _FLASH_VIEW.enablePointerDevice();
-        }
-        
-        public static function disablePointerDevice():void
-        {
-            _STARLING_VIEW.disablePointerDevice();
-            _FLASH_VIEW.disablePointerDevice();
-        }
-        
         protected function get starling():IViewAccessor
         {
             return _STARLING_VIEW;
