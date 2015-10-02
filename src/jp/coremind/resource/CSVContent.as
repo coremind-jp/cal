@@ -4,9 +4,9 @@ package jp.coremind.resource
     
     import jp.coremind.utility.helper.StringHelper;
 
-    public class CSVContent extends TextContent
+    public class CsvContent extends TextContent
     {
-        public function CSVContent()
+        public function CsvContent()
         {
             super();
         }

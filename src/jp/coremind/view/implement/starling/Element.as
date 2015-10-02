@@ -1,207 +1,222 @@
 package jp.coremind.view.implement.starling
 {
     import jp.coremind.control.Controller;
-    import jp.coremind.core.Application;
     import jp.coremind.event.ElementEvent;
-    import jp.coremind.model.Diff;
-    import jp.coremind.model.ElementModelId;
-    import jp.coremind.model.IStorageListener;
-    import jp.coremind.model.StorageModelReader;
+    import jp.coremind.model.ElementModel;
+    import jp.coremind.storage.IStorageListener;
+    import jp.coremind.storage.Storage;
+    import jp.coremind.storage.StorageModelReader;
+    import jp.coremind.model.transaction.Diff;
     import jp.coremind.utility.IRecycle;
-    import jp.coremind.view.abstract.IBox;
+    import jp.coremind.utility.Log;
+    import jp.coremind.view.abstract.ICalSprite;
     import jp.coremind.view.abstract.IElement;
-    import jp.coremind.view.abstract.IElementContainer;
     import jp.coremind.view.abstract.IStretchBox;
-    import jp.coremind.view.abstract.component.Grid9;
+    import jp.coremind.view.abstract.IView;
     import jp.coremind.view.builder.IBackgroundBuilder;
-    import jp.coremind.view.builder.IDisplayObjectBuilder;
-    import jp.coremind.view.implement.starling.buildin.Sprite;
     import jp.coremind.view.layout.LayoutCalculator;
     import jp.coremind.view.layout.PartsLayout;
-    import jp.coremind.view.transition.ElementTransition;
     
-    import starling.display.DisplayObject;
+    import starling.events.Event;
     
-    public class Element extends Sprite implements IElement, IRecycle, IStorageListener
+    public class Element extends CalSprite implements IElement, IRecycle, IStorageListener
     {
+        public static const TAG:String = "[Element]";
+        Log.addCustomTag(TAG);
+        
         private static const UNDEFINED_LAYOUT_CALCULATOR:LayoutCalculator = new LayoutCalculator();
         
         protected var
             _reader:StorageModelReader,
-            _controller:Class,
             _layoutCalculator:LayoutCalculator,
-            _elementId:ElementModelId,
             _elementWidth:Number,
             _elementHeight:Number,
-            _isCreatedChilren:Boolean,
+            _elementId:String,
+            _elementModel:ElementModel,
             _partsLayout:PartsLayout,
             _background:IStretchBox;
         
+        /**
+         * フレームワーク内で利用される基本表示オブジェクト.
+         * ElementはUIからControllerへの橋渡しをしたり、Controllerのデータにアクセスして表示内容を切り替えるため
+         * 表示オブジェクトであるので他の表示オブジェクトとは切り分けて考えられている。
+         * 
+         * 上記の理由から原則的にElementの中にElementを含めるのではなく
+         * ビルドイン表示オブジェクト(TextField, Image, Quad, MovieClip等)のみとして想定してある。
+         * 
+         * ※要求仕様上Elementの中にElementを含める必要がある場合はContainerクラスやListContainerクラスを利用する。
+         */
         public function Element(
             layoutCalculator:LayoutCalculator,
-            controllerClass:Class = null,
             backgroundBuilder:IBackgroundBuilder = null)
         {
-            _controller = controllerClass !== null ? controllerClass: Controller;
-            
             _layoutCalculator = layoutCalculator || UNDEFINED_LAYOUT_CALCULATOR;
-            
-            _elementId = new ElementModelId(this);
             
             _elementWidth = _elementHeight = NaN;
             
             _partsLayout = new PartsLayout(this);
             
-            _isCreatedChilren = false;
+            if (backgroundBuilder) _background = backgroundBuilder.build(this);
+        }
+        
+        override public function destroy(withReference:Boolean = false):void
+        {
+            Log.custom(TAG, "destroy", this, "storageId:", _reader ? _reader.id: null);
             
-            if (backgroundBuilder)
-                _background = backgroundBuilder.build(this);
-        }
-        
-        public function initialize(storageId:String = null):void
-        {
-            if (storageId !== null)
-            {
-                _reader = controller.requestModelReader(storageId);
-                _reader.addListener(this, StorageModelReader.LISTENER_PRIORITY_ELEMENT);
-                _initializeRuntimeModel();
-            }
-        }
-        
-        protected function _initializeRuntimeModel():void
-        {
-        }
-        
-        public function reset():void
-        {
-            if (_reader)
-            {
-                _partsLayout.unbindStorageId();
-                _reader.removeListener(this);
-            }
-        }
-        
-        public function destroy(withReference:Boolean = false):void
-        {
+            if (_background)
+                _background = null;
+            
+            _partsLayout.destroy();
+            
+            if (withReference)
+                _layoutCalculator.destroy();
+            _layoutCalculator = null;
+            
             if (_reader)
             {
                 _reader.removeListener(this);
                 _reader = null;
             }
             
-            if (_background)
-            {
-                _background.destroy();
-                _background = null;
-            }
+            _elementModel = null;
             
-            _partsLayout.destroy();
-            _partsLayout = null;
-            
-            _elementId.destroy();
-            _elementId = null;
-            
-            _layoutCalculator.destroy();
-            _layoutCalculator = null;
-            
-            _controller = null;
-            
-            if (parent) removeFromParent(true);
+            super.destroy(withReference);
         }
         
+        public function reset():void
+        {
+            if (_reader)
+            {
+                _partsLayout.reset();
+                _reader.removeListener(this);
+            }
+        }
+        
+        public function get elementWidth():Number       { return isNaN(_elementWidth)  ? width:  _elementWidth; }
+        public function get elementHeight():Number      { return isNaN(_elementHeight) ? height: _elementHeight; }
+        public function get elementId():String          { return _elementId; }
+        public function get elementModel():ElementModel { return _elementModel; }
+        public function get controller():Controller
+        {
+            var parent:ICalSprite = this.parent as ICalSprite;
+            
+            while (parent)
+                if (parent is IView) return (parent as IView).controller;
+                else parent = parent.parentDisplay as ICalSprite;
+            
+            return Controller.getInstance();
+        }
+        
+        public function get storageId():String      { return _reader ? _reader.id: null; }
+        
+        //IListener interface
         public function addListener(type:String, listener:Function):void    { addEventListener(type, listener); }
         public function removeListener(type:String, listener:Function):void { removeEventListener(type, listener); }
         public function hasListener(type:String):void { hasEventListener(type); }
-        
-        public function enablePointerDeviceControl():void  {}
-        public function disablePointerDeviceControl():void {}
-        
-        public function get elementWidth():Number          { return isNaN(_elementWidth)  ? width:  _elementWidth; }
-        public function get elementHeight():Number         { return isNaN(_elementHeight) ? height: _elementHeight; }
-        public function get controller():Controller        { return Controller.getInstance(_controller); }
-        public function get storageId():String             { return _reader ? _reader.id: null; }
-        
-        public function get addTransition():Function       { return ElementTransition.FAST_ADD; }
-        public function get mvoeTransition():Function      { return ElementTransition.LINER_MOVE; }
-        public function get removeTransition():Function    { return ElementTransition.FAST_REMOVE; }
-        public function get visibleTransition():Function   { return ElementTransition.FAST_VISIBLE; }
-        public function get invisibleTransition():Function { return ElementTransition.FAST_INVISIBLE; }
-        
-        public function get parentElement():IElementContainer   { return parent as IElementContainer; }
-        
-        public function getPartsByName(name:String):*           { return getChildByName(name); }
-        public function getPartsIndex(parts:*):int              { return getChildIndex(parts as DisplayObject); }
-        public function addParts(parts:*):*                     { return addChild(parts as DisplayObject); }
-        public function addPartsAt(parts:*, index:int):*        { return addChildAt(parts as DisplayObject, index); }
-        public function removeParts(parts:*, dispose:Boolean = false):* { return removeChild(parts as DisplayObject, dispose); }
         
         //IStorageListener interface
         public function preview(plainDiff:Diff):void {}
         public function commit(plainDiff:Diff):void {}
         
+        public function initialize(actualParentWidth:int, actualParentHeight:int, storageId:String = null):void
+        {
+            _initializeElementSize(actualParentWidth, actualParentHeight);
+            
+            addEventListener(Event.ADDED_TO_STAGE, function(e:Event):void
+            {
+                removeListener(Event.ADDED_TO_STAGE, arguments.callee);
+                
+                _createElementId();
+                
+                _onLoadStorageReader(storageId);
+                
+                ready();
+            });
+        }
+        
+        protected function _initializeElementSize(actualParentWidth:Number, actualParentHeight:Number):void
+        {
+            _elementWidth  = _layoutCalculator.width.calc(actualParentWidth);
+            _elementHeight = _layoutCalculator.height.calc(actualParentHeight);
+            
+            x = _layoutCalculator.horizontalAlign.calc(actualParentWidth, _elementWidth);
+            y = _layoutCalculator.verticalAlign.calc(actualParentHeight, _elementHeight);
+            
+            Log.custom(TAG,
+                "actualSize:", actualParentWidth, actualParentHeight,
+                "elementSize:", _elementWidth, _elementHeight,
+                "position:", x, y);
+            
+            if (!_partsLayout.isBuildedParts())
+                _partsLayout.buildParts();
+            
+            _refreshLayout(_elementWidth, _elementHeight);
+        }
+        
+        private function _createElementId():void
+        {
+            _elementId = name;
+            
+            var parent:ICalSprite = parent as ICalSprite;
+            while (parent)
+            {
+                if (parent is IView) break;
+                else
+                {
+                    _elementId = parent.name + "." + _elementId;
+                    parent = parent.parentDisplay as ICalSprite;
+                }
+            }
+        }
+        
+        protected function _onLoadStorageReader(id:String):void
+        {
+            if (id)
+            {
+                _reader = controller.requestModelReader(id);
+                _reader.addListener(this, StorageModelReader.LISTENER_PRIORITY_ELEMENT);
+            }
+            else
+            {
+                Log.info("undefined storageId", this, name);
+                _reader = controller.requestModelReader(Storage.UNDEFINED_STORAGE_ID);
+            }
+            
+            _initializeElementModel();
+        }
+        
+        protected function _initializeElementModel():void
+        {
+            _elementModel = controller.requestModelElementModel(_reader.id);
+        }
+        
         public function updateElementSize(elementWidth:Number, elementHeight:Number):void
         {
             if (_elementWidth != elementWidth || _elementHeight != elementHeight)
             {
-                _partsLayout.refresh();
+                _elementWidth  = elementWidth;
+                _elementHeight = elementHeight;
                 
-                _refreshBackground();
+                _refreshLayout(_elementWidth, _elementHeight);
                 
                 dispatchEventWith(ElementEvent.UPDATE_SIZE);
             }
         }
         
-        public function initializeElementSize(actualParentWidth:Number, actualParentHeight:Number):void
+        protected function _refreshLayout(containerWidth:Number, containerHeight:Number):void
         {
-            _elementWidth  = _layoutCalculator.width.calc(actualParentWidth);
-            _elementHeight = _layoutCalculator.height.calc(actualParentHeight);
+            _partsLayout.refresh();
             
-            _isCreatedChilren ?
-                _partsLayout.refresh():
-                _buildParts();
-            
-            _partsLayout.bindStorageId(storageId);
-            
-            _refreshBackground();
-        }
-        
-        protected function _buildParts():void
-        {
-            //Log.info("Element call _buildParts elementSize =", _elementWidth, _elementHeight);
-            var builder:IDisplayObjectBuilder;
-            var child:IBox;
-            var _class:Class = $.getClassByInstance(this);
-            
-            var displayObjectPartsList:Array = Application.partsBlulePrint.createPartsList(_class);
-            for (var i:int, iLen:int = displayObjectPartsList.length; i < iLen; i++) 
-            {
-                builder = Application.partsBlulePrint.createBuilder(displayObjectPartsList[i]);
-                child   = builder.build(displayObjectPartsList[i], _elementWidth, _elementHeight);
-                addParts(child is Grid9 ? (child as Grid9).asset: child);
-                
-                _partsLayout.setCalculator(child, builder.requestLayoutCalculator());
-            }
-            
-            var elementPartsList:Array = Application.elementBluePrint.createPartsList(_class);
-            for (var j:int, jLen:int = elementPartsList.length; j < jLen; j++) 
-            {
-                builder = Application.elementBluePrint.createBuilder(elementPartsList[j]);
-                child   = builder.build(elementPartsList[i], _elementWidth, _elementHeight);
-                addParts(child);
-                
-                _partsLayout.setCalculator(child, builder.requestLayoutCalculator());
-            }
-            
-            _isCreatedChilren = true;
-        }
-        
-        protected function _refreshBackground():void
-        {
             if (_background)
             {
-                _background.width  = _elementWidth;
-                _background.height = _elementHeight;
+                _background.width  = containerWidth;
+                _background.height = containerHeight;
             }
+        }
+        
+        public function ready():void
+        {
+            Log.custom(TAG, "ready", "\nname:", name, "\nelementId:", elementId, "\nstorageId:", _reader.id, "\ncontroller:", controller);
         }
     }
 }

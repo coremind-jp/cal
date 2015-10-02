@@ -1,8 +1,8 @@
 package jp.coremind.view.builder
 {
-    import jp.coremind.model.Diff;
-    import jp.coremind.model.ListDiff;
-    import jp.coremind.model.StorageModelReader;
+    import jp.coremind.model.transaction.Diff;
+    import jp.coremind.model.transaction.ListDiff;
+    import jp.coremind.storage.StorageModelReader;
     
     /**
      */

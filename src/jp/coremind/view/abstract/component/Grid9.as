@@ -30,15 +30,21 @@ package jp.coremind.view.abstract.component
             _right   = new Grid3Y(GridAsset.GRID9_LINE_TAIL);
         }
         
-        public function destroy():void
+        public function destroy(withReference:Boolean = false):void
         {
-            _top.destroy();
-            _vCenter.destroy();
-            _bottom.destroy();
+            if (withReference)
+            {
+                _top.destroy(withReference);
+                _vCenter.destroy(withReference);
+                _bottom.destroy(withReference);
+                
+                _left.destroy(withReference);
+                _hCenter.destroy(withReference);
+                _right.destroy(withReference);
+            }
             
-            _left.destroy();
-            _hCenter.destroy();
-            _right.destroy();
+            _top = _vCenter = _bottom = null;
+            _left = _hCenter = _right = null;
         }
         
         /**

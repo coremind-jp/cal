@@ -1,10 +1,10 @@
 package jp.coremind.view.implement.starling
 {
-    import jp.coremind.model.StatusConfigure;
-    import jp.coremind.model.StatusGroup;
-    import jp.coremind.model.StatusModelConfigure;
-    import jp.coremind.model.UpdateRule;
-    import jp.coremind.utility.Log;
+    import jp.coremind.model.module.StatusConfigure;
+    import jp.coremind.model.module.StatusGroup;
+    import jp.coremind.model.module.StatusModel;
+    import jp.coremind.model.module.StatusModelConfigure;
+    import jp.coremind.model.transaction.UpdateRule;
     import jp.coremind.utility.data.Status;
     import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.layout.LayoutCalculator;
@@ -21,28 +21,29 @@ package jp.coremind.view.implement.starling
         ]);
         
         protected var
+            _button:Boolean,
+            _touchHandling:Boolean,
             _touch:Touch;
         
         public function InteractiveElement(
             layoutCalculator:LayoutCalculator,
-            controllerClass:Class = null,
             backgroundBuilder:IBackgroundBuilder = null)
         {
-            super(layoutCalculator, controllerClass, backgroundBuilder);
+            super(layoutCalculator, backgroundBuilder);
+            button = false;
+            touchHandling = false;
         }
         
         override public function destroy(withReference:Boolean = false):void
         {
-            Log.info("destroy interactive", _touch);
-            
             disablePointerDeviceControl();
             
             super.destroy(withReference);
         }
         
-        override public function initialize(storageId:String = null):void
+        override public function initialize(actualParentWidth:int, actualParentHeight:int, storageId:String = null):void
         {
-            super.initialize(storageId);
+            super.initialize(actualParentWidth, actualParentHeight, storageId);
             
             enablePointerDeviceControl();
         }
@@ -51,13 +52,36 @@ package jp.coremind.view.implement.starling
         {
             super._initializeStatus();
             
-            controller.pointerDevice.refresh(_reader.id, _elementId);
+            _elementModel.getModule(StatusModel).update(StatusGroup.LOCK, null);
+        }
+        
+        public function get button():Boolean
+        {
+            return _button;
+        }
+        
+        public function set button(v:Boolean):void
+        {
+            _button = v;
+            if (v && touchable) useHandCursor = true;
+        }
+        
+        public function get touchHandling():Boolean
+        {
+            return _touchHandling;
+        }
+        
+        public function set touchHandling(v:Boolean):void
+        {
+            _touchHandling = v;
+            if (v && touchable) addEventListener(TouchEvent.TOUCH, _onTouch);
         }
         
         override public function enablePointerDeviceControl():void
         {
-            useHandCursor = touchable = true;
-            addEventListener(TouchEvent.TOUCH, _onTouch);
+            touchable = true;
+            if (_button) useHandCursor = true;
+            if (_touchHandling) addEventListener(TouchEvent.TOUCH, _onTouch);
         }
         
         override public function disablePointerDeviceControl():void

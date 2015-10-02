@@ -9,11 +9,11 @@ package jp.coremind.core.routine
     import flash.net.URLLoaderDataFormat;
     import flash.utils.ByteArray;
     
-    import jp.coremind.utility.process.Routine;
-    import jp.coremind.utility.process.Thread;
     import jp.coremind.network.RequestConfigure;
     import jp.coremind.resource.IByteArrayContent;
     import jp.coremind.utility.Log;
+    import jp.coremind.utility.process.Routine;
+    import jp.coremind.utility.process.Thread;
 
     public class WebRequest
     {
@@ -24,6 +24,10 @@ package jp.coremind.core.routine
         private static function get _DEFAULT_REQUEST_CONFIG():RequestConfigure
         {
             return _REQ_CONF ? _REQ_CONF: _REQ_CONF = new RequestConfigure({});
+        }
+        public static function set defaultRequestConfigure(value:RequestConfigure):void
+        {
+            _REQ_CONF = value;
         }
         
         public static function dumpCacheKey():void

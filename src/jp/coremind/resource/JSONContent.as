@@ -2,9 +2,9 @@ package jp.coremind.resource
 {
     import flash.utils.ByteArray;
 
-    public class JSONContent extends TextContent
+    public class JsonContent extends TextContent
     {
-        public function JSONContent()
+        public function JsonContent()
         {
             super();
         }

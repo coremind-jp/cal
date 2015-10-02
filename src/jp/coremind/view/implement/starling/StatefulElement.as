@@ -1,8 +1,7 @@
 package jp.coremind.view.implement.starling
 {
-    import jp.coremind.model.ElementModelAccessor;
-    import jp.coremind.model.StatusModel;
-    import jp.coremind.model.StatusModelConfigure;
+    import jp.coremind.model.module.StatusModel;
+    import jp.coremind.model.module.StatusModelConfigure;
     import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.interaction.StatefulElementInteractionListener;
     import jp.coremind.view.layout.LayoutCalculator;
@@ -18,41 +17,27 @@ package jp.coremind.view.implement.starling
         
         public function StatefulElement(
             layoutCalculator:LayoutCalculator,
-            controllerClass:Class = null,
             backgroundBuilder:IBackgroundBuilder = null)
         {
-            super(layoutCalculator, controllerClass, backgroundBuilder);
+            super(layoutCalculator, backgroundBuilder);
         }
         
-        override public function initialize(storageId:String = null):void
+        override protected function _initializeElementModel():void
         {
-            super.initialize(storageId);
+            super._initializeElementModel();
             
-            if (_reader)
-            {
-                var ema:ElementModelAccessor = _reader.getElementModelAccessor(_elementId);
-                ema.addListener(StatusModel, _applyStatus);
-                ema.addListener(StatusModel, _applyResouce);
-            }
+            if (_elementModel.isUndefined(StatusModel))
+                _elementModel.addModule(StatusModel.create(_statusModelConfigureKey));
+            
+            _elementModel.getModule(StatusModel).addListener(_applyStatus);
+            _elementModel.getModule(StatusModel).addListener(_applyResouce);
         }
         
-        override public function initializeElementSize(actualParentWidth:Number, actualParentHeight:Number):void
+        override protected function _onLoadStorageReader(id:String):void
         {
-            super.initializeElementSize(actualParentWidth, actualParentHeight);
+            super._onLoadStorageReader(id);
             
             _initializeStatus();
-            /*
-            var a:Array = [];
-            for (var k:int = 0; k < numChildren; k++) 
-                a.push(getChildAt(k).name, getChildAt(k).width, getChildAt(k).height);
-            Log.info("Element Initialized!", a.join(","));
-            */
-        }
-        
-        override protected function _initializeRuntimeModel():void
-        {
-            var ema:ElementModelAccessor = _reader.getElementModelAccessor(_elementId);
-            if (ema.isUndefined(StatusModel)) ema.addModel(StatusModel.create(_statusModelConfigureKey));
         }
         
         /**
@@ -79,9 +64,8 @@ package jp.coremind.view.implement.starling
         {
             if (_reader)
             {
-                var ema:ElementModelAccessor = _reader.getElementModelAccessor(_elementId);
-                ema.removeListener(StatusModel, _applyStatus);
-                ema.removeListener(StatusModel, _applyResouce);
+                _elementModel.getModule(StatusModel).removeListener(_applyStatus);
+                _elementModel.getModule(StatusModel).removeListener(_applyResouce);
             }
             
             super.reset();
@@ -91,9 +75,8 @@ package jp.coremind.view.implement.starling
         {
             if (_reader)
             {
-                var ema:ElementModelAccessor = _reader.getElementModelAccessor(_elementId);
-                ema.removeListener(StatusModel, _applyStatus);
-                ema.removeListener(StatusModel, _applyResouce);
+                _elementModel.getModule(StatusModel).removeListener(_applyStatus);
+                _elementModel.getModule(StatusModel).removeListener(_applyResouce);
             }
             
             super.destroy(withReference);

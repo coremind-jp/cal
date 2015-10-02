@@ -1,5 +1,6 @@
 package jp.coremind.view.builder
 {
+    import jp.coremind.storage.Storage;
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IBox;
     import jp.coremind.view.abstract.IElement;
@@ -9,60 +10,51 @@ package jp.coremind.view.builder
 
     public class ElementBuilder implements IDisplayObjectBuilder
     {
+        private static const TAG:String = "[ElementBuilder]";
+        Log.addCustomTag(TAG);
+        
         protected var
-            _aliasStorageId:String,
+            _storageId:String,
             _elementClass:Class,
-            _controllerClass:Class,
             _layoutCalculator:LayoutCalculator,
             _backgroundBuilder:IBackgroundBuilder;
         
         public function ElementBuilder(
             elementClass:Class,
-            controllerClass:Class,
             width:Size = null,
             height:Size = null,
             horizontalAlign:Align = null,
             verticalAlign:Align = null,
+            storageId:String = null,
             backgroundBuilder:IBackgroundBuilder = null)
         {
-            _aliasStorageId    = null;
             _elementClass      = elementClass;
-            _controllerClass   = controllerClass;
             _layoutCalculator  = new LayoutCalculator(width, height, horizontalAlign, verticalAlign);
+            _storageId         = storageId || Storage.UNDEFINED_STORAGE_ID;
             _backgroundBuilder = backgroundBuilder;
         }
         
-        public function aliasStorageId(storageId:String):ElementBuilder
+        public function overrideStorageId(storageId:String):ElementBuilder
         {
-            _aliasStorageId = storageId;
+            _storageId = storageId;
             return this;
         }
         
         public function build(name:String, actualParentWidth:int, actualParentHeight:int):IBox
         {
-            Log.info("ElementBuilder build", name);
+            Log.custom(TAG, "build", name);
             
-            var element:IElement = new _elementClass(_layoutCalculator, _controllerClass, _backgroundBuilder);
-            var storageId:String;
-            
+            var element:IElement = new _elementClass(_layoutCalculator, _backgroundBuilder);
             element.name = name;
-            
-            storageId = element.controller.initializeStorageModel(_aliasStorageId !== null ? _aliasStorageId: element.name);
-            storageId === null ?
-                Log.error("undefined StorageConfigure. instance '"+element.name+"'"):
-                element.initialize(storageId);
-            
-            element.initializeElementSize(actualParentWidth, actualParentHeight);
-            element.x = _layoutCalculator.horizontalAlign.calc(actualParentWidth, element.elementWidth);
-            element.y = _layoutCalculator.verticalAlign.calc(actualParentHeight, element.elementHeight);
+            element.initialize(actualParentWidth, actualParentHeight, _storageId);
             
             return element;
         }
         
         public function buildForListElement():IElement
         {
-            Log.info("ElementBuilder build for ListElement", _elementClass);
-            return new _elementClass(null, _controllerClass, _backgroundBuilder);
+            Log.custom(TAG, "build for ListElement", _elementClass);
+            return new _elementClass(null, _backgroundBuilder);;
         }
         
         public function get elementClass():Class

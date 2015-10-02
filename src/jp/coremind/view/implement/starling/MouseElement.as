@@ -1,9 +1,10 @@
 package jp.coremind.view.implement.starling
 {
-    import jp.coremind.model.StatusConfigure;
-    import jp.coremind.model.StatusGroup;
-    import jp.coremind.model.StatusModelConfigure;
-    import jp.coremind.model.UpdateRule;
+    import jp.coremind.model.module.StatusConfigure;
+    import jp.coremind.model.module.StatusGroup;
+    import jp.coremind.model.module.StatusModel;
+    import jp.coremind.model.module.StatusModelConfigure;
+    import jp.coremind.model.transaction.UpdateRule;
     import jp.coremind.utility.data.Status;
     import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.layout.LayoutCalculator;
@@ -28,21 +29,25 @@ package jp.coremind.view.implement.starling
         
         public function MouseElement(
             layoutCalculator:LayoutCalculator,
-            controllerClass:Class = null,
             backgroundBuilder:IBackgroundBuilder = null)
         {
-            super(layoutCalculator, controllerClass, backgroundBuilder);
+            super(layoutCalculator, backgroundBuilder);
             
             _bHover = false;
+            
+            button = true;
         }
         
         override protected function _onTouch(e:TouchEvent):void
         {
+            if (!_reader) return;
+            
             _touch = e.getTouch(this);
             
             if (!_touch)
             {
-                if (_bHover) controller.button.rollOut(_reader.id, _elementId);
+                if (_bHover)
+                    _elementModel.getModule(StatusModel).update(StatusGroup.RELEASE, Status.ROLL_OUT);
                 _bHover = false;
             }
             else
@@ -58,7 +63,7 @@ package jp.coremind.view.implement.starling
             if (_bHover) return;
             
             _bHover = true;
-            controller.button.rollOver(_reader.id, _elementId);
+            _elementModel.getModule(StatusModel).update(StatusGroup.RELEASE, Status.ROLL_OVER);
         }
         
         override protected function began():void
@@ -67,7 +72,7 @@ package jp.coremind.view.implement.starling
             _triggerRect.y = _touch.globalY - (_triggerRect.height >> 1);
             
             _bHitTest = _hold = true;
-            controller.button.press(_reader.id, _elementId);
+            _elementModel.getModule(StatusModel).update(StatusGroup.PRESS, Status.DOWN);
         }
         
         override protected function moved():void
@@ -80,35 +85,40 @@ package jp.coremind.view.implement.starling
             
             var isRollOver:Boolean = _bHitTest && !_hold;
             var isClick:Boolean    = _bHitTest &&  _hold;
+            var status:StatusModel = _elementModel.getModule(StatusModel) as StatusModel;
             
             isClick ?
-                controller.button.press(_reader.id, _elementId):
+                status.update(StatusGroup.PRESS, Status.DOWN):
                 isRollOver ?
-                    controller.button.rollOver(_reader.id, _elementId):
-                    controller.button.rollOut(_reader.id, _elementId);
+                    status.update(StatusGroup.RELEASE, Status.ROLL_OVER):
+                    status.update(StatusGroup.RELEASE, Status.ROLL_OUT);
         }
         
         override protected function ended():void
         {
             var isRollOver:Boolean = _bHitTest && !_hold;
             var isClick:Boolean    = _bHitTest &&  _hold;
+            var status:StatusModel = _elementModel.getModule(StatusModel) as StatusModel;
             
             _bHover = isRollOver;
             
             if (isClick)
             {
-                controller.action(_reader.id, _elementId);
+                status.update(StatusGroup.PRESS, Status.CLICK);
                 
-                controller.syncProcess.isRunning() ?
-                    controller.button.rollOut(_reader.id, _elementId):
-                    controller.button.rollOver(_reader.id, _elementId);
+                //↑のactionメソッドでViewの移動が発生してこの要素が破棄されていた場合_readerがnullになる可能性があるので、
+                //そのチェックをしてからボタンコントローラーへメッセージを送る
+                if (_reader)
+                    controller.syncProcess.isRunning() ?
+                        status.update(StatusGroup.RELEASE, Status.ROLL_OUT):
+                        status.update(StatusGroup.RELEASE, Status.ROLL_OVER);
             }
             else
             {
                 isRollOver ?
-                    controller.button.rollOver(_reader.id, _elementId):
-                    controller.button.rollOut(_reader.id, _elementId);
-                controller.button.release(_reader.id, _elementId);
+                    status.update(StatusGroup.RELEASE, Status.ROLL_OVER):
+                    status.update(StatusGroup.RELEASE, Status.ROLL_OUT);
+                status.update(StatusGroup.PRESS, Status.UP);
             }
         }
         

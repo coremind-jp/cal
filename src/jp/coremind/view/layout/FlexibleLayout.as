@@ -3,14 +3,14 @@ package jp.coremind.view.layout
     import flash.geom.Rectangle;
     
     import jp.coremind.core.Application;
-    import jp.coremind.model.StorageModelReader;
+    import jp.coremind.storage.StorageModelReader;
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.builder.IDisplayObjectBuilder;
-    import jp.coremind.view.builder.IElementBluePrint;
+    import jp.coremind.configure.IElementBluePrint;
     import jp.coremind.view.builder.ListElementFactory;
 
-    public class FlexibleLayout implements ILayout
+    public class FlexibleLayout implements IElementLayout
     {
         private var
             _builderList:Vector.<String>,
@@ -103,7 +103,10 @@ package jp.coremind.view.layout
         private function _getBuilder(index:int):IDisplayObjectBuilder
         {
             if (0 <= index && index < _builderList.length)
-                return Application.elementBluePrint.createBuilder(_builderList[index]);
+            {
+                var bluePrint:IElementBluePrint = Application.configure.elementBluePrint;
+                return bluePrint.createBuilder(_builderList[index]);
+            }
             else
             {
                 Log.error("[FlexibleLayout]", index, " is undefined.");

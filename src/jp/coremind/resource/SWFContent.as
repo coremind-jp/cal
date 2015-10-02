@@ -2,9 +2,9 @@ package jp.coremind.resource
 {
     import flash.display.MovieClip;
 
-    public class SWFContent extends MediaContent
+    public class SwfContent extends MediaContent
     {
-        public function SWFContent()
+        public function SwfContent()
         {
             super();
         }

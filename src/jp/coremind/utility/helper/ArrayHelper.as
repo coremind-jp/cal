@@ -15,5 +15,11 @@ package jp.coremind.utility.helper
                 array[index2] = temp;
             }
         }
+        
+        public function free(array:*):*
+        {
+            if (array) array.length = 0
+            return null;
+        }
     }
 }

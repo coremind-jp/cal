@@ -6,6 +6,7 @@ package jp.coremind.view.builder
     public interface IDisplayObjectBuilder
     {
         function build(name:String, actualParentWidth:int, actualParentHeight:int):IBox;
+        
         function requestLayoutCalculator():LayoutCalculator;
     }
 }

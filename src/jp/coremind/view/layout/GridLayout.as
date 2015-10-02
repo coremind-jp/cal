@@ -3,14 +3,14 @@ package jp.coremind.view.layout
     import flash.geom.Point;
     import flash.geom.Rectangle;
     
-    import jp.coremind.model.Diff;
-    import jp.coremind.model.IStorageListener;
-    import jp.coremind.model.StorageModelReader;
+    import jp.coremind.model.transaction.Diff;
+    import jp.coremind.storage.IStorageListener;
+    import jp.coremind.storage.StorageModelReader;
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.builder.GridListElementFactory;
     
-    public class GridLayout implements ILayout, IStorageListener
+    public class GridLayout implements IElementLayout, IStorageListener
     {
         private var
             _reader:StorageModelReader,

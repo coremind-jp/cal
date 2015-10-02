@@ -1,9 +1,10 @@
 package jp.coremind.view.implement.starling.component
 {
-    import jp.coremind.model.StatusConfigure;
-    import jp.coremind.model.StatusGroup;
-    import jp.coremind.model.StatusModelConfigure;
-    import jp.coremind.model.UpdateRule;
+    import jp.coremind.model.module.StatusConfigure;
+    import jp.coremind.model.module.StatusGroup;
+    import jp.coremind.model.module.StatusModel;
+    import jp.coremind.model.module.StatusModelConfigure;
+    import jp.coremind.model.transaction.UpdateRule;
     import jp.coremind.utility.data.Status;
     import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.implement.starling.TouchElement;
@@ -22,16 +23,16 @@ package jp.coremind.view.implement.starling.component
                     new StatusConfigure(StatusGroup.SELECT, UpdateRule.LESS_THAN_PRIORITY, 50, Status.OFF, true, [Status.OFF])
                 ));
         
-        public function TouchSwitch(tapRange:Number=5, controllerClass:Class = null, backgroundBuilder:IBackgroundBuilder = null)
+        public function TouchSwitch(tapRange:Number=5, backgroundBuilder:IBackgroundBuilder = null)
         {
-            super(tapRange, controllerClass, backgroundBuilder);
+            super(tapRange, backgroundBuilder);
         }
         
         override protected function _initializeStatus():void
         {
             super._initializeStatus();
             
-            controller.buttonSwitch.refresh(_reader.id, _elementId);
+            _elementModel.getModule(StatusModel).update(StatusGroup.SELECT, null);
         }
         
         override protected function _applyStatus(group:String, status:String):Boolean
@@ -50,7 +51,11 @@ package jp.coremind.view.implement.starling.component
         
         override protected function _onClick():void
         {
-            controller.buttonSwitch.toggleSwitch(_reader.id, _elementId);
+            var status:StatusModel = _elementModel.getModule(StatusModel) as StatusModel;
+            
+            status.getGroupStatus(StatusGroup.SELECT).equal(Status.ON) ?
+                status.update(StatusGroup.SELECT, Status.OFF):
+                status.update(StatusGroup.SELECT, Status.ON);
         }
         
         /**

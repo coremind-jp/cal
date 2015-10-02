@@ -49,9 +49,9 @@ package jp.coremind.view.layout
             return this;
         }
         
-        public function calc(parentBoxSize:Number, childBoxSize:Number):Number
+        public function calc(parentBoxSize:Number, childBoxSize:Number):int
         {
-            return parentBoxSize * _parentStandardAlign + childBoxSize * _childStandardAlign + _pixelOffset;
+            return (parentBoxSize * _parentStandardAlign + childBoxSize * _childStandardAlign + _pixelOffset);
         }
     }
 }

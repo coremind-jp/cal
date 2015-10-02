@@ -18,7 +18,7 @@ package jp.coremind.view.builder
             var sprite:Sprite = new Sprite();
             
             sprite.name = name;
-            Log.info("builded BitmapTextField", sprite.width, sprite.height);
+            Log.info("builded BitmapTextField");
             
             return sprite;
         }

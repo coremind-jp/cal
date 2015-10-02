@@ -5,24 +5,28 @@ package jp.coremind.resource
     public class ContentParser
     {
         public static const AUTO:String = "auto";
-        public static const JSON:String = "json";
-        public static const  CSV:String = "csv";
-        public static const  TXT:String = "txt";
+        public static const  MP3:String = "mp3";
         public static const  PNG:String = "png";
         public static const  JPG:String = "jpg";
         public static const  SWF:String = "swf";
+        public static const JSON:String = "json";
+        public static const  CSV:String = "csv";
+        public static const  TXT:String = "txt";
+        public static const  XML:String = "xml";
         
-        public static const FILE_EXTENTION_REGEXP:RegExp = new RegExp("\.([a-zA-Z]{3,4})$", "i");
+        public static const FILE_EXTENTION_REGEXP:RegExp = new RegExp("\.([a-zA-Z0-9]{3,4})$", "i");
         
         private static var _PARSER_LIST:Object = {
-            json: new JSONContent(),
-            csv : new CSVContent(),
+            mp3 : new mp3Content(),
+            png : new PngContent(),
+            jpg : new JpegContent(),
+            swf : new SwfContent(),
+            json: new JsonContent(),
+            csv : new CsvContent(),
             txt : new TextContent(),
-            png : new PNGContent(),
-            jpg : new JPEGContent(),
-            jpeg: new JPEGContent(),
-            swf : new SWFContent()
+            xml : new XmlContent()
         };
+        _PARSER_LIST["jpeg"] = _PARSER_LIST["jpg"];//alias
         
         public static function getParser(type:String, uri:String = null):IByteArrayContent
         {

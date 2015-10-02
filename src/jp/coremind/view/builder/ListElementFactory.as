@@ -2,10 +2,11 @@ package jp.coremind.view.builder
 {
     import flash.utils.Dictionary;
     
+    import jp.coremind.configure.IElementBluePrint;
     import jp.coremind.core.Application;
-    import jp.coremind.model.Diff;
-    import jp.coremind.model.IStorageListener;
-    import jp.coremind.model.StorageModelReader;
+    import jp.coremind.model.transaction.Diff;
+    import jp.coremind.storage.IStorageListener;
+    import jp.coremind.storage.StorageModelReader;
     import jp.coremind.utility.IRecycle;
     import jp.coremind.utility.InstancePool;
     import jp.coremind.view.abstract.IElement;
@@ -68,46 +69,46 @@ package jp.coremind.view.builder
          */
         public function request(actualParentWidth:int, actualParentHeight:int, modelData:*, index:int = -1, length:int = -1):IElement
         {
-            if (hasElement(modelData))
-                return _createdInstance[modelData];
-            
-            var l:Array = _reader.read();
-            if (length == -1) length = l.length;
-            
-            if (index == -1)
+            if (!(modelData in _createdInstance))
             {
-                var n:int = l.indexOf(modelData);
-                index = n == -1 ? length: n;
+                var l:Array = _reader.read();
+                if (length == -1) length = l.length;
+                
+                if (index == -1)
+                {
+                    var n:int = l.indexOf(modelData);
+                    index = n == -1 ? length: n;
+                }
+                
+                var builder:ElementBuilder = _getBuilder(modelData, index, length);
+                
+                var calculator:LayoutCalculator = builder.requestLayoutCalculator();
+                
+                var  element:IElement = _pool.request(builder.elementClass) as IElement;
+                if (!element) element = builder.buildForListElement();
+                
+                element.initialize(actualParentWidth, actualParentHeight, _reader.id + "." + index);
+//                element.initializeElementSize(
+//                    calculator.width.calc(actualParentWidth),
+//                    calculator.height.calc(actualParentHeight));
+                
+                _createdInstance[modelData] = element;
             }
             
-            var builderName:String = getBuilderName(modelData, index, length);
+            _createdInstance[modelData].name = index.toString();
             
-            var builder:ElementBuilder = builderName in _builderCache ?
-                _builderCache[builderName]:
-                _builderCache[builderName] = Application.elementBluePrint.createBuilder(builderName);
-            
-            var r:IRecycle = _pool.request(builder.elementClass);
-            
-            var e:IElement = _createdInstance[modelData] = r ?
-                r as IElement:
-                builder.buildForListElement();
-            
-            elementInitializer(e, builder, actualParentWidth, actualParentHeight, modelData, index, length);
-            
-            return e;
+            return _createdInstance[modelData];
         }
         
-        /**
-         * modelData, index, lengthパラメータを元に生成するIElementインターフェースを実装したクラスを返す.
-         */
-        public function elementInitializer(element:IElement, builder:ElementBuilder, actualParentWidth:int, actualParentHeight:int, modelData:*, index:int, length:int):void
+        protected function _getBuilder(modelData:*, index:int, length:int):ElementBuilder
         {
-            var calculator:LayoutCalculator = builder.requestLayoutCalculator();
+            var builderName:String = getBuilderName(modelData, index, length);
             
-            element.initialize(_reader.id + "." + index);
-            element.initializeElementSize(
-                calculator.width.calc(actualParentWidth),
-                calculator.height.calc(actualParentHeight));
+            var bluePrint:IElementBluePrint = Application.configure.elementBluePrint;
+            
+            return builderName in _builderCache ?
+                _builderCache[builderName]:
+                _builderCache[builderName] = bluePrint.createBuilder(builderName);
         }
         
         public function getBuilderName(modelData:*, index:int, length:int):String
@@ -120,7 +121,7 @@ package jp.coremind.view.builder
          */
         public function recycle(modelData:*):void
         {
-            if (hasElement(modelData))
+            if (modelData in _createdInstance)
             {
                 var e:IElement = _createdInstance[modelData];
                 delete _createdInstance[modelData];

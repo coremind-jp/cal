@@ -1,16 +1,20 @@
+config namespace CAL;
+
 package jp.coremind.core
 {
     import flash.display.Shape;
     import flash.display.Sprite;
     import flash.display.Stage;
     import flash.events.Event;
+    import flash.events.EventDispatcher;
+    import flash.events.IEventDispatcher;
     import flash.geom.Rectangle;
+    import flash.system.System;
     
-    import jp.coremind.control.Controller;
-    import jp.coremind.model.Storage;
-    import jp.coremind.model.StorageAccessor;
-    import jp.coremind.view.builder.IElementBluePrint;
-    import jp.coremind.view.builder.IPartsBluePrint;
+    import jp.coremind.asset.Asset;
+    import jp.coremind.configure.IApplicationConfigure;
+    import jp.coremind.event.ViewTransitionEvent;
+    import jp.coremind.storage.Storage;
     
     import starling.core.Starling;
 
@@ -22,47 +26,47 @@ package jp.coremind.core
         public static function get pointerX():Number { return _STAGE.mouseX / Starling.contentScaleFactor; }
         public static function get pointerY():Number { return _STAGE.mouseY / Starling.contentScaleFactor; }
         
-        private static var _ENABLED_LOG:Boolean = false;
-        private static function enabledLog(boolean:Boolean):void { _ENABLED_LOG = boolean; }
-        
         private static var _STAGE:Stage;
         public static function get stage():Stage { return _STAGE; }
         
-        private static const _DEBUG_SHAPE:Shape = new Shape();
-        public static function get debugShape():Shape { return _DEBUG_SHAPE; }
+        private static var _CONFIGURE:IApplicationConfigure;
+        public static function get configure():IApplicationConfigure { return _CONFIGURE; }
         
-        private static var _ELEMENT_BLUE_PRINT:IElementBluePrint;
-        public static function get elementBluePrint():IElementBluePrint { return _ELEMENT_BLUE_PRINT; }
+        internal static var _DISPATCHER:IEventDispatcher = new EventDispatcher();
+        public static function get globalEvent():IEventDispatcher { return _DISPATCHER; }
         
-        private static var _PARTS_BLUE_PRINT:IPartsBluePrint;
-        public static function get partsBlulePrint():IPartsBluePrint { return _PARTS_BLUE_PRINT; }
-        
-        public static function initialize(
-            deployTarget:Sprite,
-            elementBluePrint:IElementBluePrint,
-            partsBluePrint:IPartsBluePrint,
-            initialGpuView:Class = null,
-            initialCpuView:Class = null):void
+        public static function initialize(deployTarget:Sprite, configure:IApplicationConfigure, callback:Function = null):void
         {
+            _CONFIGURE = configure;
+            
             var _addedToStage:Function = function(e:Event = null):void
             {
-                _ELEMENT_BLUE_PRINT = elementBluePrint;
-                _PARTS_BLUE_PRINT   = partsBluePrint;
-                
                 _STAGE = deployTarget.stage;
                 _STAGE.frameRate = 60;
                 _STAGE.addChildAt(_DEBUG_SHAPE, 0);
                 
-                //model
+                Asset.initialize();
+                
                 StorageAccessor.initialize(new Storage());
                 
-                //controller (and view)
-                Controller.initialize(_STAGE, initialGpuView, initialCpuView);
+                ViewAccessor.initialize(_STAGE, callback);
             };
             
             deployTarget.stage ?
                 _addedToStage():
                 $.event.anyone(deployTarget, [Event.ADDED_TO_STAGE], [_addedToStage]);
+            
+            //gc test
+            globalEvent.addEventListener(ViewTransitionEvent.BEGIN_TRANSITION, function(e:ViewTransitionEvent):void {
+                System.pauseForGCIfCollectionImminent(1);
+            });
+            globalEvent.addEventListener(ViewTransitionEvent.END_TRANSITION, function(e:ViewTransitionEvent):void {
+                System.pauseForGCIfCollectionImminent(.25);
+                System.gc();
+            });
         }
+        
+        private static const _DEBUG_SHAPE:Shape = new Shape();
+        public static function get debugShape():Shape { return _DEBUG_SHAPE; }
     }
 }

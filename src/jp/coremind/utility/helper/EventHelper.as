@@ -41,7 +41,7 @@ package jp.coremind.utility.helper
                 });
             }
 		}
-		
+        
 		public function createSamelistenerArray(listener:Function, num:int = 0):Array
 		{
 			var _result:Array = [];

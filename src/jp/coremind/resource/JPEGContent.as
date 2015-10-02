@@ -1,8 +1,8 @@
 package jp.coremind.resource
 {
-    public class JPEGContent extends ImageContent
+    public class JpegContent extends ImageContent
     {
-        public function JPEGContent()
+        public function JpegContent()
         {
             super();
         }

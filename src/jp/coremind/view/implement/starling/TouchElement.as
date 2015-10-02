@@ -3,10 +3,11 @@ package jp.coremind.view.implement.starling
     import flash.geom.Point;
     import flash.geom.Rectangle;
     
-    import jp.coremind.model.StatusConfigure;
-    import jp.coremind.model.StatusGroup;
-    import jp.coremind.model.StatusModelConfigure;
-    import jp.coremind.model.UpdateRule;
+    import jp.coremind.model.module.StatusConfigure;
+    import jp.coremind.model.module.StatusGroup;
+    import jp.coremind.model.module.StatusModel;
+    import jp.coremind.model.module.StatusModelConfigure;
+    import jp.coremind.model.transaction.UpdateRule;
     import jp.coremind.utility.data.Status;
     import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.layout.LayoutCalculator;
@@ -33,10 +34,11 @@ package jp.coremind.view.implement.starling
             
         public function TouchElement(
             layoutCalculator:LayoutCalculator,
-            controllerClass:Class = null,
             backgroundBuilder:IBackgroundBuilder = null)
         {
-            super(layoutCalculator, controllerClass, backgroundBuilder);
+            super(layoutCalculator, backgroundBuilder);
+            
+            touchHandling = true;
             
             _triggerRect = new Rectangle();
             inflateClickRange(6, 6);
@@ -48,7 +50,7 @@ package jp.coremind.view.implement.starling
         {
             super._initializeStatus();
             
-            controller.button.refresh(_reader.id, _elementId);
+            _elementModel.getModule(StatusModel).update(StatusGroup.RELEASE, Status.ROLL_OUT);
         }
         
         /**
@@ -67,7 +69,7 @@ package jp.coremind.view.implement.starling
             _triggerRect.y = _touch.globalY - (_triggerRect.height >> 1);
             
             _hold = true;
-            controller.button.press(_reader.id, _elementId);
+            _elementModel.getModule(StatusModel).update(StatusGroup.PRESS, Status.DOWN);
         }
         
         override protected function moved():void
@@ -80,13 +82,14 @@ package jp.coremind.view.implement.starling
             
             _hold = bIntersects && bHitTest;
             _hold ?
-                controller.button.press(_reader.id, _elementId):
-                controller.button.release(_reader.id, _elementId);
+                _elementModel.getModule(StatusModel).update(StatusGroup.PRESS, Status.DOWN):
+                _elementModel.getModule(StatusModel).update(StatusGroup.PRESS, Status.UP);
         }
         
         override protected function ended():void
         {
-            if (_hold) controller.action(_reader.id, _elementId);
+            if (_hold)
+                _elementModel.getModule(StatusModel).update(StatusGroup.PRESS, Status.CLICK);
         }
         
         override protected function _applyStatus(group:String, status:String):Boolean
@@ -142,6 +145,7 @@ package jp.coremind.view.implement.starling
          */
         protected function _onClick():void
         {
+            controller.doClickHandler("clickHandler", _elementId);
             //Log.info("_onClick");
         }
     }

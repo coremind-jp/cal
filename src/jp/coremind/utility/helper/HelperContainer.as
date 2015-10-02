@@ -3,6 +3,8 @@ package jp.coremind.utility.helper
     import flash.utils.ByteArray;
     import flash.utils.getDefinitionByName;
     
+    import avmplus.getQualifiedClassName;
+    
     import jp.coremind.utility.Log;
 
     public class HelperContainer
@@ -81,12 +83,19 @@ package jp.coremind.utility.helper
             return _binary.readObject();
         }
         
-        public function getClassByName(className:String):Class
+        public function getClassByName(className:String, notifyError:Boolean = true):Class
         {
             var _class:Class;
             
-            try { _class = getDefinitionByName(className) as Class; }
-            catch (e:Error) { Log.error("undefined class.", className); }
+            try {
+                Log.info("request class", className);
+                _class = getDefinitionByName(className) as Class;
+            }
+            catch (e:ReferenceError)
+            {
+                if (notifyError) Log.warning(e, className);
+                else Log.info(e);
+            }
             
             return _class;
         }

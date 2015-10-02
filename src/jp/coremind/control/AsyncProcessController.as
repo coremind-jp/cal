@@ -7,7 +7,7 @@ package jp.coremind.control
         private var
             _runningProcess:Vector.<String>;
         
-        public function AsyncProcessController()
+        public function AsyncProcessController(...params)
         {
             super();
             _runningProcess = new <String>[];

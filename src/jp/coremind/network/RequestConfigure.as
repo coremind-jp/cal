@@ -22,7 +22,7 @@ package jp.coremind.network
             _contentParser:String,
             _useClientCache:Boolean;
         
-        public function RequestConfigure(validationDefine:Object)
+        public function RequestConfigure(validationDefine:Object = null)
         {
             _validater      = new HashValidation(validationDefine || {});
             _headers        = null;

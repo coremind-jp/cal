@@ -2,7 +2,7 @@ package flexUnitTests
 {
     import flexunit.framework.Assert;
     
-    import jp.coremind.model.StatusModel;
+    import jp.coremind.model.module.StatusModel;
     import jp.coremind.utility.data.Status;
     
     import org.flexunit.assertThat;

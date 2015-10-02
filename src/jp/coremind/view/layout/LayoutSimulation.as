@@ -33,6 +33,12 @@ package jp.coremind.view.layout
         
         public function destroy():void
         {
+            reset();
+            _remove = _move = _add = _contains = _children = null;
+        }
+        
+        public function reset():void
+        {
             var key:*;
             
             for (key in _remove)   delete _remove[key];
@@ -97,6 +103,11 @@ package jp.coremind.view.layout
         public function getChild(key:*):Rectangle
         {
             return _children[key];
+        }
+        
+        public function each(f:Function):void
+        {
+            for (var key:* in _children) f(key, _children[key]);
         }
         
         /**

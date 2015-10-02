@@ -142,6 +142,12 @@ package jp.coremind.utility.helper
             return _result;
         }
         
+        public function free(hash_or_dic:*):*
+        {
+            for (var p:* in hash_or_dic) delete hash_or_dic[p];
+            return null;
+        }
+        
         public function createUrlParam(o:Object):String
         {
             if (!o) return "";

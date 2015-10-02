@@ -1,9 +1,10 @@
 package jp.coremind.view.implement.starling.component
 {
-    import jp.coremind.model.StatusConfigure;
-    import jp.coremind.model.StatusGroup;
-    import jp.coremind.model.StatusModelConfigure;
-    import jp.coremind.model.UpdateRule;
+    import jp.coremind.model.module.StatusConfigure;
+    import jp.coremind.model.module.StatusGroup;
+    import jp.coremind.model.module.StatusModel;
+    import jp.coremind.model.module.StatusModelConfigure;
+    import jp.coremind.model.transaction.UpdateRule;
     import jp.coremind.utility.data.Status;
     import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.implement.starling.MouseElement;
@@ -25,17 +26,16 @@ package jp.coremind.view.implement.starling.component
         
         public function MouseSwitch(
             layoutCalculator:LayoutCalculator,
-            controllerClass:Class = null,
             backgroundBuilder:IBackgroundBuilder = null)
         {
-            super(layoutCalculator, controllerClass, backgroundBuilder);
+            super(layoutCalculator, backgroundBuilder);
         }
         
         override protected function _initializeStatus():void
         {
             super._initializeStatus();
             
-            controller.buttonSwitch.refresh(_reader.id, _elementId);
+            _elementModel.getModule(StatusModel).update(StatusGroup.SELECT, null);
         }
         
         override protected function _applyStatus(group:String, status:String):Boolean
@@ -54,7 +54,12 @@ package jp.coremind.view.implement.starling.component
         
         override protected function _onClick():void
         {
-            controller.buttonSwitch.toggleSwitch(_reader.id, _elementId);
+            var status:StatusModel = _elementModel.getModule(StatusModel) as StatusModel;
+            
+            status.getGroupStatus(StatusGroup.SELECT).equal(Status.ON) ?
+                status.update(StatusGroup.SELECT, Status.OFF):
+                status.update(StatusGroup.SELECT, Status.ON);
+            
             super._onClick();
         }
         

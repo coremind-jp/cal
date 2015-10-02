@@ -7,16 +7,16 @@ package jp.coremind.view.implement.starling.component
     import jp.coremind.event.ElementEvent;
     import jp.coremind.utility.Log;
     import jp.coremind.utility.data.NumberTracker;
-    import jp.coremind.view.builder.IBackgroundBuilder;
+    import jp.coremind.view.abstract.IContainer;
     import jp.coremind.view.abstract.IElement;
-    import jp.coremind.view.abstract.IElementContainer;
     import jp.coremind.view.abstract.component.Slider;
+    import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.implement.starling.Container;
-    import jp.coremind.view.layout.Align;
-    import jp.coremind.view.layout.LayoutCalculator;
     import jp.coremind.view.interaction.Flick;
+    import jp.coremind.view.layout.LayoutCalculator;
     
     import starling.events.Event;
+    import starling.events.TouchEvent;
     
     public class ScrollContainer extends Container
     {
@@ -25,7 +25,7 @@ package jp.coremind.view.implement.starling.component
         
         private var
             _before:Before,
-            _container:IElementContainer,
+            _container:IContainer,
             _sliderX:Slider,
             _sliderY:Slider,
             _drugSize:Point,
@@ -37,45 +37,33 @@ package jp.coremind.view.implement.starling.component
          */
         public function ScrollContainer(
             layoutCalculator:LayoutCalculator,
-            controllerClass:Class = null,
             backgroundBuilder:IBackgroundBuilder = null)
         {
-            super(layoutCalculator, controllerClass, backgroundBuilder);
-            
-            disablePointerDeviceControl();
+            super(layoutCalculator, backgroundBuilder);
         }
         
-        public function wrap(element:IElement):void
+        public function wrap(element:IContainer):void
         {
-            _container = element as IElementContainer;
+            _container = element;
             
-            if (_container)
-            {
-                _container.addListener(ElementEvent.UPDATE_SIZE, _onUpdateContentSize);
-                
-                addElement(_container);
-                
-                name       = _container.name + "ScrollWrapper";
-                /** TODO 設定で変えられるように(clipRectはdrawコールをあげる) */
-                //clipRect   = new Rectangle(0, 0, _maxWidth, _maxHeight);
-                _flick     = new Flick();
-                _flickArea = new Rectangle();
-                _drugSize  = new Point();
-                _before    = new Before();
-                initialize(null);
-            }
+            touchHandling = true;
+            name = _container.name + "ScrollWrapper";
+            _flick     = new Flick();
+            _flickArea = new Rectangle();
+            _drugSize  = new Point();
+            _before    = new Before();
         }
         
         override public function destroy(withReference:Boolean = false):void
         {
-            Log.info("destroy scroll", withReference, _container);
             if (_container)
             {
+                Log.info("destroy ScrollContainer", withReference);
+                
                 _container.removeListener(ElementEvent.UPDATE_SIZE, _onUpdateContentSize);
                 
                 if (withReference)
                 {
-                    _container.destroy(withReference);
                     if (_sliderX) _sliderX.destroy(withReference);
                     if (_sliderY) _sliderY.destroy(withReference);
                 }
@@ -89,10 +77,17 @@ package jp.coremind.view.implement.starling.component
             super.destroy(withReference);
         }
         
-        override public function initializeElementSize(actualParentWidth:Number, actualParentHeight:Number):void
+        override protected function _onLoadStorageReader(id:String):void
         {
-            super.initializeElementSize(actualParentWidth, actualParentHeight)
-            _container.initializeElementSize(actualParentWidth, actualParentHeight);
+            super._onLoadStorageReader(id);
+            
+            /** TODO 設定で変えられるように(clipRectはdrawコールをあげる) */
+            //clipRect   = new Rectangle(0, 0, _maxWidth, _maxHeight);
+            
+            _container.initialize(_maxWidth, _maxHeight, storageId);
+            _container.addListener(ElementEvent.UPDATE_SIZE, _onUpdateContentSize);
+            _container.x = _container.y = 0;
+            addDisplayAt(_container, _background ? 1: 0);
         }
         
         public function get wrappedElement():IElement
@@ -114,31 +109,35 @@ package jp.coremind.view.implement.starling.component
         
         private function _onUpdateContentSize(e:Event):void
         {
+            var resultX:Number = _container.x;
+            var resultY:Number = _container.y;
             var delta:Number = 0;
             
             var w:Number = _container.x + _container.elementWidth;
             if (w < _maxWidth)
             {
                 delta = _maxWidth - w;
-                _drugSize.x  += delta;
-                _container.x += delta;
+                _drugSize.x += delta;
+                resultX     += delta;
                 
-                if (0 < _container.x) _container.x = 0;
-                if (0 < _drugSize.x)  _drugSize.x  = 0;
+                if (0 < resultX)     resultX = 0;
+                if (0 < _drugSize.x) _drugSize.x  = 0;
             }
             
             var h:Number  = _container.y + _container.elementHeight;
             if (h <= _maxHeight)
             {
                 delta = _maxHeight - h;
-                _drugSize.y  += delta;
-                _container.y += delta;
+                _drugSize.y += delta;
+                resultY     += delta;
                 
-                if (0 < _container.y) _container.y = 0;
-                if (0 < _drugSize.y)  _drugSize.y  = 0;
+                if (0 < resultY)     resultY = 0;
+                if (0 < _drugSize.y) _drugSize.y  = 0;
             }
             
-            _container.refreshChildrenLayout();
+            if (_container.x != resultX || _container.y != resultY)
+                _container.updatePosition(resultX, resultY);
+            
             _updateSlider();
         }
         
@@ -162,6 +161,18 @@ package jp.coremind.view.implement.starling.component
         {
             if (_sliderX) _sliderX.update(x.rate);
             if (_sliderY) _sliderY.update(y.rate);
+        }
+        
+        override public function enablePointerDeviceControl():void
+        {
+            touchable = true;
+            addEventListener(TouchEvent.TOUCH, _onTouch);
+        }
+        
+        override public function disablePointerDeviceControl():void
+        {
+            touchable = false;
+            removeEventListener(TouchEvent.TOUCH, _onTouch);
         }
         
         override protected function began():void
@@ -200,23 +211,26 @@ package jp.coremind.view.implement.starling.component
         
         private function _onFlickUpdate(x:NumberTracker, y:NumberTracker):void
         {
+            var resultX:Number = _container.x;
+            var resultY:Number = _container.y;
+            
             if (_maxWidth  < _container.elementWidth)
             {
-                _drugSize.x  = _before.drugSize.x          + x.totalDelta;
-                _container.x = _before.containerPosition.x + x.totalDelta;
                 _flickArea.x = _before.flickAreaPosition.x - x.totalDelta;
+                resultX      = _before.containerPosition.x + x.totalDelta;
+                _drugSize.x  = _before.drugSize.x          + x.totalDelta;
                 if (_sliderX) _sliderX.update(x.rate);
             }
             
             if (_maxHeight < _container.elementHeight)
             {
                 _drugSize.y  = _before.drugSize.y          + y.totalDelta;
-                _container.y = _before.containerPosition.y + y.totalDelta;
+                resultY      = _before.containerPosition.y + y.totalDelta;
                 _flickArea.y = _before.flickAreaPosition.y - y.totalDelta;
                 if (_sliderY) _sliderY.update(y.rate);
             }
             
-            _container.refreshChildrenLayout();
+            _container.updatePosition(resultX, resultY);
         }
     }
 }
