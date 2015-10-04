@@ -2,6 +2,7 @@ package jp.coremind.model.module
 {
     import flash.utils.getQualifiedClassName;
     
+    import jp.coremind.core.Application;
     import jp.coremind.model.IElementModel;
     import jp.coremind.model.transaction.UpdateRule;
     import jp.coremind.utility.Dispatcher;
@@ -14,28 +15,17 @@ package jp.coremind.model.module
         public static const TAG:String = "[StatusModel]";
         //Log.addCustomTag(TAG);
         
-        public static function create(klass:Class):StatusModel
-        {
-            var configure:Array = StatusModelConfigure.request(klass);
-            if (configure)
-            {
-                return new StatusModel(configure);
-            }
-            else
-            {
-                Log.error("undefined StatusModelConfigure from", klass);
-                return new StatusModel([]);
-            }
-        }
-        
         private var
             _isUpdating:Boolean,
             _isClonedList:Boolean,
             _sortedConfigList:HashList,
             _statusList:Object;
         
-        public function StatusModel(configList:Array = null)
+        public function StatusModel(configureId:String)
         {
+            var configList:Array = Application.configure.statusModel.getConfigure(configureId);
+            Log.custom(TAG, "create", configureId);
+            
             _statusList = {};
             
             if (configList)

@@ -5,9 +5,9 @@ package jp.coremind.control
     import jp.coremind.core.Application;
     import jp.coremind.core.ViewAccessor;
     import jp.coremind.model.ElementModel;
+    import jp.coremind.model.ViewModel;
     import jp.coremind.storage.StorageModelReader;
     import jp.coremind.utility.Log;
-    import jp.coremind.model.ViewModel;
 
     public class Controller extends ViewAccessor
     {
@@ -67,9 +67,18 @@ package jp.coremind.control
          * storageIdパラメータに紐づくStorageModelReaderオブジェクトを要求する.
          * @param   storageId   ストレージID. initializeStorageModelで初期化が済んでいるStorageModelReaderのStorageIdまたはその子となるStorageIdでなければならない。
          */
-        public function requestModelElementModel(storageId:String):ElementModel
+        public function requestModelElementModel(storageId:String, elementId:String):ElementModel
         {
-            return _storage.requestElementModel(storageId);
+            return _storage.requestElementModel(storageId, elementId);
+        }
+        
+        /**
+         * storageIdパラメータに紐づくStorageModelReaderオブジェクトを要求する.
+         * @param   storageId   ストレージID. initializeStorageModelで初期化が済んでいるStorageModelReaderのStorageIdまたはその子となるStorageIdでなければならない。
+         */
+        public function deleteElementModel(elementId:String):void
+        {
+            _storage.deleteElementModel(elementId);
         }
         
         /**

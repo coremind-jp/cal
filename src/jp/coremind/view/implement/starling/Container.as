@@ -3,7 +3,7 @@ package jp.coremind.view.implement.starling
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IContainer;
     import jp.coremind.view.builder.IBackgroundBuilder;
-    import jp.coremind.view.layout.LayoutCalculator;
+    import jp.coremind.view.layout.Layout;
     
     public class Container extends InteractiveElement implements IContainer
     {
@@ -17,7 +17,7 @@ package jp.coremind.view.implement.starling
         /**
          */
         public function Container(
-            layoutCalculator:LayoutCalculator,
+            layoutCalculator:Layout,
             backgroundBuilder:IBackgroundBuilder = null)
         {
             super(layoutCalculator, backgroundBuilder);
@@ -34,11 +34,11 @@ package jp.coremind.view.implement.starling
         
         override protected function _initializeElementSize(actualParentWidth:Number, actualParentHeight:Number):void
         {
-            _maxWidth  = _elementWidth  = _layoutCalculator.width.calc(actualParentWidth);
-            _maxHeight = _elementHeight = _layoutCalculator.height.calc(actualParentHeight);
+            _maxWidth  = _elementWidth  = _layout.width.calc(actualParentWidth);
+            _maxHeight = _elementHeight = _layout.height.calc(actualParentHeight);
             
-            x = _layoutCalculator.horizontalAlign.calc(actualParentWidth, _maxWidth);
-            y = _layoutCalculator.verticalAlign.calc(actualParentHeight, _maxHeight);
+            x = _layout.horizontalAlign.calc(actualParentWidth, _maxWidth);
+            y = _layout.verticalAlign.calc(actualParentHeight, _maxHeight);
             
             Log.custom(TAG,
                 "initializeElementSize actualSize:", actualParentWidth, actualParentHeight,

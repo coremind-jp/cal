@@ -4,10 +4,9 @@ package jp.coremind.view.builder
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IBox;
     import jp.coremind.view.abstract.component.Grid9;
-    import jp.coremind.view.layout.Align;
-    import jp.coremind.view.layout.Size;
+    import jp.coremind.view.layout.Layout;
     
-    public class RoundRectBuilder extends BuildinDisplayObjectBuilder implements IDisplayObjectBuilder
+    public class RoundRectBuilder extends DisplayObjectBuilder implements IDisplayObjectBuilder
     {
         private var
             _assetId:String,
@@ -19,19 +18,16 @@ package jp.coremind.view.builder
             _topRight:Boolean;
         
         public function RoundRectBuilder(
-            width:Size,
-            height:Size,
-            horizontalAlign:Align,
-            verticalAlign:Align,
             assetId:String,
             color:uint,
             radius:int = 5,
+            layout:Layout = null,
             topLeft:Boolean = true,
             bottomLeft:Boolean = true,
             bottomRight:Boolean = true,
             topRight:Boolean = true)
         {
-            super(width, height, horizontalAlign, verticalAlign);
+            super(layout);
             
             _assetId     = assetId;
             _color       = color;
@@ -50,8 +46,8 @@ package jp.coremind.view.builder
             asset.name = name;
             
             var grid9:Grid9 = new Grid9().setAsset(asset);
-            grid9.width  = _width.calc(actualParentWidth);
-            grid9.height = _height.calc(actualParentHeight);
+            grid9.width  = _layout.width.calc(actualParentWidth);
+            grid9.height = _layout.height.calc(actualParentHeight);
             
             Log.info("builded RoundRect", asset.width, asset.height);
             

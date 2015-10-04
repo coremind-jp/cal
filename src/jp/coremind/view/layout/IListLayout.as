@@ -8,7 +8,7 @@ package jp.coremind.view.layout
     /**
      * 抽象レイアウトインターフェース.
      */
-    public interface IElementLayout
+    public interface IListLayout
     {
         /** 破棄する. */
         function destroy(withReference:Boolean = false):void;

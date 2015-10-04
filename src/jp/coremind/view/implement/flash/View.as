@@ -56,8 +56,8 @@ package jp.coremind.view.implement.flash
         
         protected function _buildBluePrint(list:Array):void
         {
-            var w:Number = Application.VIEW_PORT.width;
-            var h:Number = Application.VIEW_PORT.height;
+            var w:int = Application.configure.appViewPort.width;
+            var h:int = Application.configure.appViewPort.height;
             
             for (var i:int = 0; i < list.length; i++) 
             {

@@ -14,6 +14,8 @@ package jp.coremind.view.layout
         /** サイズ：0 */
         public static const ZERO:Size           = new Size(0, false);
         
+        public static const EQUAL_TEXTURE:Size  = new Size(NaN, false);
+        
         private var
             _size:Number,
             _dependParent:Boolean;
@@ -24,9 +26,24 @@ package jp.coremind.view.layout
             _dependParent = depentdParent;
         }
         
+        public function clone():Size
+        {
+            return new Size(_size, _dependParent);
+        }
+        
         public function calc(parentSize:Number):Number
         {
             return _dependParent ? parentSize * _size: _size;
+        }
+        
+        /**
+         * テクスチャーアトラスを利用している場合、サイズはXML内に予め含まれているが
+         * それをわざわざ定義には含めるのが手間なので生成時に後から動的に入れるためのメソッド.
+         */
+        public function setAtlasTextureSize(size:Number):void
+        {
+            _size = size;
+            _dependParent = false;
         }
     }
 }

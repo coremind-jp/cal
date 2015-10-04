@@ -10,20 +10,33 @@ package jp.coremind.view.layout
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IBox;
     import jp.coremind.view.abstract.ICalSprite;
+    import jp.coremind.view.abstract.IContainer;
     import jp.coremind.view.abstract.IDisplayObject;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.abstract.component.Grid9;
     import jp.coremind.view.builder.IDisplayObjectBuilder;
-    import jp.coremind.view.implement.starling.Container;
 
     public class PartsLayout
     {
+        private static const _PLAIN_ELEMENT_CLASS:Array = [
+            "jp.coremind.view.implement.starling::Container",
+            "jp.coremind.view.implement.starling::Element",
+            "jp.coremind.view.implement.starling::InteractiveElement",
+            "jp.coremind.view.implement.starling::MouseElement",
+            "jp.coremind.view.implement.starling::StatefulElement",
+            "jp.coremind.view.implement.starling::TouchElement",
+            "jp.coremind.view.implement.starling.component::ListContainer",
+            "jp.coremind.view.implement.starling.component::MouseSwitch",
+            "jp.coremind.view.implement.starling.component::ScrollContainer",
+            "jp.coremind.view.implement.starling.component::TouchSwitch"
+        ];
+        
         public static const TAG:String = "[PartsLayout]";
         Log.addCustomTag(TAG);
         
         private var
             _element:IElement,
-            _calculatorList:Dictionary;
+            _layoutList:Dictionary;
         
         public function PartsLayout(element:IElement)
         {
@@ -33,13 +46,10 @@ package jp.coremind.view.layout
         public function destroy():void
         {
             //Log.custom(TAG, "[destroy]", _element.storageId);
-            for (var child:IBox in _calculatorList)
+            for (var child:IBox in _layoutList)
             {
                 if (child is ICalSprite) (child as ICalSprite).destroy(true);
-                
-                (_calculatorList[child] as LayoutCalculator).destroy();
-                
-                delete _calculatorList[child];
+                delete _layoutList[child];
             }
             
             _element = null;
@@ -47,24 +57,20 @@ package jp.coremind.view.layout
         
         public function buildParts():void
         {
-            Log.custom(TAG, _element.storageId, "buildParts", _element);
+            var actual:String  = getQualifiedClassName(_element);
+            var bluePrintKey:* = _PLAIN_ELEMENT_CLASS.indexOf(actual) == -1 ? $.getClassByInstance(_element): _element.name;
             
-            var element:String   = "jp.coremind.view.implement.starling.Element";
-            var container:String = "jp.coremind.view.implement.starling.Container";
-            var actual:String    = getQualifiedClassName(_element);
-            var bluePrintKey:* = actual === element || actual === container ?
-                _element.name:
-                $.getClassByInstance(_element);
+            Log.custom(TAG, "buildParts", _element.name, bluePrintKey);
             
             _buildBuildinParts(bluePrintKey);
             
-            if (_element is Container)
+            if (_element is IContainer)
                 _buildElementParts(bluePrintKey);
         }
         
         private function _buildBuildinParts(bluePrintKey:*):void
         {
-            Log.custom(TAG, "[buildin]");
+            Log.custom(TAG, " >[buildin]");
             
             var builder:IDisplayObjectBuilder;
             var child:IBox;
@@ -79,13 +85,15 @@ package jp.coremind.view.layout
                 child   = builder.build(partsList[i], _element.elementWidth, _element.elementHeight);
                 _element.addDisplay(child is Grid9 ? (child as Grid9).asset: child as IDisplayObject);
                 
-                _bindCalculator(child, builder.requestLayoutCalculator());
+                _bindLayout(child, builder.layout);
             }
+            
+            Log.custom(TAG, " <[buildin]");
         }
         
         private function _buildElementParts(bluePrintKey:*):void
         {
-            Log.custom(TAG, "[Element]");
+            Log.custom(TAG, " >[Element]");
             
             var builder:IDisplayObjectBuilder;
             var child:IBox;
@@ -100,34 +108,37 @@ package jp.coremind.view.layout
                 child   = builder.build(partsList[i], _element.elementWidth, _element.elementHeight);
                 _element.addDisplay(child as IDisplayObject);
                 
-                _bindCalculator(child, builder.requestLayoutCalculator());
+                _bindLayout(child, builder.layout);
             }
+            
+            Log.custom(TAG, " <[Element]");
         }
         
         public function isBuildedParts():Boolean
         {
-            return Boolean(_calculatorList);
+            return Boolean(_layoutList);
         }
         
-        private function _bindCalculator(child:IBox, calculator:LayoutCalculator):void
+        private function _bindLayout(child:IBox, layout:Layout):void
         {
-            if (!_calculatorList) _calculatorList = new Dictionary(false);
-            _calculatorList[child] = calculator;
+            if (!_layoutList) _layoutList = new Dictionary(false);
+            _layoutList[child] = layout;
         }
         
         public function reset():void
         {
-            Log.custom(TAG, "[reset]", _element.storageId);
-            if (_calculatorList)
-                for (var child:* in _calculatorList)
+            Log.custom(TAG, "[reset]", _element.name);
+            if (_layoutList)
+                for (var child:* in _layoutList)
                     if (child is IRecycle) child.reset();
         }
         
         public function refresh():void
         {
-            if (_calculatorList)
-                for (var child:IBox in _calculatorList)
-                    (_calculatorList[child] as LayoutCalculator).applyDisplayObject(
+            Log.custom(TAG, "[refresh]", _element.name);
+            if (_layoutList)
+                for (var child:IBox in _layoutList)
+                    (_layoutList[child] as Layout).applyDisplayObject(
                         child,
                         _element.elementWidth,
                         _element.elementHeight);

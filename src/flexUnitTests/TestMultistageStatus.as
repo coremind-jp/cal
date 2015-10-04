@@ -2,6 +2,7 @@ package flexUnitTests
 {
     import flexunit.framework.Assert;
     
+    import jp.coremind.core.StatusModelType;
     import jp.coremind.model.module.StatusModel;
     import jp.coremind.utility.data.Status;
     
@@ -15,7 +16,7 @@ package flexUnitTests
         [Before]
         public function setUp():void
         {
-            _stats = new StatusModel();
+            _stats = new StatusModel(StatusModelType.STATEFUL_ELEMENT);
         }
         
         [After]

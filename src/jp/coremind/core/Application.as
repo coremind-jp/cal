@@ -2,13 +2,11 @@ config namespace CAL;
 
 package jp.coremind.core
 {
-    import flash.display.Shape;
-    import flash.display.Sprite;
+    import flash.display.DisplayObjectContainer;
     import flash.display.Stage;
     import flash.events.Event;
     import flash.events.EventDispatcher;
     import flash.events.IEventDispatcher;
-    import flash.geom.Rectangle;
     import flash.system.System;
     
     import jp.coremind.asset.Asset;
@@ -20,14 +18,10 @@ package jp.coremind.core
 
     public class Application
     {
-        public static const VIEW_PORT:Rectangle = new Rectangle(0, 0, 320, 568);
-        public static var SCALE_FACTOR:Number = 1;
-        
-        public static function get pointerX():Number { return _STAGE.mouseX / Starling.contentScaleFactor; }
-        public static function get pointerY():Number { return _STAGE.mouseY / Starling.contentScaleFactor; }
-        
         private static var _STAGE:Stage;
         public static function get stage():Stage { return _STAGE; }
+        public static function get pointerX():Number { return _STAGE.mouseX / Starling.contentScaleFactor; }
+        public static function get pointerY():Number { return _STAGE.mouseY / Starling.contentScaleFactor; }
         
         private static var _CONFIGURE:IApplicationConfigure;
         public static function get configure():IApplicationConfigure { return _CONFIGURE; }
@@ -35,15 +29,14 @@ package jp.coremind.core
         internal static var _DISPATCHER:IEventDispatcher = new EventDispatcher();
         public static function get globalEvent():IEventDispatcher { return _DISPATCHER; }
         
-        public static function initialize(deployTarget:Sprite, configure:IApplicationConfigure, callback:Function = null):void
+        public static function initialize(deployTarget:DisplayObjectContainer, configure:IApplicationConfigure, callback:Function = null):void
         {
             _CONFIGURE = configure;
             
             var _addedToStage:Function = function(e:Event = null):void
             {
                 _STAGE = deployTarget.stage;
-                _STAGE.frameRate = 60;
-                _STAGE.addChildAt(_DEBUG_SHAPE, 0);
+                _STAGE.frameRate = configure.framerate;
                 
                 Asset.initialize();
                 
@@ -65,8 +58,5 @@ package jp.coremind.core
                 System.gc();
             });
         }
-        
-        private static const _DEBUG_SHAPE:Shape = new Shape();
-        public static function get debugShape():Shape { return _DEBUG_SHAPE; }
     }
 }

@@ -1,10 +1,8 @@
 package jp.coremind.view.implement.starling.component
 {
-    import jp.coremind.model.module.StatusConfigure;
+    import jp.coremind.core.StatusModelType;
     import jp.coremind.model.module.StatusGroup;
     import jp.coremind.model.module.StatusModel;
-    import jp.coremind.model.module.StatusModelConfigure;
-    import jp.coremind.model.transaction.UpdateRule;
     import jp.coremind.utility.data.Status;
     import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.implement.starling.TouchElement;
@@ -14,18 +12,14 @@ package jp.coremind.view.implement.starling.component
      */
     public class TouchSwitch extends TouchElement
     {
-        override protected function get _statusModelConfigureKey():Class { return TouchSwitch }
-        
-        StatusModelConfigure.registry(
-            TouchSwitch,
-            StatusModelConfigure.marge(
-                TouchElement,
-                    new StatusConfigure(StatusGroup.SELECT, UpdateRule.LESS_THAN_PRIORITY, 50, Status.OFF, true, [Status.OFF])
-                ));
-        
         public function TouchSwitch(tapRange:Number=5, backgroundBuilder:IBackgroundBuilder = null)
         {
             super(tapRange, backgroundBuilder);
+        }
+        
+        override protected function get statusModelType():String
+        {
+            return StatusModelType.TOUCH_SWITCH;
         }
         
         override protected function _initializeStatus():void

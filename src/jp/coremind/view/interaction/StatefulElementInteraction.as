@@ -1,24 +1,44 @@
 package jp.coremind.view.interaction
 {
+    import jp.coremind.configure.IInteractionConfigure;
+    import jp.coremind.core.Application;
+    import jp.coremind.view.abstract.IElement;
+
     public class StatefulElementInteraction
     {
-        protected var
-            _name:String;
+        private static const _INTERACTION_CACHE:Object = {};
         
-        public function StatefulElementInteraction(applyTargetName:String)
+        private var _interactionList:Object;
+        
+        public function StatefulElementInteraction()
         {
-            _name = applyTargetName;
+            _interactionList = {};
         }
         
-        public function get applyTargetName():String
+        public function addInateraction(group:String, status:String, interactionName:String):StatefulElementInteraction
         {
-            return null;
+            _getInteractionNameList(group, status).push(interactionName);
+            return this;
         }
         
-        public function getRuntimeValue(parent:*, params:Array):*
+        private function _getInteractionNameList(group:String, status:String):Vector.<String>
         {
-            params = params.slice();
-            return parent[params.shift()].apply(null, params);
+            if (!(group in _interactionList))
+                _interactionList[group] = {};
+            
+            if (!(status in _interactionList[group]))
+                _interactionList[group][status] = new <String>[];
+            
+            return _interactionList[group][status];
+        }
+        
+        public function apply(parent:IElement, group:String, status:String):void
+        {
+            var interactionList:Vector.<String> = _getInteractionNameList(group, status);
+            var configure:IInteractionConfigure = Application.configure.interaction;
+            
+            for (var i:int, len:int = interactionList.length; i < len; i++)
+                configure.getInteraction(interactionList[i]).apply(parent);
         }
     }
 }

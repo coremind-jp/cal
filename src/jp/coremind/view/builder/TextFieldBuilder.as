@@ -3,10 +3,9 @@ package jp.coremind.view.builder
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IBox;
     import jp.coremind.view.implement.starling.buildin.TextField;
-    import jp.coremind.view.layout.Align;
-    import jp.coremind.view.layout.Size;
+    import jp.coremind.view.layout.Layout;
     
-    public class TextFieldBuilder extends BuildinDisplayObjectBuilder implements IDisplayObjectBuilder
+    public class TextFieldBuilder extends DisplayObjectBuilder implements IDisplayObjectBuilder
     {
         private var
             _fontName:String,
@@ -14,10 +13,14 @@ package jp.coremind.view.builder
             _color:uint,
             _bold:Boolean;
         
-        public function TextFieldBuilder(width:Size, height:Size, horizontalAlign:Align, verticalAlign:Align,
-            fontName:String = "Verdana", fontSize:Number = 12, color:uint = 0, bold:Boolean = false)
+        public function TextFieldBuilder(
+            layout:Layout = null,
+            fontName:String = "Verdana",
+            fontSize:Number = 12,
+            color:uint = 0,
+            bold:Boolean = false)
         {
-            super(width, height, horizontalAlign, verticalAlign);
+            super(layout);
             
             _fontName = fontName;
             _fontSize = fontSize;
@@ -28,16 +31,11 @@ package jp.coremind.view.builder
         public function build(name:String, actualParentWidth:int, actualParentHeight:int):IBox
         {
             var tf:TextField = new TextField(
-                _width.calc(actualParentWidth),
-                _height.calc(actualParentHeight),
-                "",
-                _fontName,
-                _fontSize,
-                _color,
-                _bold);
+                _layout.width.calc(actualParentWidth),
+                _layout.width.calc(actualParentHeight),
+                "", _fontName, _fontSize, _color, _bold);
             
             tf.name = name;
-            //tf.touchable = false;
             Log.info("builded TextField", tf.width, tf.height);
             
             return tf;

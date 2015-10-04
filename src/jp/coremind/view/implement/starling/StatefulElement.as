@@ -1,25 +1,37 @@
 package jp.coremind.view.implement.starling
 {
+    import jp.coremind.core.Application;
+    import jp.coremind.core.StatusModelType;
     import jp.coremind.model.module.StatusModel;
-    import jp.coremind.model.module.StatusModelConfigure;
     import jp.coremind.view.builder.IBackgroundBuilder;
-    import jp.coremind.view.interaction.StatefulElementInteractionListener;
-    import jp.coremind.view.layout.LayoutCalculator;
+    import jp.coremind.view.interaction.StatefulElementInteraction;
+    import jp.coremind.view.layout.Layout;
     
     /**
      * Elementクラスに状態機能を加えたクラス.
      */
     public class StatefulElement extends Element
     {
-        protected function get _statusModelConfigureKey():Class { return StatefulElement }
+        private var _interactionId:String;
         
-        StatusModelConfigure.registry(StatefulElement, []);
-        
-        public function StatefulElement(
-            layoutCalculator:LayoutCalculator,
-            backgroundBuilder:IBackgroundBuilder = null)
+        public function StatefulElement(layoutCalculator:Layout, backgroundBuilder:IBackgroundBuilder = null)
         {
             super(layoutCalculator, backgroundBuilder);
+        }
+        
+        protected function get statusModelType():String
+        {
+            return StatusModelType.STATEFUL_ELEMENT;
+        }
+        
+        public function get interactionId():String
+        {
+            return _interactionId;
+        }
+        
+        public function set interactionId(id:String):void
+        {
+            _interactionId = id;
         }
         
         override protected function _initializeElementModel():void
@@ -27,10 +39,10 @@ package jp.coremind.view.implement.starling
             super._initializeElementModel();
             
             if (_elementModel.isUndefined(StatusModel))
-                _elementModel.addModule(StatusModel.create(_statusModelConfigureKey));
+                _elementModel.addModule(new StatusModel(statusModelType))
             
             _elementModel.getModule(StatusModel).addListener(_applyStatus);
-            _elementModel.getModule(StatusModel).addListener(_applyResouce);
+            _elementModel.getModule(StatusModel).addListener(_applyInteraction);
             
             _initializeStatus();
         }
@@ -48,11 +60,12 @@ package jp.coremind.view.implement.starling
             return false;
         }
         
-        private function _applyResouce(group:String, status:String):void
+        private function _applyInteraction(group:String, status:String):void
         {
-            StatefulElementInteractionListener
-                .request($.getClassByInstance(this))
-                .apply(group, status, this);
+            var interaction:StatefulElementInteraction = Application.configure.interaction
+                .getStatefulElementInteraction(interactionId);
+            
+            if (interaction) interaction.apply(this, group, status);
         }
         
         override public function reset():void
@@ -60,7 +73,7 @@ package jp.coremind.view.implement.starling
             if (_reader)
             {
                 _elementModel.getModule(StatusModel).removeListener(_applyStatus);
-                _elementModel.getModule(StatusModel).removeListener(_applyResouce);
+                _elementModel.getModule(StatusModel).removeListener(_applyInteraction);
             }
             
             super.reset();
@@ -71,7 +84,7 @@ package jp.coremind.view.implement.starling
             if (_reader)
             {
                 _elementModel.getModule(StatusModel).removeListener(_applyStatus);
-                _elementModel.getModule(StatusModel).removeListener(_applyResouce);
+                _elementModel.getModule(StatusModel).removeListener(_applyInteraction);
             }
             
             super.destroy(withReference);

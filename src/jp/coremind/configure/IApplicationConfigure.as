@@ -1,7 +1,14 @@
 package jp.coremind.configure
 {
+    import flash.geom.Rectangle;
+
     public interface IApplicationConfigure
     {
+        /**
+         * Application.initializeメソッドへ渡すinitialStarlingViewがスプラッシュ画面かを示す値を返す.
+         */
+        function get enabledSplash():Boolean;
+        
         /**
          * アプリケーション起動時にStarlingステージ上で生成するViewクラス、またはViewの名称(String)
          */
@@ -38,9 +45,37 @@ package jp.coremind.configure
         function get asset():IAssetConfigure;
         
         /**
+         * StatefulElementで利用するステータス定義を返す.
+         */
+        function get statusModel():StatusModelConfigure;
+        
+        /**
+         * インタラクション定義を返す.
+         */
+        function get interaction():IInteractionConfigure;
+        
+        /**
          * アプリケーションのルートレイヤー構造設定を返す.
          */
         function get viewLayer():ViewLayerConfigure;
+        
+        /**
+         * アプリケーションのレイアウトに利用した画面サイズ
+         */
+        function get appViewPort():Rectangle;
+        
+        /**
+         * 起動する機器の画面サイズ(デバッグ)
+         */
+        function get useDebugViewPort():Boolean;
+        
+        /**
+         * 起動する機器の画面サイズ(デバッグ)
+         */
+        function get debugViewPort():Rectangle;
+        
+        
+        function get framerate():int;
         
         /**
          * アプリケーションのアスペクト比(横：縦)
@@ -53,9 +88,5 @@ package jp.coremind.configure
          */
         function get screenOrientaion():int;
         
-        /**
-         * Application.initializeメソッドへ渡すinitialViewがスプラッシュ画面かを示す値を返す.
-         */
-        function get enabledSplash():Boolean;
     }
 }

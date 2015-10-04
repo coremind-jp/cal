@@ -61,14 +61,20 @@ package jp.coremind.view.implement.starling
                 bluePrint.createContentListByCommonView(name):
                 bluePrint.createContentListByUniqueView(viewClass));
             
+            ready();
             r.scceeded();
+        }
+        
+        public function ready():void
+        {
+            Log.custom(TAG, name, "ready");
         }
         
         protected function _buildElement(list:Array):void
         {
+            var w:int = Application.configure.appViewPort.width;
+            var h:int = Application.configure.appViewPort.height;
             var bluePrint:IElementBluePrint = Application.configure.elementBluePrint;
-            var w:Number = Application.VIEW_PORT.width;
-            var h:Number = Application.VIEW_PORT.height;
             
             for (var i:int = 0; i < list.length; i++) 
             {

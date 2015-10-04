@@ -10,7 +10,6 @@ package jp.coremind.view.builder
     import jp.coremind.utility.IRecycle;
     import jp.coremind.utility.InstancePool;
     import jp.coremind.view.abstract.IElement;
-    import jp.coremind.view.layout.LayoutCalculator;
     
     /**
      * ListConatinerクラスインスタンスの子インスタンスを生成を制御するクラス.
@@ -82,9 +81,7 @@ package jp.coremind.view.builder
                 
                 var builder:ElementBuilder = _getBuilder(modelData, index, length);
                 
-                var calculator:LayoutCalculator = builder.requestLayoutCalculator();
-                
-                var  element:IElement = _pool.request(builder.elementClass) as IElement;
+                var  element:IElement = _pool.request(builder.getElementClass()) as IElement;
                 if (!element) element = builder.buildForListElement();
                 element.initialize(actualParentWidth, actualParentHeight, _reader.id + "." + index);
                 

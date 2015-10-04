@@ -17,5 +17,7 @@ package jp.coremind.core
         function getLayerProcessor(layerIndex:String):LayerProcessor;
         
         function run():void;
+        
+        function runTransition(transition:Function, ...params):void;
     }
 }

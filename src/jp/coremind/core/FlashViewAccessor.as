@@ -28,5 +28,10 @@ package jp.coremind.core
             var initialView:Class  = Application.configure.initialFlashView;
             if (initialView) getLayerProcessor(Layer.CONTENT).push(initialView);
         }
+        
+        public function runTransition(transition:Function, ...params):void
+        {
+            
+        }
     }
 }

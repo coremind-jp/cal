@@ -4,20 +4,19 @@ package jp.coremind.storage
     import jp.coremind.core.Application;
     import jp.coremind.core.Layer;
     import jp.coremind.event.ViewTransitionEvent;
-    import jp.coremind.utility.Log;
     import jp.coremind.model.ElementModel;
+    import jp.coremind.utility.Log;
 
     public class Storage
     {
         public static const UNDEFINED_STORAGE_ID:String = "undefinedStorageId";
-        
         public static const TAG:String = "[Storage]";
         //Log.addCustomTag(TAG);
         
         private var
             _modelCache:Object,
             _readerCache:Object,
-            _elementModelCache:Object,
+            _elementModelStorage:ElementModelStorage,
             _storageContainer:Object;
         
         /**
@@ -28,7 +27,8 @@ package jp.coremind.storage
         {
             _modelCache   = {};
             _readerCache  = {};
-            _elementModelCache = {};
+            
+            _elementModelStorage = new ElementModelStorage();
             
             _storageContainer = {};
             _storageContainer[StorageType.HASH]    = new HashStorage();
@@ -95,19 +95,6 @@ package jp.coremind.storage
         }
         
         /** 
-         */
-        public function requestElementModel(id:String):ElementModel
-        {
-            if (!(id in _elementModelCache))
-            {
-                Log.custom(TAG, "create ElementModel("+id+")");
-                _elementModelCache[id] = new ElementModel();
-            }
-            
-            return _elementModelCache[id];
-        }
-        
-        /** 
          * パラメータidと対になるStorageModeインスタンスが定義(作成)済みかを示す値を返す.
          * @param   id              ストレージid。指定したidが見つからない場合、そのidを利用できるように領域を作成する
          * @param   type            ストレージタイプ(StorageType定数で指定)
@@ -115,6 +102,28 @@ package jp.coremind.storage
         public function isDefined(storageId, type:String):Boolean
         {
             return _selectStorage(type).isDefined(storageId);
+        }
+        
+        /** 
+         */
+        public function requestElementModel(storageId:String, elementId:String):ElementModel
+        {
+            if (!_elementModelStorage.isDefined(storageId, elementId))
+            {
+                Log.custom(TAG, "create ElementModel(", storageId, elementId, ")");
+                _elementModelStorage.create(storageId, elementId);
+            }
+            
+            return _elementModelStorage.read(storageId, elementId);
+        }
+        
+        public function deleteElementModel(elementId:String):void
+        {
+            if (_elementModelStorage.isDefined(UNDEFINED_STORAGE_ID, elementId))
+            {
+                Log.custom(TAG, "de1ete ElementModel(", elementId, ")");
+                _elementModelStorage.de1ete(UNDEFINED_STORAGE_ID, elementId);
+            }
         }
         
         /** 現存するStorageModelをダンプする. */
@@ -149,14 +158,8 @@ package jp.coremind.storage
                 reader.destroy();
             }
             
-            if (id in _elementModelCache)
-            {
-                eModel = _elementModelCache[id];
-                delete _elementModelCache[id];
-                
-                Log.custom(TAG, "\tElementModel");
-                eModel.destroy();
-            }
+            if (id !== UNDEFINED_STORAGE_ID)
+                _elementModelStorage.de1ete(id);
         }
         
         public function refresh(e:ViewTransitionEvent = null):void

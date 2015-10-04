@@ -109,8 +109,10 @@ package jp.coremind.view.interaction
         {
             if (!_druging) return true;
 
-            x = _applyOutOfRangeResistance(x, _trackX, Application.VIEW_PORT.width);
-            y = _applyOutOfRangeResistance(y, _trackY, Application.VIEW_PORT.height);
+            var w:int = Application.configure.appViewPort.width;
+            var h:int = Application.configure.appViewPort.height;
+            x = _applyOutOfRangeResistance(x, _trackX, w);
+            y = _applyOutOfRangeResistance(y, _trackY, h);
             
             if (_isAdsorb(_trackX.start - x, _trackY.start - y))
             {

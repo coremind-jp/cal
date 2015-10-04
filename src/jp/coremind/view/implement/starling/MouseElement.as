@@ -1,41 +1,31 @@
 package jp.coremind.view.implement.starling
 {
-    import jp.coremind.model.module.StatusConfigure;
+    import jp.coremind.core.StatusModelType;
     import jp.coremind.model.module.StatusGroup;
     import jp.coremind.model.module.StatusModel;
-    import jp.coremind.model.module.StatusModelConfigure;
-    import jp.coremind.model.transaction.UpdateRule;
     import jp.coremind.utility.data.Status;
     import jp.coremind.view.builder.IBackgroundBuilder;
-    import jp.coremind.view.layout.LayoutCalculator;
+    import jp.coremind.view.layout.Layout;
     
     import starling.events.TouchEvent;
     
     public class MouseElement extends TouchElement
     {
-        override protected function get _statusModelConfigureKey():Class { return MouseElement }
-        
-        StatusModelConfigure.registry(
-            MouseElement,
-            StatusModelConfigure.marge(
-                InteractiveElement,
-                    new StatusConfigure(StatusGroup.PRESS,   UpdateRule.LESS_THAN_PRIORITY, 75, Status.UP, false, [Status.CLICK, Status.UP]),
-                    new StatusConfigure(StatusGroup.RELEASE, UpdateRule.ALWAYS, 25, Status.ROLL_OUT, true)
-                ));
-        
         private var
             _bHitTest:Boolean,
             _bHover:Boolean;
         
-        public function MouseElement(
-            layoutCalculator:LayoutCalculator,
-            backgroundBuilder:IBackgroundBuilder = null)
+        public function MouseElement(layoutCalculator:Layout, backgroundBuilder:IBackgroundBuilder = null)
         {
             super(layoutCalculator, backgroundBuilder);
             
             _bHover = false;
-            
             button = true;
+        }
+        
+        override protected function get statusModelType():String
+        {
+            return StatusModelType.MOUSE_ELEMENT;
         }
         
         override protected function _onTouch(e:TouchEvent):void

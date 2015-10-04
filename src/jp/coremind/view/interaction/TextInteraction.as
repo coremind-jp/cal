@@ -5,7 +5,7 @@ package jp.coremind.view.interaction
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.implement.starling.buildin.TextField;
     
-    public class TextInteraction extends StatefulElementInteraction implements IStatefulElementInteraction
+    public class TextInteraction extends ElementInteraction implements IElementInteraction
     {
         protected var _text:*;
         

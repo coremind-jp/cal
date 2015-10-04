@@ -7,7 +7,7 @@ package jp.coremind.view.interaction
     
     import starling.textures.Texture;
 
-    public class Grid9TextureInteraction extends StatefulElementInteraction implements IStatefulElementInteraction
+    public class Grid9TextureInteraction extends ElementInteraction implements IElementInteraction
     {
         private var
             _tl:Texture, _t :Texture, _tr:Texture,

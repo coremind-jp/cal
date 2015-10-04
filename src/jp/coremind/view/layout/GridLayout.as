@@ -10,7 +10,7 @@ package jp.coremind.view.layout
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.builder.GridListElementFactory;
     
-    public class GridLayout implements IElementLayout, IStorageListener
+    public class GridLayout implements IListLayout, IStorageListener
     {
         private var
             _reader:StorageModelReader,

@@ -7,6 +7,7 @@ package jp.coremind.core
     import jp.coremind.view.abstract.IDisplayObjectContainer;
     
     import org.libspark.betweenas3.BetweenAS3;
+    import org.libspark.betweenas3.easing.Expo;
     import org.libspark.betweenas3.tweens.IObjectTween;
     
     /**
@@ -14,7 +15,7 @@ package jp.coremind.core
      */
     public class TransitionTween
     {
-        private static const TIME:Number = 1.0;
+        private static const TIME:Number = .2;
         private static const _SKIP:Function = function(p:Routine, t:Thread):void { p.scceeded(); };
         
         public static function FAST_ADD(parent:IDisplayObjectContainer, child:IDisplayObject, fromX:Number = NaN, fromY:Number = NaN, toX:Number = NaN, toY:Number = NaN):Function
@@ -115,7 +116,7 @@ package jp.coremind.core
                 var tween:IObjectTween = BetweenAS3.to(child, {
                     x: toX,
                     y: toY
-                }, TIME);
+                }, TIME, Expo.easeOut);
                 tween.onComplete = p.scceeded;
                 tween.play();
             };

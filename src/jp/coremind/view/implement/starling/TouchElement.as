@@ -3,27 +3,15 @@ package jp.coremind.view.implement.starling
     import flash.geom.Point;
     import flash.geom.Rectangle;
     
-    import jp.coremind.model.module.StatusConfigure;
+    import jp.coremind.core.StatusModelType;
     import jp.coremind.model.module.StatusGroup;
     import jp.coremind.model.module.StatusModel;
-    import jp.coremind.model.module.StatusModelConfigure;
-    import jp.coremind.model.transaction.UpdateRule;
     import jp.coremind.utility.data.Status;
     import jp.coremind.view.builder.IBackgroundBuilder;
-    import jp.coremind.view.layout.LayoutCalculator;
+    import jp.coremind.view.layout.Layout;
 
     public class TouchElement extends InteractiveElement
     {
-        override protected function get _statusModelConfigureKey():Class { return TouchElement }
-        
-        StatusModelConfigure.registry(
-            TouchElement,
-            StatusModelConfigure.marge(
-                InteractiveElement,
-                    new StatusConfigure(StatusGroup.PRESS,   UpdateRule.ALWAYS, 75, Status.UP, false, [Status.CLICK, Status.UP]),
-                    new StatusConfigure(StatusGroup.RELEASE, UpdateRule.LESS_THAN_PRIORITY, 25, Status.UP, true)
-                ));
-        
         protected static const _POINT_LOCAL:Point  = new Point();
         protected static const _POINT_GLOBAL:Point = new Point();
         protected static const _POINTER_RECT:Rectangle = new Rectangle(0, 0, 1, 1);
@@ -33,7 +21,7 @@ package jp.coremind.view.implement.starling
             _hold:Boolean;
             
         public function TouchElement(
-            layoutCalculator:LayoutCalculator,
+            layoutCalculator:Layout,
             backgroundBuilder:IBackgroundBuilder = null)
         {
             super(layoutCalculator, backgroundBuilder);
@@ -44,6 +32,11 @@ package jp.coremind.view.implement.starling
             inflateClickRange(6, 6);
             
             _hold = false;
+        }
+        
+        override protected function get statusModelType():String
+        {
+            return StatusModelType.TOUCH_ELEMENT;
         }
         
         override protected function _initializeStatus():void

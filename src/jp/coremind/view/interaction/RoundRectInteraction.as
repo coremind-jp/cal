@@ -5,7 +5,7 @@ package jp.coremind.view.interaction
     import jp.coremind.utility.process.Thread;
     import jp.coremind.view.abstract.IElement;
     
-    public class RoundRectInteraction extends StatefulElementInteraction implements IStatefulElementInteraction
+    public class RoundRectInteraction extends ElementInteraction implements IElementInteraction
     {
         private var
             _assetId:String,

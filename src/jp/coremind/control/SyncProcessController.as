@@ -1,6 +1,5 @@
 package jp.coremind.control
 {
-    import jp.coremind.core.ViewAccessor;
     import jp.coremind.utility.Log;
     import jp.coremind.utility.process.Process;
     import jp.coremind.utility.process.Thread;
@@ -48,16 +47,16 @@ package jp.coremind.control
                 
                 if (_numRunning++ == 0)
                 {
-                    starling.disablePointerDevice();
-                    flash.disablePointerDevice();
+                    if (starling) starling.disablePointerDevice();
+                    if (flash)    flash.disablePointerDevice();
                 }
                 
                 p.exec(function(res:Process):void
                 {
                     if (--_numRunning == 0)
                     {
-                        starling.enablePointerDevice();
-                        flash.enablePointerDevice();
+                        if (starling) starling.enablePointerDevice();
+                        if (flash)    flash.enablePointerDevice();
                     }
                     
                     if (callback is Function)

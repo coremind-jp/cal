@@ -3,6 +3,8 @@ package jp.coremind.core
     import flash.display.Stage;
     import flash.geom.Rectangle;
     
+    import jp.coremind.control.Controller;
+    import jp.coremind.utility.process.Thread;
     import jp.coremind.view.implement.starling.CalSprite;
     import jp.coremind.view.implement.starling.NavigationView;
     import jp.coremind.view.implement.starling.View;
@@ -13,8 +15,7 @@ package jp.coremind.core
     
     public class StarlingViewAccessor extends AbstractViewAccessor implements IViewAccessor
     {
-        private var
-            _starling:Starling;
+        private var _starling:Starling;
         
         public function initialize(stage:Stage, completeHandler:Function):void
         {
@@ -24,15 +25,17 @@ package jp.coremind.core
                 completeHandler();
             };
             
-            var PhoneResolution:Rectangle = new Rectangle(0, 0, 640, 1136);
-            var appResolution:Rectangle   = new Rectangle(0, 0, 320, 568);
-            var viewPort:Rectangle = RectangleUtil.fit(appResolution, PhoneResolution, ScaleMode.SHOW_ALL);
+            var appViewPort:Rectangle = Application.configure.appViewPort;
             
-            Application.SCALE_FACTOR = PhoneResolution.width / appResolution.width;
+            var deviceViewPort:Rectangle = Application.configure.useDebugViewPort ?
+                Application.configure.debugViewPort:
+                new Rectangle(0, 0, Application.stage.stageWidth, Application.stage.stageHeight);
             
-            _starling  = new Starling(StarlingMain, stage, viewPort);
-            _starling.stage.stageWidth  = appResolution.width;
-            _starling.stage.stageHeight = appResolution.height;
+            var fit:Rectangle = RectangleUtil.fit(appViewPort, deviceViewPort, ScaleMode.SHOW_ALL);
+            
+            _starling  = new Starling(StarlingMain, stage, fit);
+            _starling.stage.stageWidth  = appViewPort.width;
+            _starling.stage.stageHeight = appViewPort.height;
             _starling.start();
         }
         
@@ -47,6 +50,17 @@ package jp.coremind.core
             if (initialView) getLayerProcessor(targetLayer).push(initialView);
             
             Starling.current.showStats = true;
+        }
+        
+        public function runTransition(transition:Function, ...params):void
+        {
+            params.unshift(root);
+            
+            var thread:Thread = new Thread("").pushRoutine(transition.apply(null, params))
+            var pId:String = "window transition tween";
+            
+            Controller.getInstance().syncProcess.pushThread(pId, thread, false)
+            Controller.getInstance().syncProcess.run(pId);
         }
     }
 }

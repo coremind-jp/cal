@@ -14,8 +14,8 @@ package jp.coremind.view.implement.starling.component
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.implement.starling.Container;
-    import jp.coremind.view.layout.IElementLayout;
-    import jp.coremind.view.layout.LayoutCalculator;
+    import jp.coremind.view.layout.IListLayout;
+    import jp.coremind.view.layout.Layout;
     import jp.coremind.view.layout.LayoutSimulation;
     
     public class ListContainer extends Container
@@ -27,20 +27,20 @@ package jp.coremind.view.implement.starling.component
         private static const REFRESH_PROCESS:String = "ListContainer::Refresh";
         
         private var
-            _layout:IElementLayout,
+            _listLayout:IListLayout,
             _simulation:LayoutSimulation;
         
         /**
          * 配列データをリスト表示オブジェクトとして表示するコンテナクラス.
          */
         public function ListContainer(
-            layout:IElementLayout,
-            layoutCalculator:LayoutCalculator,
+            layout:IListLayout,
+            layoutCalculator:Layout,
             backgroundBuilder:IBackgroundBuilder = null)
         {
             super(layoutCalculator, backgroundBuilder);
             
-            _layout = layout;
+            _listLayout = layout;
             _simulation = new LayoutSimulation();
         }
         
@@ -49,8 +49,8 @@ package jp.coremind.view.implement.starling.component
             _simulation.destroy();
             
             if (withReference)
-                _layout.destroy(withReference);
-            _layout = null;
+                _listLayout.destroy(withReference);
+            _listLayout = null;
             
             super.destroy(withReference);
         }
@@ -59,11 +59,11 @@ package jp.coremind.view.implement.starling.component
         {
             Log.custom(TAG, "initializeElementSize", actualParentWidth, actualParentHeight);
             
-            _maxWidth  = _layoutCalculator.width.calc(actualParentWidth);
-            _maxHeight = _layoutCalculator.height.calc(actualParentHeight);
+            _maxWidth  = _layout.width.calc(actualParentWidth);
+            _maxHeight = _layout.height.calc(actualParentHeight);
             
-            x = _layoutCalculator.horizontalAlign.calc(actualParentWidth, _maxWidth);
-            y = _layoutCalculator.verticalAlign.calc(actualParentHeight, _maxHeight);
+            x = _layout.horizontalAlign.calc(actualParentWidth, _maxWidth);
+            y = _layout.verticalAlign.calc(actualParentHeight, _maxHeight);
             
             _simulation.setDrawableArea(_maxWidth, _maxHeight);
             
@@ -74,13 +74,13 @@ package jp.coremind.view.implement.starling.component
         {
             super._onLoadStorageReader(id);
             
-            _layout.initialize(_reader);
+            _listLayout.initialize(_reader);
             
             var list:Array = _reader.read();
             for (var i:int = 0, len:int = list.length; i < len; i++) 
-                _simulation.addChild(list[i], _layout.calcElementRect(_maxWidth, _maxHeight, i).clone());
+                _simulation.addChild(list[i], _listLayout.calcElementRect(_maxWidth, _maxHeight, i).clone());
             
-            var r:Rectangle = _layout.calcTotalRect(_maxWidth, _maxHeight, len);
+            var r:Rectangle = _listLayout.calcTotalRect(_maxWidth, _maxHeight, len);
             var beforeX:Number = x;
             var beforeY:Number = y;
             //updateElementSizeでScrollContainerがupdatePositionを呼び場合によってはこのオブジェクトの座標を変える
@@ -104,17 +104,17 @@ package jp.coremind.view.implement.starling.component
             
             for (data in _simulation.removed) 
             {
-                if (_layout.hasCache(data))
+                if (_listLayout.hasCache(data))
                 {
-                    removeDisplay(_layout.requestElement(0, 0, data));
-                    _layout.requestRecycle(data);
+                    removeDisplay(_listLayout.requestElement(0, 0, data));
+                    _listLayout.requestRecycle(data);
                 }
             }
             
             for (data in _simulation.added) 
             {
                 to = _simulation.added[data];
-                e  = _layout.requestElement(to.width, to.height, data);
+                e  = _listLayout.requestElement(to.width, to.height, data);
                 e.x = to.x;
                 e.y = to.y;
                 addDisplay(e);
@@ -142,7 +142,7 @@ package jp.coremind.view.implement.starling.component
             var addThread:Thread  = new Thread("add");
             var len:int = diff.editedOrigin.length;
             var beforePosition:Dictionary;
-            var r:Rectangle = _layout.calcTotalRect(_maxWidth, _maxHeight, len == 0 ? 0: len).clone();
+            var r:Rectangle = _listLayout.calcTotalRect(_maxWidth, _maxHeight, len == 0 ? 0: len).clone();
             
             beforePosition = _updateChildrenPosition(diff);
             
@@ -172,7 +172,7 @@ package jp.coremind.view.implement.starling.component
                 _simulation.removechild(diff.removed[i].value);
             
             for (i = 0, len = diff.added.length; i < len; i++)
-                _simulation.addChild(diff.added[i].value, _layout.calcElementRect(_maxWidth, _maxHeight, editedOrigin.length - len + i).clone());
+                _simulation.addChild(diff.added[i].value, _listLayout.calcElementRect(_maxWidth, _maxHeight, editedOrigin.length - len + i).clone());
         }
         
         /**
@@ -194,7 +194,7 @@ package jp.coremind.view.implement.starling.component
                 beforePosition[origin[i]] = { x:r.x, y:r.y };
                 
                 var j:int = n == -1 ? n: diff.order.indexOf(n);
-                var s:Rectangle = _layout.calcElementRect(_maxWidth, _maxHeight, j);
+                var s:Rectangle = _listLayout.calcElementRect(_maxWidth, _maxHeight, j);
                 r.x = s.x;
                 r.y = s.y;
             }
@@ -210,9 +210,9 @@ package jp.coremind.view.implement.starling.component
         {
             for (var i:int = 0, len:int = removeDisplayList.length; i < len; i++) 
             {
-                if (_layout.hasCache(removeDisplayList[i].value))
+                if (_listLayout.hasCache(removeDisplayList[i].value))
                 {
-                    var e:IElement = _layout.requestElement(0, 0, removeDisplayList[i].value);
+                    var e:IElement = _listLayout.requestElement(0, 0, removeDisplayList[i].value);
                     controller.syncProcess.pushThread(pId, new Thread("remove"+e)
                         .pushRoutine(e.removeTransition(this, e))
                         .pushRoutine(_createRecycleRoutine(removeDisplayList[i].value)),
@@ -228,9 +228,9 @@ package jp.coremind.view.implement.starling.component
         {
             for (var i:int = 0, len:int = filteringList.length; i < len; i++) 
             {
-                if (_layout.hasCache(filteringList[i]))
+                if (_listLayout.hasCache(filteringList[i]))
                 {
-                    var e:IElement = _layout.requestElement(0, 0, filteringList[i]);
+                    var e:IElement = _listLayout.requestElement(0, 0, filteringList[i]);
                     controller.syncProcess.pushThread(pId, new Thread("remove"+e)
                         .pushRoutine(e.removeTransition(this, e))
                         .pushRoutine(_createRecycleRoutine(filteringList[i])),
@@ -255,7 +255,7 @@ package jp.coremind.view.implement.starling.component
                 if (data in _simulation.added)
                 {
                     to = _simulation.added[data];
-                    e  = _layout.requestElement(to.width, to.height, data);
+                    e  = _listLayout.requestElement(to.width, to.height, data);
                     //このエレメントはフィルタリング解除されて追加されたか？
                     diff.filteringRestored.indexOf(data) == -1 ?
                         //そうでなければ、並び替え前の位置から移動してきたように見せる
@@ -267,14 +267,14 @@ package jp.coremind.view.implement.starling.component
                 if (data in _simulation.moved)
                 {
                     to = _simulation.moved[data];
-                    e  = _layout.requestElement(to.width, to.height, data);
+                    e  = _listLayout.requestElement(to.width, to.height, data);
                     moveThread.pushRoutine(e.mvoeTransition(e, to.x, to.y));
                 }
                 else
-                if (data in _simulation.removed && _layout.hasCache(data))
+                if (data in _simulation.removed && _listLayout.hasCache(data))
                 {
                     to = _simulation.removed[data];
-                    e  = _layout.requestElement(0, 0, data);
+                    e  = _listLayout.requestElement(0, 0, data);
                     controller.syncProcess.pushThread(pId, new Thread("remove"+e)
                         .pushRoutine(e.removeTransition(this, e, to.x, to.y))
                         .pushRoutine(_createRecycleRoutine(data)),
@@ -293,8 +293,8 @@ package jp.coremind.view.implement.starling.component
                 if (addElementList[i].value in _simulation.contains)
                 {
                     var o:int       = addElementList[i].key;
-                    var r:Rectangle = _layout.calcElementRect(_maxWidth, _maxHeight, o);
-                    var e:IElement  = _layout.requestElement(r.width, r.height, addElementList[i].value);
+                    var r:Rectangle = _listLayout.calcElementRect(_maxWidth, _maxHeight, o);
+                    var e:IElement  = _listLayout.requestElement(r.width, r.height, addElementList[i].value);
                     
                     e.x = r.x;
                     e.y = r.y;
@@ -309,7 +309,7 @@ package jp.coremind.view.implement.starling.component
         private function _createRecycleRoutine(data:*):Function
         {
             return function(r:Routine, t:Thread):void {
-                _layout.requestRecycle(data);
+                _listLayout.requestRecycle(data);
                 r.scceeded();
             };
         }

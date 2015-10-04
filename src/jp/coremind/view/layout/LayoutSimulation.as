@@ -25,9 +25,12 @@ package jp.coremind.view.layout
          */
         public function LayoutSimulation()
         {
+            var w:int = Application.configure.appViewPort.width;
+            var h:int = Application.configure.appViewPort.height;
+
             _contains     = new Dictionary(true);
             _children     = new Dictionary(true);
-            _drawableArea = new Point(Application.VIEW_PORT.width, Application.VIEW_PORT.height);
+            _drawableArea = new Point(w, h);
             _hitbox       = new Rectangle(Number.MAX_VALUE, Number.MAX_VALUE, _drawableArea.x, _drawableArea.y);
         }
         

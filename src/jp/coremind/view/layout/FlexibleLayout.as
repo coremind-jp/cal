@@ -10,7 +10,7 @@ package jp.coremind.view.layout
     import jp.coremind.configure.IElementBluePrint;
     import jp.coremind.view.builder.ListElementFactory;
 
-    public class FlexibleLayout implements IElementLayout
+    public class FlexibleLayout implements IListLayout
     {
         private var
             _builderList:Vector.<String>,
@@ -95,7 +95,7 @@ package jp.coremind.view.layout
             var result:Rectangle = _rect || new Rectangle();
             
             if (builder)
-                builder.requestLayoutCalculator().exportRectangle(actualParentWidth, actualParentHeight, result);
+                builder.layout.exportRectangle(actualParentWidth, actualParentHeight, result);
             
             return result;
         }

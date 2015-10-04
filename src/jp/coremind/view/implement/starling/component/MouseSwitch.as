@@ -1,34 +1,26 @@
 package jp.coremind.view.implement.starling.component
 {
-    import jp.coremind.model.module.StatusConfigure;
+    import jp.coremind.core.StatusModelType;
     import jp.coremind.model.module.StatusGroup;
     import jp.coremind.model.module.StatusModel;
-    import jp.coremind.model.module.StatusModelConfigure;
-    import jp.coremind.model.transaction.UpdateRule;
     import jp.coremind.utility.data.Status;
     import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.implement.starling.MouseElement;
-    import jp.coremind.view.layout.LayoutCalculator;
+    import jp.coremind.view.layout.Layout;
     
     /**
      * MouseElementクラスにスイッチ機能を加えたクラス.
      */
     public class MouseSwitch extends MouseElement
     {
-        override protected function get _statusModelConfigureKey():Class { return MouseSwitch }
-        
-        StatusModelConfigure.registry(
-            MouseSwitch,
-            StatusModelConfigure.marge(
-                MouseElement,
-                    new StatusConfigure(StatusGroup.SELECT, UpdateRule.LESS_THAN_PRIORITY, 50, Status.OFF, true, [Status.OFF])
-                ));
-        
-        public function MouseSwitch(
-            layoutCalculator:LayoutCalculator,
-            backgroundBuilder:IBackgroundBuilder = null)
+        public function MouseSwitch(layoutCalculator:Layout, backgroundBuilder:IBackgroundBuilder = null)
         {
             super(layoutCalculator, backgroundBuilder);
+        }
+        
+        override protected function get statusModelType():String
+        {
+            return StatusModelType.MOUSE_SWITCH;
         }
         
         override protected function _initializeStatus():void

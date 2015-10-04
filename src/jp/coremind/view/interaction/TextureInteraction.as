@@ -7,7 +7,7 @@ package jp.coremind.view.interaction
     
     import starling.textures.Texture;
     
-    public class TextureInteraction extends StatefulElementInteraction implements IStatefulElementInteraction
+    public class TextureInteraction extends ElementInteraction implements IElementInteraction
     {
         private var _texture:Texture;
         

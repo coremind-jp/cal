@@ -20,6 +20,8 @@ package jp.coremind.core
             _layerProcessorList = {};
         }
         
+        protected function get root():ICalSprite { return _root; }
+        
         public function disablePointerDevice():void { _root.disablePointerDeviceControl(); }
         
         public function enablePointerDevice():void  { _root.enablePointerDeviceControl(); }

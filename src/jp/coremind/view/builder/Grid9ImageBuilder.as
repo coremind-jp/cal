@@ -4,12 +4,11 @@ package jp.coremind.view.builder
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IBox;
     import jp.coremind.view.abstract.component.Grid9;
-    import jp.coremind.view.layout.Align;
-    import jp.coremind.view.layout.Size;
+    import jp.coremind.view.layout.Layout;
     
     import starling.textures.Texture;
     
-    public class Grid9ImageBuilder extends BuildinDisplayObjectBuilder implements IDisplayObjectBuilder
+    public class Grid9ImageBuilder extends DisplayObjectBuilder implements IDisplayObjectBuilder
     {
         private var
             _tl:Texture, _t :Texture, _tr:Texture,
@@ -17,12 +16,12 @@ package jp.coremind.view.builder
             _bl:Texture, _b :Texture, _br:Texture;
         
         public function Grid9ImageBuilder(
-            width:Size, height:Size, horizontalAlign:Align, verticalAlign:Align,
             topLeft:Texture,    top:Texture,    topRight:Texture,
             left:Texture,       body:Texture,   right:Texture,
-            bottomLeft:Texture, bottom:Texture, bottomRight:Texture)
+            bottomLeft:Texture, bottom:Texture, bottomRight:Texture,
+            layout:Layout = null)
         {
-            super(width, height, horizontalAlign, verticalAlign);
+            super(layout);
             
             _tl = topLeft;
             _t  = top;
@@ -45,8 +44,8 @@ package jp.coremind.view.builder
             asset.name = name;
             
             var grid9:Grid9 = new Grid9().setAsset(asset);
-            grid9.width  = _width.calc(actualParentWidth);
-            grid9.height = _height.calc(actualParentHeight);
+            grid9.width  = _layout.width.calc(actualParentWidth);
+            grid9.height = _layout.height.calc(actualParentHeight);
             
             Log.info("builded Grid9Image", asset.width, asset.height);
             

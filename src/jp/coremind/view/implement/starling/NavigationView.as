@@ -62,6 +62,8 @@ package jp.coremind.view.implement.starling
             if (addList.length == 0)
                 return;
             
+            var w:int = Application.configure.appViewPort.width;
+            var h:int = Application.configure.appViewPort.height;
             var thread:Thread = new Thread("addNavigationParts");
             while (addList.length > 0) 
             {
@@ -73,7 +75,7 @@ package jp.coremind.view.implement.starling
                 {
                     Log.custom(TAG, childName, "build exec.");
                     
-                    child = bluePrint.createBuilder(childName).build(childName, Application.VIEW_PORT.width, Application.VIEW_PORT.height) as ICalSprite;
+                    child = bluePrint.createBuilder(childName).build(childName, w, h) as ICalSprite;
                     thread.pushRoutine(child.addTransition(this, child));
                 }
                 

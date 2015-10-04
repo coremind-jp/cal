@@ -5,43 +5,40 @@ package jp.coremind.view.builder
     import jp.coremind.view.abstract.IContainer;
     import jp.coremind.view.implement.starling.component.ListContainer;
     import jp.coremind.view.implement.starling.component.ScrollContainer;
-    import jp.coremind.view.layout.Align;
-    import jp.coremind.view.layout.IElementLayout;
-    import jp.coremind.view.layout.Size;
+    import jp.coremind.view.layout.IListLayout;
+    import jp.coremind.view.layout.Layout;
     
     public class ContainerBuilder extends ElementBuilder
     {
         protected var
-            _layout:IElementLayout,
+            _listLayout:IListLayout,
             _scrollOption:Vector.<ScrollOption>;
         
-        public function ContainerBuilder(
-            layout:IElementLayout,
-            width:Size,
-            height:Size,
-            horizontalAlign:Align,
-            verticalAlign:Align,
-            storageId:String = null,
-            scrollOption:Vector.<ScrollOption> = null,
-            backgroundBuilder:IBackgroundBuilder = null)
+        public function ContainerBuilder(storageId:String, listLayout:IListLayout, layout:Layout = null)
         {
-            super(ListContainer, width, height, horizontalAlign, verticalAlign, storageId, backgroundBuilder);
+            super(layout);
             
-            _layout = layout;
+            this.storageId(storageId);
+            _listLayout = listLayout;
+        }
+
+        public function scrollOption(scrollOption:Vector.<ScrollOption>):ContainerBuilder
+        {
             _scrollOption = scrollOption;
+            return this;
         }
         
         override public function build(name:String, actualParentWidth:int, actualParentHeight:int):IBox
         {
             Log.info("build ContainerElement", _elementClass);
             
-            var container:IContainer = new _elementClass(_layout, _layoutCalculator, null);
+            var container:IContainer = new ListContainer(_listLayout, _layout, null);
             
             container.name = name;
             
             if (_scrollOption)
             {
-                var scrollContainer:ScrollContainer = new ScrollContainer(_layoutCalculator, _backgroundBuilder);
+                var scrollContainer:ScrollContainer = new ScrollContainer(_layout, _backgroundBuilder);
                 
                 scrollContainer.wrap(container);
                 scrollContainer.initialize(actualParentWidth, actualParentHeight, _storageId);

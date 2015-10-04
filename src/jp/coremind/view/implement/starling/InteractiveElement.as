@@ -1,35 +1,26 @@
 package jp.coremind.view.implement.starling
 {
-    import jp.coremind.model.module.StatusConfigure;
+    import jp.coremind.core.StatusModelType;
     import jp.coremind.model.module.StatusGroup;
     import jp.coremind.model.module.StatusModel;
-    import jp.coremind.model.module.StatusModelConfigure;
-    import jp.coremind.model.transaction.UpdateRule;
     import jp.coremind.utility.data.Status;
     import jp.coremind.view.builder.IBackgroundBuilder;
-    import jp.coremind.view.layout.LayoutCalculator;
+    import jp.coremind.view.layout.Layout;
     
     import starling.events.Touch;
     import starling.events.TouchEvent;
     
     public class InteractiveElement extends StatefulElement
     {
-        override protected function get _statusModelConfigureKey():Class { return InteractiveElement }
-        
-        StatusModelConfigure.registry(InteractiveElement, [
-            new StatusConfigure(StatusGroup.LOCK, UpdateRule.LESS_THAN_PRIORITY, 100, Status.UNLOCK, true, [Status.UNLOCK])
-        ]);
-        
         protected var
             _button:Boolean,
             _touchHandling:Boolean,
             _touch:Touch;
         
-        public function InteractiveElement(
-            layoutCalculator:LayoutCalculator,
-            backgroundBuilder:IBackgroundBuilder = null)
+        public function InteractiveElement(layoutCalculator:Layout, backgroundBuilder:IBackgroundBuilder = null)
         {
             super(layoutCalculator, backgroundBuilder);
+            
             button = false;
             touchHandling = false;
         }
@@ -39,6 +30,11 @@ package jp.coremind.view.implement.starling
             disablePointerDeviceControl();
             
             super.destroy(withReference);
+        }
+        
+        override protected function get statusModelType():String
+        {
+            return StatusModelType.INTERACTIVE_ELEMENT;
         }
         
         override public function initialize(actualParentWidth:int, actualParentHeight:int, storageId:String = null):void

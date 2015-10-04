@@ -3,10 +3,10 @@ package jp.coremind.view.implement.starling
     import jp.coremind.control.Controller;
     import jp.coremind.event.ElementEvent;
     import jp.coremind.model.ElementModel;
+    import jp.coremind.model.transaction.Diff;
     import jp.coremind.storage.IStorageListener;
     import jp.coremind.storage.Storage;
     import jp.coremind.storage.StorageModelReader;
-    import jp.coremind.model.transaction.Diff;
     import jp.coremind.utility.IRecycle;
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.ICalSprite;
@@ -14,7 +14,7 @@ package jp.coremind.view.implement.starling
     import jp.coremind.view.abstract.IStretchBox;
     import jp.coremind.view.abstract.IView;
     import jp.coremind.view.builder.IBackgroundBuilder;
-    import jp.coremind.view.layout.LayoutCalculator;
+    import jp.coremind.view.layout.Layout;
     import jp.coremind.view.layout.PartsLayout;
     
     import starling.events.Event;
@@ -24,11 +24,9 @@ package jp.coremind.view.implement.starling
         public static const TAG:String = "[Element]";
         Log.addCustomTag(TAG);
         
-        private static const UNDEFINED_LAYOUT_CALCULATOR:LayoutCalculator = new LayoutCalculator();
-        
         protected var
             _reader:StorageModelReader,
-            _layoutCalculator:LayoutCalculator,
+            _layout:Layout,
             _elementWidth:Number,
             _elementHeight:Number,
             _elementId:String,
@@ -47,10 +45,10 @@ package jp.coremind.view.implement.starling
          * ※要求仕様上Elementの中にElementを含める必要がある場合はContainerクラスやListContainerクラスを利用する。
          */
         public function Element(
-            layoutCalculator:LayoutCalculator,
+            layoutCalculator:Layout,
             backgroundBuilder:IBackgroundBuilder = null)
         {
-            _layoutCalculator = layoutCalculator || UNDEFINED_LAYOUT_CALCULATOR;
+            _layout = layoutCalculator || Layout.EQUAL_PARENT_TL;
             
             _elementWidth = _elementHeight = NaN;
             
@@ -61,19 +59,21 @@ package jp.coremind.view.implement.starling
         
         override public function destroy(withReference:Boolean = false):void
         {
-            Log.custom(TAG, "destroy", this, "storageId:", _reader ? _reader.id: null);
+            Log.custom(TAG, "destroy", this, "storageId:", _reader ? _reader.id: null, "elementId:", _elementId);
             
             if (_background)
                 _background = null;
             
             _partsLayout.destroy();
             
-            if (withReference)
-                _layoutCalculator.destroy();
-            _layoutCalculator = null;
+            _layout = null;
             
             if (_reader)
             {
+                //StorageIdに紐づいていないElement（_readerIdがStorage.UNDEFINED_STORAGE_ID）の
+                //ElementModelはView切り替え時でも破棄されないため、明示的に破棄する必要がある。
+                controller.deleteElementModel(_elementId);
+                
                 _reader.removeListener(this);
                 _reader = null;
             }
@@ -136,11 +136,11 @@ package jp.coremind.view.implement.starling
         
         protected function _initializeElementSize(actualParentWidth:Number, actualParentHeight:Number):void
         {
-            _elementWidth  = _layoutCalculator.width.calc(actualParentWidth);
-            _elementHeight = _layoutCalculator.height.calc(actualParentHeight);
+            _elementWidth  = _layout.width.calc(actualParentWidth);
+            _elementHeight = _layout.height.calc(actualParentHeight);
             
-            x = _layoutCalculator.horizontalAlign.calc(actualParentWidth, _elementWidth);
-            y = _layoutCalculator.verticalAlign.calc(actualParentHeight, _elementHeight);
+            x = _layout.horizontalAlign.calc(actualParentWidth, _elementWidth);
+            y = _layout.verticalAlign.calc(actualParentHeight, _elementHeight);
             
             Log.custom(TAG,
                 "actualSize:", actualParentWidth, actualParentHeight,
@@ -171,6 +171,7 @@ package jp.coremind.view.implement.starling
         
         protected function _onLoadStorageReader(id:String):void
         {
+            Log.custom(TAG, "onLoadStorageId", id);
             if (id)
             {
                 _reader = controller.requestModelReader(id);
@@ -187,7 +188,7 @@ package jp.coremind.view.implement.starling
         
         protected function _initializeElementModel():void
         {
-            _elementModel = controller.requestModelElementModel(_reader.id);
+            _elementModel = controller.requestModelElementModel(_reader.id, _elementId);
         }
         
         public function updateElementSize(elementWidth:Number, elementHeight:Number):void

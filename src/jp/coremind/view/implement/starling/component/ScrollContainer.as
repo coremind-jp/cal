@@ -13,7 +13,7 @@ package jp.coremind.view.implement.starling.component
     import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.implement.starling.Container;
     import jp.coremind.view.interaction.Flick;
-    import jp.coremind.view.layout.LayoutCalculator;
+    import jp.coremind.view.layout.Layout;
     
     import starling.events.Event;
     import starling.events.TouchEvent;
@@ -36,7 +36,7 @@ package jp.coremind.view.implement.starling.component
          * 任意の表示オブジェクトをスクロールさせるクラス.
          */
         public function ScrollContainer(
-            layoutCalculator:LayoutCalculator,
+            layoutCalculator:Layout,
             backgroundBuilder:IBackgroundBuilder = null)
         {
             super(layoutCalculator, backgroundBuilder);
