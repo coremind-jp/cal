@@ -4,7 +4,6 @@ package jp.coremind.model.module
     
     import jp.coremind.core.Application;
     import jp.coremind.model.IElementModel;
-    import jp.coremind.model.transaction.UpdateRule;
     import jp.coremind.utility.Dispatcher;
     import jp.coremind.utility.Log;
     import jp.coremind.utility.data.HashList;

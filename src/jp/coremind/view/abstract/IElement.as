@@ -2,6 +2,7 @@ package jp.coremind.view.abstract
 {
     import jp.coremind.control.Controller;
     import jp.coremind.model.ElementModel;
+    import jp.coremind.storage.StorageModelReader;
 
     public interface IElement extends ICalSprite
     {
@@ -13,6 +14,7 @@ package jp.coremind.view.abstract
             
         function updateElementSize(elementWidth:Number, elementHeight:Number):void;
         
+        function get reader():StorageModelReader;
         function get elementWidth():Number;
         function get elementHeight():Number;
         function get controller():Controller;

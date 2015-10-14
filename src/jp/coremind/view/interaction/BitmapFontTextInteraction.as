@@ -1,35 +1,22 @@
 package jp.coremind.view.interaction
 {
-    import jp.coremind.asset.Asset;
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IElement;
+    import jp.coremind.view.builder.BitmapFont;
     
     import starling.display.Sprite;
 
     public class BitmapFontTextInteraction extends TextInteraction
     {
-        private var
-            _assetId:String,
-            _fontface:String,
-            _fontSize:int,
-            _fontColor:uint,
-            _hAlign:String,
-            _vAlign:String,
-            _autoScale:Boolean,
-            _kerning:Boolean;
+        private var _bitmapFont:BitmapFont;
         
-        public function BitmapFontTextInteraction(applyTargetName:String, text:*, assetId:String, fontface:String=null, fontSize:int=-1, fontColor:uint=16777215, hAlign:String="center", vAlign:String="center", autoScale:Boolean=true, kerning:Boolean=true)
+        public function BitmapFontTextInteraction(applyTargetName:String, text:String, isStaticText:Boolean, assetId:String, fontface:String=null, fontSize:int=-1, fontColor:uint=16777215, hAlign:String="center", vAlign:String="center", autoScale:Boolean=true, kerning:Boolean=true)
         {
-            super(applyTargetName, text);
+            super(applyTargetName, text, isStaticText);
             
-            _assetId   = assetId;
-            _fontface  = fontface;
-            _fontSize  = fontSize;
-            _fontColor = fontColor;
-            _hAlign    = hAlign;
-            _vAlign    = vAlign;
-            _autoScale = autoScale;
-            _kerning   = kerning;
+            _bitmapFont = new BitmapFont(
+                assetId, fontface, fontSize, fontColor,
+                hAlign, vAlign, autoScale, kerning);
         }
         
         override public function apply(parent:IElement):void
@@ -41,20 +28,13 @@ package jp.coremind.view.interaction
             var before:Sprite = starlingParent.getChildByName(_name) as Sprite;
             if (before)
             {
-                var bitmapFont:Sprite = Asset.texture(_assetId).getBitmapFont(_fontface).createSprite(
+                var createdSprite:Sprite = _bitmapFont.create(
+                    _getText(parent.reader),
                     parent.elementWidth,
-                    parent.elementHeight,
-                    _getText(parent),
-                    _fontSize,
-                    _fontColor,
-                    _hAlign,
-                    _vAlign,
-                    _autoScale,
-                    _kerning);
+                    parent.elementHeight);
+                createdSprite.name = _name;
                 
-                bitmapFont.name = _name;
-                
-                starlingParent.addChildAt(bitmapFont, starlingParent.getChildIndex(before));
+                starlingParent.addChildAt(createdSprite, starlingParent.getChildIndex(before));
                 before.removeFromParent(true);
             }
             else Log.warning("undefined Parts(SpriteForBitmapFont). name=", _name);

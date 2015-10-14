@@ -3,7 +3,7 @@ package jp.coremind.configure
     import jp.coremind.core.StatusModelType;
     import jp.coremind.model.module.StatusConfigure;
     import jp.coremind.model.module.StatusGroup;
-    import jp.coremind.model.transaction.UpdateRule;
+    import jp.coremind.model.module.UpdateRule;
     import jp.coremind.utility.Log;
     import jp.coremind.utility.data.Status;
 

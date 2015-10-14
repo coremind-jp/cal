@@ -3,6 +3,7 @@ package jp.coremind.core
     import flash.display.Stage;
     
     import jp.coremind.view.abstract.LayerProcessor;
+    import jp.coremind.configure.IViewTransition;
 
     public interface IViewAccessor
     {
@@ -16,8 +17,6 @@ package jp.coremind.core
         
         function getLayerProcessor(layerIndex:String):LayerProcessor;
         
-        function run():void;
-        
-        function runTransition(transition:Function, ...params):void;
+        function updateView(transition:IViewTransition):void;
     }
 }

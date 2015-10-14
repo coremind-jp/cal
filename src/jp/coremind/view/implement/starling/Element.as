@@ -92,6 +92,7 @@ package jp.coremind.view.implement.starling
             }
         }
         
+        public function get reader():StorageModelReader { return _reader; }
         public function get elementWidth():Number       { return isNaN(_elementWidth)  ? width:  _elementWidth; }
         public function get elementHeight():Number      { return isNaN(_elementHeight) ? height: _elementHeight; }
         public function get elementId():String          { return _elementId; }
@@ -157,14 +158,14 @@ package jp.coremind.view.implement.starling
         {
             _elementId = name;
             
-            var parent:ICalSprite = parent as ICalSprite;
-            while (parent)
+            var p:ICalSprite = parent as ICalSprite;
+            while (p)
             {
-                if (parent is IView) break;
+                if (p is IView) break;
                 else
                 {
-                    _elementId = parent.name + "." + _elementId;
-                    parent = parent.parentDisplay as ICalSprite;
+                    _elementId = p.name + "." + _elementId;
+                    p = p.parentDisplay as ICalSprite;
                 }
             }
         }

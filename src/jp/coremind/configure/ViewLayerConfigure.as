@@ -11,7 +11,6 @@ package jp.coremind.configure
         public function ViewLayerConfigure()
         {
             _nameList = new <String>[];
-            initialize();
         }
         
         public function get viewLength():int

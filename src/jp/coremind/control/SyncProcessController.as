@@ -24,11 +24,11 @@ package jp.coremind.control
         }
         
         /**　ProcessクラスのpushThreadメソッドと動議　*/
-        public function pushThread(processName:String, thread:Thread, parallel:Boolean, async:Boolean = false):SyncProcessController
+        public function pushThread(processId:String, thread:Thread, parallel:Boolean, async:Boolean = false):SyncProcessController
         {
-            var p:Process = processName in _processList ?
-                _processList[processName]:
-                _processList[processName] = new Process(processName);
+            var p:Process = processId in _processList ?
+                _processList[processId]:
+                _processList[processId] = new Process(processId);
             
             p.pushThread(thread, parallel, async);
             
@@ -36,27 +36,27 @@ package jp.coremind.control
         }
         
         /**　Processクラスのexecメソッドと動議　*/
-        public function run(processName:String, callback:Function = null):void
+        public function run(processId:String, callback:Function = null):void
         {
-            if (processName in _processList)
+            if (processId in _processList)
             {
-                Log.custom(TAG, "exec", processName);
+                Log.custom(TAG, "exec", processId);
                 
-                var p:Process = _processList[processName];
-                delete _processList[processName];
+                var p:Process = _processList[processId];
+                delete _processList[processId];
                 
                 if (_numRunning++ == 0)
                 {
-                    if (starling) starling.disablePointerDevice();
-                    if (flash)    flash.disablePointerDevice();
+                    if (starlingRoot) starlingRoot.disablePointerDevice();
+                    if (flashRoot)    flashRoot.disablePointerDevice();
                 }
                 
                 p.exec(function(res:Process):void
                 {
                     if (--_numRunning == 0)
                     {
-                        if (starling) starling.enablePointerDevice();
-                        if (flash)    flash.enablePointerDevice();
+                        if (starlingRoot) starlingRoot.enablePointerDevice();
+                        if (flashRoot)    flashRoot.enablePointerDevice();
                     }
                     
                     if (callback is Function)

@@ -55,7 +55,7 @@
     <classEntry path="jp.coremind.storage.StorageModelReader"/>
     <classEntry path="jp.coremind.storage.StorageType"/>
     <classEntry path="jp.coremind.model.transaction.TransactionLog"/>
-    <classEntry path="jp.coremind.model.transaction.UpdateRule"/>
+    <classEntry path="jp.coremind.model.module.UpdateRule"/>
     <classEntry path="jp.coremind.network.RequestConfigure"/>
     <classEntry path="jp.coremind.network.ResponseContainer"/>
     <classEntry path="jp.coremind.resource.ContentParser"/>
@@ -141,7 +141,6 @@
     <classEntry path="jp.coremind.view.builder.ScrollOption"/>
     <classEntry path="jp.coremind.view.builder.TextFieldBuilder"/>
     <classEntry path="jp.coremind.view.implement.flash.CalSprite"/>
-    <classEntry path="jp.coremind.view.implement.flash.NavigationView"/>
     <classEntry path="jp.coremind.view.implement.flash.View"/>
     <classEntry path="jp.coremind.view.implement.flash.buildin.Bitmap"/>
     <classEntry path="jp.coremind.view.implement.flash.buildin.MovieClip"/>
@@ -154,7 +153,6 @@
     <classEntry path="jp.coremind.view.implement.starling.Element"/>
     <classEntry path="jp.coremind.view.implement.starling.InteractiveElement"/>
     <classEntry path="jp.coremind.view.implement.starling.MouseElement"/>
-    <classEntry path="jp.coremind.view.implement.starling.NavigationView"/>
     <classEntry path="jp.coremind.view.implement.starling.StatefulElement"/>
     <classEntry path="jp.coremind.view.implement.starling.StretchImage"/>
     <classEntry path="jp.coremind.view.implement.starling.TouchElement"/>
@@ -186,14 +184,21 @@
     <classEntry path="jp.coremind.view.layout.Size"/>
     <classEntry path="jp.coremind.core.ViewAccessor"/>
     <classEntry path="jp.coremind.model.ViewModel"/>
-    <classEntry path="jp.coremind.configure.IViewBluePrint"/>
-    <classEntry path="jp.coremind.core.PartsBuilderGenerator"/>
     <classEntry path="jp.coremind.storage.ElementModelStorage"/>
     <classEntry path="jp.coremind.core.StatusModelType"/>
-    <classEntry path="jp.coremind.configure.IInteractionConfigure"/>
     <classEntry path="jp.coremind.configure.InteractionConfigure"/>
     <classEntry path="jp.coremind.view.interaction.StatefulElementInteraction"/>
     <classEntry path="jp.coremind.view.builder.StatefulElementBuilder"/>
+    <classEntry path="jp.coremind.view.interaction.PainterTextureInteraction"/>
+    <classEntry path="jp.coremind.view.builder.BitmapFont"/>
+    <classEntry path="jp.coremind.configure.ViewConfigure"/>
+    <classEntry path="jp.coremind.configure.ViewInsertType"/>
+    <classEntry path="jp.coremind.configure.IViewTransition"/>
+    <classEntry path="jp.coremind.configure.LayerType"/>
+    <classEntry path="jp.coremind.view.implement.starling.InstantView"/>
+    <classEntry path="jp.coremind.configure.IViewBluePrint"/>
+    <classEntry path="ViewBuilder"/>
+    <classEntry path="jp.coremind.configure.ViewTransition"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

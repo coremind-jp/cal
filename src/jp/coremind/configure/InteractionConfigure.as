@@ -1,10 +1,14 @@
 package jp.coremind.configure
 {
+    import jp.coremind.utility.Log;
     import jp.coremind.view.interaction.IElementInteraction;
     import jp.coremind.view.interaction.StatefulElementInteraction;
 
-    public class InteractionConfigure implements IInteractionConfigure
+    public class InteractionConfigure
     {
+        private static const TAG:String = "[InteractionConfigure]";
+        //Log.addCustomTag(TAG);
+        
         private static const  _EI_CACHE:Object = {};
         private static const _SEI_CACHE:Object = {};
         
@@ -29,6 +33,7 @@ package jp.coremind.configure
         
         public function getStatefulElementInteraction(interactionName:String):StatefulElementInteraction
         {
+            Log.custom(TAG, "getStatefulElementInteraction name:", interactionName);
             return _SEI_CACHE[interactionName];
         }
     }

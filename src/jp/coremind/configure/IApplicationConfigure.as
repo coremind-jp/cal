@@ -5,21 +5,6 @@ package jp.coremind.configure
     public interface IApplicationConfigure
     {
         /**
-         * Application.initializeメソッドへ渡すinitialStarlingViewがスプラッシュ画面かを示す値を返す.
-         */
-        function get enabledSplash():Boolean;
-        
-        /**
-         * アプリケーション起動時にStarlingステージ上で生成するViewクラス、またはViewの名称(String)
-         */
-        function get initialStarlingView():*
-        
-        /**
-         * アプリケーション起動時にFlashステージ上で生成するViewクラス、またはViewの名称(String)
-         */
-        function get initialFlashView():*
-        
-        /**
          * アプリケーション内で利用するビュー定義を返す.
          */
         function get viewBluePrint():IViewBluePrint;
@@ -52,7 +37,7 @@ package jp.coremind.configure
         /**
          * インタラクション定義を返す.
          */
-        function get interaction():IInteractionConfigure;
+        function get interaction():InteractionConfigure;
         
         /**
          * アプリケーションのルートレイヤー構造設定を返す.

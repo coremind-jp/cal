@@ -7,6 +7,9 @@ package jp.coremind.view.layout
     public class Layout
     {
         public static const EQUAL_PARENT_TL:Layout = new Layout();
+        public static const ATLAS_CENTER:Layout = new Layout(
+                new Align().parentStandard(.5).childStandard(-.5),
+                new Align().parentStandard(.5).childStandard(-.5))
         
         private var
             _width:Size,

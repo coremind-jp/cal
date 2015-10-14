@@ -8,6 +8,7 @@ package jp.coremind.view.builder
     public class TextFieldBuilder extends DisplayObjectBuilder implements IDisplayObjectBuilder
     {
         private var
+            _text:String,
             _fontName:String,
             _fontSize:Number,
             _color:uint,
@@ -28,6 +29,17 @@ package jp.coremind.view.builder
             _bold = bold;
         }
         
+        public function clone():TextFieldBuilder
+        {
+            return new TextFieldBuilder(_layout, _fontName, _fontSize, _color, _bold);
+        }
+        
+        public function initialValue(text:String):TextFieldBuilder
+        {
+            _text = text;
+            return this;
+        }
+        
         public function build(name:String, actualParentWidth:int, actualParentHeight:int):IBox
         {
             var tf:TextField = new TextField(
@@ -36,7 +48,8 @@ package jp.coremind.view.builder
                 "", _fontName, _fontSize, _color, _bold);
             
             tf.name = name;
-            Log.info("builded TextField", tf.width, tf.height);
+            if (_text) tf.text = _text;
+            Log.info("builded TextField", tf.width, tf.height, tf.text);
             
             return tf;
         }

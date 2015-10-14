@@ -2,6 +2,8 @@ package jp.coremind.control
 {
     import flash.utils.Dictionary;
     
+    import jp.coremind.configure.IViewTransition;
+    import jp.coremind.configure.LayerType;
     import jp.coremind.core.Application;
     import jp.coremind.core.ViewAccessor;
     import jp.coremind.model.ElementModel;
@@ -26,7 +28,27 @@ package jp.coremind.control
         
         public function Controller(viewModel:ViewModel = null)
         {
-            _viewModel
+            _viewModel = viewModel;
+        }
+        
+        public function updateView(transition:IViewTransition, terminateAsyncProcess:Boolean = true):void
+        {
+            if (terminateAsyncProcess)
+                asyncProcess.terminateAll();
+            
+            transition.layerType === LayerType.STARLING ?
+                starlingRoot.updateView(transition):
+                flashRoot.updateView(transition);
+        }
+        
+        protected function joinId(...elementIdList):String
+        {
+            return elementIdList.join(".");
+        }
+        
+        protected function createScrollContainerId(elementId):String
+        {
+            return elementId+"ScrollWrapper."+elementId;
         }
         
         protected function get viewModel():ViewModel
@@ -49,9 +71,26 @@ package jp.coremind.control
                 "\n[params]", params);
         }
         
-        public function onClick(elementId:String, ...params):void
+        public function notifyClick(elementId:String, ...params):void
+        {
+            if (elementId.search(/\.[0-9]+$/) == -1)
+                onClickElement(elementId, params);
+            else
+            {
+                var split:Array = elementId.split(".");
+                var index:int = split.pop();
+                onClickListElement(split.join("."), index, params);
+            }
+        }
+        
+        protected function onClickElement(elementId:String, params:Array):void
         {
             Log.info("onClick", elementId, params);
+        }
+        
+        protected function onClickListElement(elementId:String, index:int, params:Array):void
+        {
+            Log.info("onClickListElement", elementId, index, params);
         }
         
         /**

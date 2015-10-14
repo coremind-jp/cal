@@ -1,8 +1,8 @@
 package jp.coremind.view.implement.flash
 {
+    import jp.coremind.core.TransitionTween;
     import jp.coremind.view.abstract.ICalSprite;
     import jp.coremind.view.implement.flash.buildin.Sprite;
-    import jp.coremind.core.TransitionTween;
     
     public class CalSprite extends Sprite implements ICalSprite
     {
@@ -56,6 +56,16 @@ package jp.coremind.view.implement.flash
         public function get invisibleTransition():Function
         {
             return TransitionTween.FAST_INVISIBLE;
+        }
+        
+        public function createChildrenNameList():Array
+        {
+            var result:Array = [];
+            
+            for (var i:int = 0, len:int = numChildren; i < len; i++) 
+                result[i] = getChildAt(i).name;
+            
+            return result;
         }
     }
 }

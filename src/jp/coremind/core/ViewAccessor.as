@@ -10,29 +10,25 @@ package jp.coremind.core
         public static function initialize(stage:Stage, callback:Function = null):void
         {
             _STARLING_VIEW = new StarlingViewAccessor();
-            //_FLASH_VIEW = new FlashViewAccessor();
+            _FLASH_VIEW = new FlashViewAccessor();
             
             var onComplete:Function = function():void
             {
-                if (_STARLING_VIEW.isInitialized()/* && _FLASH_VIEW.isInitialized()*/)
-                {
-                    _STARLING_VIEW.run();
-                    //_FLASH_VIEW.run();
-                    
-                    if (callback is Function) callback();
-                }
+                if (callback is Function
+                &&  _STARLING_VIEW.isInitialized()
+                &&  _FLASH_VIEW.isInitialized()) callback();
             };
             
             _STARLING_VIEW.initialize(stage, onComplete);
-            //_FLASH_VIEW.initialize(stage, onComplete);
+            _FLASH_VIEW.initialize(stage, onComplete);
         }
         
-        protected function get starling():IViewAccessor
+        protected function get starlingRoot():IViewAccessor
         {
             return _STARLING_VIEW;
         }
         
-        protected function get flash():IViewAccessor
+        protected function get flashRoot():IViewAccessor
         {
             return _FLASH_VIEW;
         }

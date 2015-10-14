@@ -2,7 +2,6 @@ package jp.coremind.view.interaction
 {
     import jp.coremind.asset.Grid9ImageAsset;
     import jp.coremind.utility.Log;
-    import jp.coremind.utility.process.Thread;
     import jp.coremind.view.abstract.IElement;
     
     import starling.textures.Texture;
@@ -45,26 +44,6 @@ package jp.coremind.view.interaction
             var asset:Grid9ImageAsset = parent.getDisplayByName(_name) as Grid9ImageAsset;
             if (asset) asset.update(_tl, _t, _tr, _l, _c, _r, _bl, _b, _br);
             else Log.warning("undefined Parts(Grid9ImageTexture). name=", _name);
-        }
-        
-        public function isThreadType():Boolean
-        {
-            return false;
-        }
-        
-        public function createThread(parent:IElement):Thread
-        {
-            return null;
-        }
-        
-        public function get parallelThread():Boolean
-        {
-            return false;
-        }
-        
-        public function get asyncThread():Boolean
-        {
-            return false;
         }
     }
 }

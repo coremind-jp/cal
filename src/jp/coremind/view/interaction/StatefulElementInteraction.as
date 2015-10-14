@@ -1,6 +1,6 @@
 package jp.coremind.view.interaction
 {
-    import jp.coremind.configure.IInteractionConfigure;
+    import jp.coremind.configure.InteractionConfigure;
     import jp.coremind.core.Application;
     import jp.coremind.view.abstract.IElement;
 
@@ -35,7 +35,7 @@ package jp.coremind.view.interaction
         public function apply(parent:IElement, group:String, status:String):void
         {
             var interactionList:Vector.<String> = _getInteractionNameList(group, status);
-            var configure:IInteractionConfigure = Application.configure.interaction;
+            var configure:InteractionConfigure = Application.configure.interaction;
             
             for (var i:int, len:int = interactionList.length; i < len; i++)
                 configure.getInteraction(interactionList[i]).apply(parent);

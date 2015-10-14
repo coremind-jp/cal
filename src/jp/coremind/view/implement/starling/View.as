@@ -1,7 +1,7 @@
 package jp.coremind.view.implement.starling
 {
     import jp.coremind.configure.IElementBluePrint;
-    import jp.coremind.configure.IViewBluePrint;
+    import jp.coremind.configure.ViewConfigure;
     import jp.coremind.control.Controller;
     import jp.coremind.core.Application;
     import jp.coremind.core.TransitionTween;
@@ -21,24 +21,23 @@ package jp.coremind.view.implement.starling
         Log.addCustomTag(TAG);
         
         private var
+            _isFocus:Boolean,
             _controller:Controller;
         
         /**
          * 画面表示オブジェクトクラス.
          * 画面のルートでViewControllerから制御される。
          */
-        public function View(name:String = null)
+        public function View(controllerClass:Class)
         {
             pivotX = Starling.current.stage.stageWidth  >> 1;
             pivotY = Starling.current.stage.stageHeight >> 1;
             x = pivotX;
             y = pivotY;
             
-            name === null ? Log.error("[View] name is null.", this): this.name = name;
+            _isFocus = touchable = false;
             
-            _controller = Controller.getInstance(
-                Application.configure.viewBluePrint.getControllerClass(name),
-                new ViewModel(this));
+            _controller = Controller.getInstance(controllerClass, new ViewModel(this));
         }
         
         override public function destroy(withReference:Boolean=false):void
@@ -48,19 +47,13 @@ package jp.coremind.view.implement.starling
             _controller = null;
         }
         
+        public function isFocus():Boolean { return _isFocus; }
+        
         public function get controller():Controller { return _controller; }
         
         public function initializeProcess(r:Routine, t:Thread):void
         {
             Log.custom(TAG, name, "initializeProcess");
-            
-            var bluePrint:IViewBluePrint = Application.configure.viewBluePrint;
-            var viewClass:Class = $.getClassByInstance(this);
-            
-            _buildElement(viewClass === View ?
-                bluePrint.createContentListByCommonView(name):
-                bluePrint.createContentListByUniqueView(viewClass));
-            
             ready();
             r.scceeded();
         }
@@ -68,19 +61,6 @@ package jp.coremind.view.implement.starling
         public function ready():void
         {
             Log.custom(TAG, name, "ready");
-        }
-        
-        protected function _buildElement(list:Array):void
-        {
-            var w:int = Application.configure.appViewPort.width;
-            var h:int = Application.configure.appViewPort.height;
-            var bluePrint:IElementBluePrint = Application.configure.elementBluePrint;
-            
-            for (var i:int = 0; i < list.length; i++) 
-            {
-                var name:String = list[i];
-                addDisplay(bluePrint.createBuilder(name).build(name, w, h) as IDisplayObject);
-            }
         }
         
         public function getElement(path:String):IElement
@@ -100,6 +80,7 @@ package jp.coremind.view.implement.starling
         public function focusInPreProcess(r:Routine, t:Thread):void
         {
             Log.custom(TAG, name, "focusInPreProcess");
+            _isFocus = true;
             r.scceeded();
         }
         
@@ -111,12 +92,14 @@ package jp.coremind.view.implement.starling
         public function focusInPostProcess(r:Routine, t:Thread):void
         {
             Log.custom(TAG, name, "focusInPostProcess");
+            touchable = true;
             r.scceeded();
         }
         
         public function focusOutPreProcess(r:Routine, t:Thread):void
         {
             Log.custom(TAG, name, "focusOutPreProcess");
+            _isFocus = false;
             r.scceeded();
         }
         
@@ -128,6 +111,7 @@ package jp.coremind.view.implement.starling
         public function focusOutPostProcess(r:Routine, t:Thread):void
         {
             Log.custom(TAG, name, "focusOutPostProcess");
+            touchable = false;
             r.scceeded();
         }
         

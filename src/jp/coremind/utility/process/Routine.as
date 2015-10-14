@@ -7,7 +7,7 @@ package jp.coremind.utility.process
     public class Routine
     {
         public static const TAG:String = "[Routine]";
-        Log.addCustomTag(TAG);
+        //Log.addCustomTag(TAG);
         
         public var weight:int;
         

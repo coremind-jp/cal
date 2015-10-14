@@ -6,7 +6,10 @@ package jp.coremind.view.abstract
 
     public interface IView extends ICalSprite 
     {
-        function getElement(path:String):IElement
+        function getElement(path:String):IElement;
+        
+        function isFocus():Boolean;
+        
         function get controller():Controller;
         
         function initializeProcess(r:Routine, t:Thread):void;

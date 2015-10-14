@@ -1,8 +1,8 @@
 package jp.coremind.view.implement.starling
 {
+    import jp.coremind.core.TransitionTween;
     import jp.coremind.view.abstract.ICalSprite;
     import jp.coremind.view.implement.starling.buildin.Sprite;
-    import jp.coremind.core.TransitionTween;
     
     public class CalSprite extends Sprite implements ICalSprite
     {
@@ -10,6 +10,7 @@ package jp.coremind.view.implement.starling
         {
             super();
             this.name = name;
+            alpha = .999999;
         }
         
         public function destroy(withReference:Boolean = false):void
@@ -56,6 +57,16 @@ package jp.coremind.view.implement.starling
         public function get invisibleTransition():Function
         {
             return TransitionTween.FAST_INVISIBLE;
+        }
+        
+        public function createChildrenNameList():Array
+        {
+            var result:Array = [];
+            
+            for (var i:int = 0, len:int = numChildren; i < len; i++) 
+                result[i] = getChildAt(i).name;
+            
+            return result;
         }
     }
 }

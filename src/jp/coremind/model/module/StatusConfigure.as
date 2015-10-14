@@ -1,7 +1,6 @@
 package jp.coremind.model.module
 {
     import jp.coremind.utility.data.Status;
-    import jp.coremind.model.transaction.UpdateRule;
 
     public class StatusConfigure
     {

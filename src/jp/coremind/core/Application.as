@@ -1,5 +1,3 @@
-config namespace CAL;
-
 package jp.coremind.core
 {
     import flash.display.DisplayObjectContainer;
@@ -32,6 +30,8 @@ package jp.coremind.core
         public static function initialize(deployTarget:DisplayObjectContainer, configure:IApplicationConfigure, callback:Function = null):void
         {
             _CONFIGURE = configure;
+            _CONFIGURE.viewLayer.initialize();
+            _CONFIGURE.statusModel.initialize();
             
             var _addedToStage:Function = function(e:Event = null):void
             {

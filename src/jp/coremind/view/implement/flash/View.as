@@ -1,5 +1,7 @@
 package jp.coremind.view.implement.flash
 {
+    import jp.coremind.configure.IViewTransition;
+    import jp.coremind.configure.ViewConfigure;
     import jp.coremind.control.Controller;
     import jp.coremind.core.Application;
     import jp.coremind.core.TransitionTween;
@@ -16,19 +18,27 @@ package jp.coremind.view.implement.flash
         Log.addCustomTag(TAG);
         
         private var
+            _isFocus:Boolean,
+            //_configure:ViewConfigure,
             _controller:Controller;
         
         /**
          * 画面表示オブジェクトクラス.
          * 画面のルートでViewControllerから制御される。
          */
-        public function View(name:String = null)
+        public function View(controllerClass:Class)
         {
-            name === null ? Log.error("[View] name is null.", this): this.name = name;
+            _isFocus = false;
+            
+            //_configure = configure;
             
             _controller = Controller.getInstance(
-                Application.configure.viewBluePrint.getControllerClass(name),
-                new ViewModel(this));
+                controllerClass,
+                //_configure.controllerClass,
+                new ViewModel(this)
+            );
+            
+            //name = _configure.viewName;
         }
         
         override public function destroy(withReference:Boolean=false):void
@@ -36,7 +46,11 @@ package jp.coremind.view.implement.flash
             super.destroy(withReference);
             
             _controller = null;
+            
+            //_configure = null;
         }
+        
+        public function isFocus():Boolean { return _isFocus; }
         
         public function get controller():Controller { return _controller; }
         
@@ -84,6 +98,7 @@ package jp.coremind.view.implement.flash
         public function focusInPreProcess(r:Routine, t:Thread):void
         {
             r.scceeded(name + " focusInPreProcess");
+            _isFocus = true;
         }
         
         public function get focusInTransition():Function
@@ -99,6 +114,7 @@ package jp.coremind.view.implement.flash
         public function focusOutPreProcess(r:Routine, t:Thread):void
         {
             r.scceeded(name + " focusOutPreProcess");
+            _isFocus = false;
         }
         
         public function get focusOutTransition():Function

@@ -1,4 +1,4 @@
-package jp.coremind.model.transaction
+package jp.coremind.model.module
 {
     public class UpdateRule
     {

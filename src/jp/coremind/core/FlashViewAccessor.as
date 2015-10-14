@@ -5,7 +5,6 @@ package jp.coremind.core
     
     import jp.coremind.view.abstract.ICalSprite;
     import jp.coremind.view.implement.flash.CalSprite;
-    import jp.coremind.view.implement.flash.NavigationView;
     import jp.coremind.view.implement.flash.View;
 
     public class FlashViewAccessor extends AbstractViewAccessor implements IViewAccessor
@@ -16,22 +15,14 @@ package jp.coremind.core
             
             stage.addChild(root as DisplayObject);
             
-            initializeLayer(root, CalSprite, View);
+            initializeLayer(root, CalSprite);
             
             completeHandler();
         }
         
-        public function run():void
+        override protected function get _commonView():Class
         {
-            getLayerProcessor(Layer.NAVIGATION).push(NavigationView);
-            
-            var initialView:Class  = Application.configure.initialFlashView;
-            if (initialView) getLayerProcessor(Layer.CONTENT).push(initialView);
-        }
-        
-        public function runTransition(transition:Function, ...params):void
-        {
-            
+            return View;
         }
     }
 }

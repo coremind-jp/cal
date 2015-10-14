@@ -138,7 +138,7 @@ package jp.coremind.view.implement.starling
          */
         protected function _onClick():void
         {
-            controller.onClick(_elementId);
+            controller.notifyClick(_elementId);
             //Log.info("_onClick");
         }
     }

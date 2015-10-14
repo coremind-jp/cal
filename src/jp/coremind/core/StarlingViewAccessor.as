@@ -3,10 +3,7 @@ package jp.coremind.core
     import flash.display.Stage;
     import flash.geom.Rectangle;
     
-    import jp.coremind.control.Controller;
-    import jp.coremind.utility.process.Thread;
     import jp.coremind.view.implement.starling.CalSprite;
-    import jp.coremind.view.implement.starling.NavigationView;
     import jp.coremind.view.implement.starling.View;
     
     import starling.core.Starling;
@@ -21,7 +18,12 @@ package jp.coremind.core
         {
             StarlingMain.INITIALIZE_HANDLER = function(instance:StarlingMain):void
             {
-                initializeLayer(instance, CalSprite, View);
+                initializeLayer(instance, CalSprite);
+                
+                getLayerProcessor(Layer.NAVIGATION).dispatcher = Application.globalEvent;
+                getLayerProcessor(Layer.CONTENT).dispatcher = Application.globalEvent;
+                getLayerProcessor(Layer.POPUP).dispatcher   = Application.globalEvent;
+                
                 completeHandler();
             };
             
@@ -39,28 +41,9 @@ package jp.coremind.core
             _starling.start();
         }
         
-        public function run():void
+        override protected function get _commonView():Class
         {
-            getLayerProcessor(Layer.NAVIGATION).push(NavigationView);
-            getLayerProcessor(Layer.CONTENT).dispatcher = Application.globalEvent;
-            getLayerProcessor(Layer.POPUP).dispatcher   = Application.globalEvent;
-            
-            var initialView:Class  = Application.configure.initialStarlingView;
-            var targetLayer:String = Application.configure.enabledSplash ? Layer.POPUP: Layer.CONTENT;
-            if (initialView) getLayerProcessor(targetLayer).push(initialView);
-            
-            Starling.current.showStats = true;
-        }
-        
-        public function runTransition(transition:Function, ...params):void
-        {
-            params.unshift(root);
-            
-            var thread:Thread = new Thread("").pushRoutine(transition.apply(null, params))
-            var pId:String = "window transition tween";
-            
-            Controller.getInstance().syncProcess.pushThread(pId, thread, false)
-            Controller.getInstance().syncProcess.run(pId);
+            return View;
         }
     }
 }

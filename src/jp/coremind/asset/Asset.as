@@ -29,20 +29,19 @@ package jp.coremind.asset
             Application.globalEvent.addEventListener(ViewTransitionEvent.VIEW_DESTROY_AFTER, free);
         }
         
-        public static function allocate(pId:String, viewName:String):void
+        public static function allocate(pId:String, fileList:Array):void
         {
             var controller:Controller = Controller.getInstance();
             
-            var fileList:Array = Application.configure.asset.getAllocateIdList(viewName);
             _UpdateReferenceCounterByAllocate(fileList);
             
-            var loadThread:Thread = new Thread("AssetLoading ["+viewName+"]");
+            var loadThread:Thread = new Thread("AssetLoading ["+pId+"]");
             for (var i:int = 0; i < fileList.length; i++) 
                 loadThread.pushRoutine(WebRequest.create(fileList[i], fileList[i]));
             controller.syncProcess.pushThread(pId, loadThread, true, false);
             
             controller.syncProcess
-                .pushThread(pId, new Thread("AssetAllocate ["+viewName+"]")
+                .pushThread(pId, new Thread("AssetAllocate ["+pId+"]")
                 .pushRoutine(function(r:Routine, t:Thread):void
                 {
                     for (var i:int = 0; i < fileList.length; i++) 

@@ -2,7 +2,6 @@ package jp.coremind.view.interaction
 {
     import jp.coremind.asset.Grid9ImageAsset;
     import jp.coremind.utility.Log;
-    import jp.coremind.utility.process.Thread;
     import jp.coremind.view.abstract.IElement;
     
     public class RoundRectInteraction extends ElementInteraction implements IElementInteraction
@@ -46,26 +45,6 @@ package jp.coremind.view.interaction
             var asset:Grid9ImageAsset = parent.getDisplayByName(_name) as Grid9ImageAsset;
             if (asset) Grid9ImageAsset.updateRoundRect(asset, _assetId, _color, _radius, _topLeft, _bottomLeft, _bottomRight, _topRight);
             else Log.warning("undefined Parts(RoundRectInteraction). name=", _name);
-        }
-        
-        public function isThreadType():Boolean
-        {
-            return false;
-        }
-        
-        public function createThread(parent:IElement):Thread
-        {
-            return null;
-        }
-        
-        public function get parallelThread():Boolean
-        {
-            return false;
-        }
-        
-        public function get asyncThread():Boolean
-        {
-            return false;
         }
     }
 }
