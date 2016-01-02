@@ -7,6 +7,9 @@ package jp.coremind.view.layout
     import jp.coremind.storage.IStorageListener;
     import jp.coremind.storage.StorageModelReader;
     import jp.coremind.utility.Log;
+    import jp.coremind.utility.process.Routine;
+    import jp.coremind.utility.process.Thread;
+    import jp.coremind.view.abstract.IDisplayObject;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.builder.GridListElementFactory;
     
@@ -281,6 +284,30 @@ package jp.coremind.view.layout
             }
             
             return result;
+        }
+        
+        public function getTweenRoutineByAddedStage(modelData:*):Function
+        {
+            return function(r:Routine, t:Thread, child:IDisplayObject, fromX:Number = NaN, fromY:Number = NaN, toX:Number = NaN, toY:Number = NaN):Function
+            {
+                r.scceeded();
+            };
+        }
+        
+        public function getTweenRoutineByMoved(modelData:*):Function
+        {
+            return function(r:Routine, t:Thread, child:IDisplayObject, toX:Number, toY:Number, fromX:Number = NaN, fromY:Number = NaN):Function
+            {
+                r.scceeded();
+            };
+        }
+        
+        public function getTweenRoutineByRemovedStage(modelData:*):Function
+        {
+            return function(r:Routine, t:Thread, child:IDisplayObject, toX:Number = NaN, toY:Number = NaN):Function
+            {
+                r.scceeded();
+            };
         }
     }
 }

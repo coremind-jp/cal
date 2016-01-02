@@ -3,7 +3,7 @@ config namespace CAL;
 package jp.coremind.utility
 {
     import flash.utils.Dictionary;
-
+    
     public class Log
     {
         public static var STACK_TRACE_NUM:int  = 25;

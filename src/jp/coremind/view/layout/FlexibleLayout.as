@@ -2,12 +2,13 @@ package jp.coremind.view.layout
 {
     import flash.geom.Rectangle;
     
+    import jp.coremind.configure.IElementBluePrint;
     import jp.coremind.core.Application;
     import jp.coremind.storage.StorageModelReader;
     import jp.coremind.utility.Log;
+    import jp.coremind.utility.process.Routine;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.builder.IDisplayObjectBuilder;
-    import jp.coremind.configure.IElementBluePrint;
     import jp.coremind.view.builder.ListElementFactory;
 
     public class FlexibleLayout implements IListLayout
@@ -112,6 +113,21 @@ package jp.coremind.view.layout
                 Log.error("[FlexibleLayout]", index, " is undefined.");
                 return null;
             }
+        }
+        
+        public function getTweenRoutineByAddedStage(modelData:*):Function
+        {
+            return Routine.SKIP;
+        }
+        
+        public function getTweenRoutineByMoved(modelData:*):Function
+        {
+            return Routine.SKIP;
+        }
+        
+        public function getTweenRoutineByRemovedStage(modelData:*):Function
+        {
+            return Routine.SKIP;
         }
     }
 }

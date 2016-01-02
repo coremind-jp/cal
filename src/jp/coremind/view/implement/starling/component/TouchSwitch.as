@@ -1,20 +1,22 @@
 package jp.coremind.view.implement.starling.component
 {
+    import jp.coremind.core.Application;
     import jp.coremind.core.StatusModelType;
     import jp.coremind.model.module.StatusGroup;
     import jp.coremind.model.module.StatusModel;
     import jp.coremind.utility.data.Status;
     import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.implement.starling.TouchElement;
+    import jp.coremind.view.layout.Layout;
 
     /**
      * TouchElementクラスにスイッチ機能を加えたクラス.
      */
     public class TouchSwitch extends TouchElement
     {
-        public function TouchSwitch(tapRange:Number=5, backgroundBuilder:IBackgroundBuilder = null)
+        public function TouchSwitch(layoutCalculator:Layout, backgroundBuilder:IBackgroundBuilder = null)
         {
-            super(tapRange, backgroundBuilder);
+            super(layoutCalculator, backgroundBuilder);
         }
         
         override protected function get statusModelType():String
@@ -36,8 +38,15 @@ package jp.coremind.view.implement.starling.component
                 case StatusGroup.SELECT:
                     switch(status)
                     {
-                        case Status.ON:    _onSelected(); return true;
-                        case Status.OFF: _onDeselected(); return true;
+                        case Status.ON:
+                            _onSelected();
+                            Application.router.notify(_elementInfo, group, status);
+                            return true;
+                            
+                        case Status.OFF:
+                            _onDeselected();
+                            Application.router.notify(_elementInfo, group, status);
+                            return true;
                     }
             }
             return super._applyStatus(group, status);

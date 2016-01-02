@@ -113,6 +113,13 @@ package jp.coremind.utility.helper
             return function():* { return apply(f, rest); }
         }
         
+        CAL::DEBUG
+        public function call(f:Function, ...rest):*
+        {
+            return f.apply(null, rest);
+        }
+        
+        CAL::RELEASE
         public function call(f:Function, ...rest):*
         {
             try {
@@ -128,6 +135,19 @@ package jp.coremind.utility.helper
             return function():* { return apply(f, args); }
         }
         
+        CAL::DEBUG
+        public function apply(f:Function, args:Array):*
+        {
+            if (!(f is Function))
+            {
+                Log.error("f paramater is not Function dump auguments", arguments);
+                return null;
+            }
+            
+            return f.apply(null, args);
+        }
+        
+        CAL::RELEASE
         public function apply(f:Function, args:Array):*
         {
             if (!(f is Function))
@@ -143,6 +163,5 @@ package jp.coremind.utility.helper
                 return null;
             }
         }
-        
     }
 }

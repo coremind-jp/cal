@@ -9,7 +9,7 @@ package jp.coremind.core
     
     import jp.coremind.asset.Asset;
     import jp.coremind.configure.IApplicationConfigure;
-    import jp.coremind.event.ViewTransitionEvent;
+    import jp.coremind.event.TransitionEvent;
     import jp.coremind.storage.Storage;
     
     import starling.core.Starling;
@@ -26,6 +26,12 @@ package jp.coremind.core
         
         internal static var _DISPATCHER:IEventDispatcher = new EventDispatcher();
         public static function get globalEvent():IEventDispatcher { return _DISPATCHER; }
+        
+        private static const _ROUTER:Router = new Router();
+        public static function get router():Router { return _ROUTER; }
+        
+        public static const sync:SyncProcess   = new SyncProcess();
+        public static const async:AsyncProcess = new AsyncProcess();
         
         public static function initialize(deployTarget:DisplayObjectContainer, configure:IApplicationConfigure, callback:Function = null):void
         {
@@ -50,10 +56,10 @@ package jp.coremind.core
                 $.event.anyone(deployTarget, [Event.ADDED_TO_STAGE], [_addedToStage]);
             
             //gc test
-            globalEvent.addEventListener(ViewTransitionEvent.BEGIN_TRANSITION, function(e:ViewTransitionEvent):void {
+            globalEvent.addEventListener(TransitionEvent.BEGIN_TRANSITION, function(e:TransitionEvent):void {
                 System.pauseForGCIfCollectionImminent(1);
             });
-            globalEvent.addEventListener(ViewTransitionEvent.END_TRANSITION, function(e:ViewTransitionEvent):void {
+            globalEvent.addEventListener(TransitionEvent.END_TRANSITION, function(e:TransitionEvent):void {
                 System.pauseForGCIfCollectionImminent(.25);
                 System.gc();
             });

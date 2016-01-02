@@ -14,6 +14,8 @@ package jp.coremind.view.builder
         
         protected var
             _storageId:String,
+            _storageInteractionId:String,
+            _runInteractionOnCreated:Boolean,
             _elementClass:Class,
             _backgroundBuilder:IBackgroundBuilder;
         
@@ -23,6 +25,7 @@ package jp.coremind.view.builder
             
             _storageId    = Storage.UNDEFINED_STORAGE_ID;
             _elementClass = Element;
+            _runInteractionOnCreated = false;
         }
         
         public function getElementClass():Class
@@ -48,13 +51,20 @@ package jp.coremind.view.builder
             return this;
         }
         
+        public function storageInteraction(storageInteractionId:String, runInteractionOnCreated:Boolean = true):ElementBuilder
+        {
+            _storageInteractionId = storageInteractionId;
+            _runInteractionOnCreated = runInteractionOnCreated;
+            return this;
+        }
+        
         public function build(name:String, actualParentWidth:int, actualParentHeight:int):IBox
         {
             Log.custom(TAG, "build", name);
             
             var element:IElement = new _elementClass(layout, _backgroundBuilder);
             element.name = name;
-            element.initialize(actualParentWidth, actualParentHeight, _storageId);
+            element.initialize(actualParentWidth, actualParentHeight, _storageId, _storageInteractionId, _runInteractionOnCreated);
             
             return element;
         }

@@ -78,14 +78,14 @@ package jp.coremind.view.implement.starling.component
             super.destroy(withReference);
         }
         
-        override protected function _onLoadStorageReader(id:String):void
+        override protected function _onLoadElementInfo():void
         {
-            super._onLoadStorageReader(id);
+            super._onLoadElementInfo();
             
             /** TODO 設定で変えられるように(clipRectはdrawコールをあげる) */
             //clipRect   = new Rectangle(0, 0, _maxWidth, _maxHeight);
             
-            _container.initialize(_maxWidth, _maxHeight, storageId);
+            _container.initialize(_maxWidth, _maxHeight, _reader.id);
             _container.addListener(ElementEvent.UPDATE_SIZE, _onUpdateContentSize);
             _container.x = _container.y = 0;
             addDisplayAt(_container, _background ? 1: 0);
@@ -99,13 +99,13 @@ package jp.coremind.view.implement.starling.component
         public function set sliderX(gauge:Slider):void
         {
             _sliderX = gauge;
-            if (_sliderX) _updateSlider();
+            _updateSlider();
         }
         
         public function set sliderY(gauge:Slider):void
         {
             _sliderY = gauge;
-            if (_sliderY) _updateSlider();
+            _updateSlider();
         }
         
         private function _onUpdateContentSize(e:Event):void
@@ -154,11 +154,11 @@ package jp.coremind.view.implement.starling.component
                 
                 _updateFlickArea();
                 
-                _flick.createTracker(_OFFSET, _flickArea, _onTrackerCreate);
+                _flick.createTracker(_OFFSET, _flickArea, _flickCallback);
             }
         }
         
-        private function _onTrackerCreate(x:NumberTracker, y:NumberTracker):void
+        private function _flickCallback(x:NumberTracker, y:NumberTracker):void
         {
             if (_sliderX) _sliderX.update(x.rate);
             if (_sliderY) _sliderY.update(y.rate);

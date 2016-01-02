@@ -7,7 +7,9 @@ package jp.coremind.utility.process
     public class Routine
     {
         public static const TAG:String = "[Routine]";
-        //Log.addCustomTag(TAG);
+        Log.addCustomTag(TAG);
+        
+        public static const SKIP:Function = function(r:Routine, t:Thread):void { r.scceeded(); };
         
         public var weight:int;
         

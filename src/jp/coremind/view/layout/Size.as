@@ -18,12 +18,14 @@ package jp.coremind.view.layout
         
         private var
             _size:Number,
-            _dependParent:Boolean;
+            _dependParent:Boolean,
+            _pixelOffset:int;
         
         public function Size(size:Number, depentdParent:Boolean = false)
         {
             _size = size;
             _dependParent = depentdParent;
+            _pixelOffset = 0;
         }
         
         public function clone():Size
@@ -33,7 +35,13 @@ package jp.coremind.view.layout
         
         public function calc(parentSize:Number):Number
         {
-            return _dependParent ? parentSize * _size: _size;
+            return (_dependParent ? parentSize * _size: _size) + _pixelOffset;
+        }
+        
+        public function pixelOffset(pixel:int):Size
+        {
+            _pixelOffset = pixel;
+            return this;
         }
         
         /**

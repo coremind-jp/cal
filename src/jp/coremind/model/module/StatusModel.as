@@ -157,7 +157,9 @@ package jp.coremind.model.module
                 for (var i:int = 0, len:int = updateLog.length; _isUpdating && i < len; i++)
                 {
                     Log.custom(TAG, "dispatch", updateLog[i]);
-                    dispatch(updateLog[i], getGroupStatus(updateLog[i]).value);
+                    //このループ途中でこのオブジェクト自体が破棄される可能性があるのでループ毎に参照が存在するか確認をしておく
+                    var status:Status = getGroupStatus(updateLog[i]);
+                    if (status) dispatch(updateLog[i], status.value);
                 }
                 
                 _isUpdating = false;

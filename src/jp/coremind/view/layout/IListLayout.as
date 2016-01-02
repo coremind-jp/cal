@@ -47,5 +47,11 @@ package jp.coremind.view.layout
          * @param   length                  データ配列長
          */
         function calcTotalRect(actualParentWidth:int, actualParentHeight:int, length:int = 0):Rectangle;
+        
+        function getTweenRoutineByAddedStage(modelData:*):Function;
+        
+        function getTweenRoutineByMoved(modelData:*):Function;
+        
+        function getTweenRoutineByRemovedStage(modelData:*):Function;
     }
 }

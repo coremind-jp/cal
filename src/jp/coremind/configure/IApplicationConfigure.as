@@ -1,6 +1,8 @@
 package jp.coremind.configure
 {
     import flash.geom.Rectangle;
+    
+    import jp.coremind.utility.IUrlConverter;
 
     public interface IApplicationConfigure
     {
@@ -73,5 +75,9 @@ package jp.coremind.configure
          */
         function get screenOrientaion():int;
         
+        /**
+         * ローカルファイルを参照する際に利用するURLコンバーター.
+         */
+        function get urlConverter():IUrlConverter;
     }
 }

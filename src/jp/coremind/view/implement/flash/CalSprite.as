@@ -1,6 +1,5 @@
 package jp.coremind.view.implement.flash
 {
-    import jp.coremind.core.TransitionTween;
     import jp.coremind.view.abstract.ICalSprite;
     import jp.coremind.view.implement.flash.buildin.Sprite;
     
@@ -31,31 +30,6 @@ package jp.coremind.view.implement.flash
         public function disablePointerDeviceControl():void
         {
             mouseChildren = mouseEnabled = false;
-        }
-        
-        public function get addTransition():Function
-        {
-            return TransitionTween.FAST_ADD;
-        }
-        
-        public function get mvoeTransition():Function
-        {
-            return TransitionTween.LINER_MOVE;
-        }
-        
-        public function get removeTransition():Function
-        {
-            return TransitionTween.FAST_REMOVE;
-        }
-        
-        public function get visibleTransition():Function
-        {
-            return TransitionTween.FAST_VISIBLE;
-        }
-        
-        public function get invisibleTransition():Function
-        {
-            return TransitionTween.FAST_INVISIBLE;
         }
         
         public function createChildrenNameList():Array

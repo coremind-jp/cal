@@ -8,10 +8,8 @@ package jp.coremind.asset
     
     import jp.coremind.asset.painter.RuntimeTexturePainter;
     import jp.coremind.configure.IAssetConfigure;
-    import jp.coremind.control.Controller;
     import jp.coremind.core.Application;
     import jp.coremind.core.routine.WebRequest;
-    import jp.coremind.event.ViewTransitionEvent;
     import jp.coremind.utility.Log;
     import jp.coremind.utility.process.Routine;
     import jp.coremind.utility.process.Thread;
@@ -26,36 +24,49 @@ package jp.coremind.asset
         
         public static function initialize():void
         {
-            Application.globalEvent.addEventListener(ViewTransitionEvent.VIEW_DESTROY_AFTER, free);
         }
         
         public static function allocate(pId:String, fileList:Array):void
         {
-            var controller:Controller = Controller.getInstance();
-            
             _UpdateReferenceCounterByAllocate(fileList);
             
+            var urlList:Array = _createUrlList(fileList);
             var loadThread:Thread = new Thread("AssetLoading ["+pId+"]");
             for (var i:int = 0; i < fileList.length; i++) 
-                loadThread.pushRoutine(WebRequest.create(fileList[i], fileList[i]));
-            controller.syncProcess.pushThread(pId, loadThread, true, false);
+                loadThread.pushRoutine(WebRequest.create(fileList[i], urlList[i]));
             
-            controller.syncProcess
-                .pushThread(pId, new Thread("AssetAllocate ["+pId+"]")
+            var allocateThread:Thread = new Thread("AssetAllocate ["+pId+"]")
                 .pushRoutine(function(r:Routine, t:Thread):void
                 {
                     for (var i:int = 0; i < fileList.length; i++) 
                         fileList[i] in _CONTAINER ?
-                            fileList.splice(i--, 1):
-                            _CONTAINER[fileList[i]] = t.readData(fileList[i]);
+                        fileList.splice(i--, 1):
+                        _CONTAINER[fileList[i]] = t.readData(fileList[i]);
                     
                     for (var j:int = 0; j < fileList.length; j++) 
                         if (_CONTAINER[fileList[j]] is Bitmap)
                             _CONTAINER[fileList[j]] = _CreateTexturePicker(fileList[j]);
                     
-                    r.scceeded("\nalocated" + Log.toString(fileList)
-                             + "\ndumpReferenceCounter" + Log.toString(_REFERENCE_COUNTER));
-                }), true, false);
+                    r.scceeded(
+                          "\nalocated" + Log.toString(fileList)
+                        + "\ndumpReferenceCounter" + Log.toString(_REFERENCE_COUNTER));
+                });
+            
+            Application.sync
+                .pushThread(pId, loadThread, true, false)
+                .pushThread(pId, allocateThread, true, false);
+        }
+        
+        private static function _createUrlList(fileList:Array):Array
+        {
+            var result:Array = [];
+            
+            fileList.forEach(function(file:String, i:int, arr:Array):void {
+                result[i] = Application.configure.urlConverter.getUrl(file);
+            });
+            
+            Log.custom(TAG, "createUrlList:", result);
+            return result;
         }
         
         private static function _UpdateReferenceCounterByAllocate(fileList:Array):void
@@ -101,11 +112,11 @@ package jp.coremind.asset
             return result;
         }
         
-        public static function free(e:ViewTransitionEvent):void
+        public static function dispose(viewId:String):void
         {
-            Log.custom(TAG, "free [", e.name, "]");
+            Log.custom(TAG, "free [", viewId, "]");
             
-            var fileList:Array = Application.configure.asset.getAllocateIdList(e.name);
+            var fileList:Array = Application.configure.asset.getAllocateIdList(viewId);
             _UpdateReferenceCounterByFree(fileList);
             
             Log.custom(TAG, "free targets" , fileList, "\ndumpReferenceCounter", _REFERENCE_COUNTER);

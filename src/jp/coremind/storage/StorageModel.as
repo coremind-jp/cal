@@ -24,7 +24,7 @@ package jp.coremind.storage
         
         public function StorageModel(id:String, type:String = StorageType.HASH)
         {
-            _reader      = _storage.requestModelReader(id, type);
+            _reader      = storage.requestModelReader(id, type);
             _filter      = null;
             _sortNames   = null;
             _sortOptions = 0;
@@ -154,7 +154,7 @@ package jp.coremind.storage
                 
                 diff.build(origin, _history);
                 
-                _storage.update(this, _reader._origin = diff.editedOrigin);
+                storage.update(this, _reader._origin = diff.editedOrigin);
                 
                 _deleteStorageModel(diff);
                 
@@ -168,7 +168,7 @@ package jp.coremind.storage
             
             if (listDiff)
                 for (var i:int = 0; i < listDiff.removed.length; i++) 
-                    _storage.de1ete(_reader.id+"."+listDiff.removed[i].index, _reader.type);
+                    storage.de1ete(_reader.id+"."+listDiff.removed[i].index, _reader.type);
         }
     }
 }

@@ -3,7 +3,7 @@ package jp.coremind.storage
     import jp.coremind.configure.IStorageConfigure;
     import jp.coremind.core.Application;
     import jp.coremind.core.Layer;
-    import jp.coremind.event.ViewTransitionEvent;
+    import jp.coremind.event.TransitionEvent;
     import jp.coremind.model.ElementModel;
     import jp.coremind.utility.Log;
 
@@ -35,7 +35,7 @@ package jp.coremind.storage
             _storageContainer[StorageType.SHARED]  = new SharedObjectStrage();
             _storageContainer[StorageType.SQ_LITE] = new SqLiteStorage();
             
-            Application.globalEvent.addEventListener(ViewTransitionEvent.END_TRANSITION, refresh);
+            Application.globalEvent.addEventListener(TransitionEvent.END_TRANSITION, refresh);
         }
         
         /** 
@@ -162,7 +162,7 @@ package jp.coremind.storage
                 _elementModelStorage.de1ete(id);
         }
         
-        public function refresh(e:ViewTransitionEvent = null):void
+        public function refresh(e:TransitionEvent = null):void
         {
             Log.custom("refresh");
             

@@ -1,5 +1,6 @@
 package jp.coremind.view.implement.starling
 {
+    import jp.coremind.core.Application;
     import jp.coremind.core.StatusModelType;
     import jp.coremind.model.module.StatusGroup;
     import jp.coremind.model.module.StatusModel;
@@ -99,7 +100,7 @@ package jp.coremind.view.implement.starling
                 //↑のactionメソッドでViewの移動が発生してこの要素が破棄されていた場合_readerがnullになる可能性があるので、
                 //そのチェックをしてからボタンコントローラーへメッセージを送る
                 if (_reader)
-                    controller.syncProcess.isRunning() ?
+                    Application.sync.isRunning() ?
                         status.update(StatusGroup.RELEASE, Status.ROLL_OUT):
                         status.update(StatusGroup.RELEASE, Status.ROLL_OVER);
             }
@@ -119,16 +120,30 @@ package jp.coremind.view.implement.starling
                 case StatusGroup.RELEASE:
                     switch(status)
                     {
-                        case Status.ROLL_OVER: _onRollOver(); return true;
-                        case Status.ROLL_OUT :  _onRollOut(); return true;
+                        case Status.ROLL_OVER:
+                            _onRollOver();
+                            Application.router.notify(_elementInfo, group, status);
+                            return true;
+                            
+                        case Status.ROLL_OUT:
+                            _onRollOut();
+                            Application.router.notify(_elementInfo, group, status);
+                            return true;
                     }
                     break;
                 
                 case StatusGroup.PRESS:
                     switch(status)
                     {
-                        case Status.ROLL_OVER: _onRollOver(); return true;
-                        case Status.ROLL_OUT :  _onRollOut(); return true;
+                        case Status.ROLL_OVER:
+                            _onRollOver();
+                            Application.router.notify(_elementInfo, group, status);
+                            return true;
+                            
+                        case Status.ROLL_OUT:
+                            _onRollOut();
+                            Application.router.notify(_elementInfo, group, status);
+                            return true;
                     }
                     break;
             }

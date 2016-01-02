@@ -3,6 +3,7 @@ package jp.coremind.view.implement.starling
     import flash.geom.Point;
     import flash.geom.Rectangle;
     
+    import jp.coremind.core.Application;
     import jp.coremind.core.StatusModelType;
     import jp.coremind.model.module.StatusGroup;
     import jp.coremind.model.module.StatusModel;
@@ -20,9 +21,7 @@ package jp.coremind.view.implement.starling
             _triggerRect:Rectangle,
             _hold:Boolean;
             
-        public function TouchElement(
-            layoutCalculator:Layout,
-            backgroundBuilder:IBackgroundBuilder = null)
+        public function TouchElement(layoutCalculator:Layout, backgroundBuilder:IBackgroundBuilder = null)
         {
             super(layoutCalculator, backgroundBuilder);
             
@@ -93,16 +92,33 @@ package jp.coremind.view.implement.starling
                     switch(status)
                     {
                         case Status.ROLL_OUT:
-                        case Status.UP: _onUp(); return true;
+                            _onUp();
+                            Application.router.notify(_elementInfo, group, status);
+                            return true;
+                            
+                        case Status.UP:
+                            _onUp();
+                            Application.router.notify(_elementInfo, group, status);
+                            return true;
                     }
                     break;
                 
                 case StatusGroup.PRESS:
                     switch(status)
                     {
-                        case Status.DOWN : _onDown(); return true;
-                        case Status.UP   : _onUp(); return true;
-                        case Status.CLICK: _onClick();
+                        case Status.DOWN:
+                            _onDown();
+                            Application.router.notify(_elementInfo, group, status);
+                            return true;
+                            
+                        case Status.UP:
+                            _onUp();
+                            Application.router.notify(_elementInfo, group, status);
+                            return true;
+                            
+                        case Status.CLICK:
+                            _onClick();
+                            Application.router.notify(_elementInfo, group, status);
                             return true;
                     }
                     break;
@@ -138,7 +154,6 @@ package jp.coremind.view.implement.starling
          */
         protected function _onClick():void
         {
-            controller.notifyClick(_elementId);
             //Log.info("_onClick");
         }
     }

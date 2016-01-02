@@ -1,6 +1,7 @@
 package jp.coremind.view.builder
 {
     import jp.coremind.asset.Asset;
+    import jp.coremind.asset.painter.ColorPainter;
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IBox;
     import jp.coremind.view.implement.starling.buildin.Image;
@@ -12,6 +13,7 @@ package jp.coremind.view.builder
     {
         private var
             _assetId:String,
+            _color:uint,
             _atlasName:String;
         
         public function ImageBuilder(layout:Layout = null)
@@ -26,17 +28,33 @@ package jp.coremind.view.builder
             return this;
         }
         
+        public function initialColor(assetId:String, color:uint):ImageBuilder
+        {
+            _assetId = assetId;
+            _color = color;
+            return this;
+        }
+        
         public function build(name:String, actualParentWidth:int, actualParentHeight:int):IBox
         {
             var image:Image;
-            if (_assetId && _atlasName)
+            if (_assetId)
             {
-                image = new Image(Asset.texture(_assetId).getAtlasTexture(_atlasName));
-                
-                //アトラステクスチャの場合、サイズを定義に反映させる.(定数を使っている可能性があるので複製する)
-                _layout = _layout.clone();
-                _layout.width.setAtlasTextureSize(image.width);
-                _layout.height.setAtlasTextureSize(image.height);
+                if (_atlasName)
+                {
+                    image = new Image(Asset.texture(_assetId).getAtlasTexture(_atlasName));
+                    
+                    //アトラステクスチャの場合、サイズを定義に反映させる.(定数を使っている可能性があるので複製する)
+                    _layout = _layout.clone();
+                    _layout.width.setAtlasTextureSize(image.width);
+                    _layout.height.setAtlasTextureSize(image.height);
+                }
+                else
+                {
+                    image = new Image(Asset.texture(_assetId).getPaintTexture(ColorPainter, _color));
+                    image.width  = _layout.width.calc(actualParentWidth);
+                    image.height = _layout.height.calc(actualParentHeight);
+                }
             }
             else　image = new Image(Texture.empty(
                 _layout.width.calc(actualParentWidth),

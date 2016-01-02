@@ -27,6 +27,16 @@ package jp.coremind.model.transaction
             return _updated ? _updated: _updated = new <TransactionLog>[];
         }
         
+        public function createUpdatedKeyList():Array
+        {
+            var result:Array = [];
+            
+            for (var i:int = 0, len:int = updated.length; i < len; i++) 
+                result[i] = updated[i].key;
+            
+            return result;
+        }
+        
         /**
          * 元データと比較し差分データを作成する.
          * このメソッドの呼び出し後にeditedOrigin, updatedアクセサにアクセスすることができる。

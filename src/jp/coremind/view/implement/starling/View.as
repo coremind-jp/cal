@@ -1,15 +1,8 @@
 package jp.coremind.view.implement.starling
 {
-    import jp.coremind.configure.IElementBluePrint;
-    import jp.coremind.configure.ViewConfigure;
-    import jp.coremind.control.Controller;
-    import jp.coremind.core.Application;
-    import jp.coremind.core.TransitionTween;
-    import jp.coremind.model.ViewModel;
     import jp.coremind.utility.Log;
     import jp.coremind.utility.process.Routine;
     import jp.coremind.utility.process.Thread;
-    import jp.coremind.view.abstract.IDisplayObject;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.abstract.IView;
     
@@ -20,36 +13,26 @@ package jp.coremind.view.implement.starling
         public static const TAG:String = "[StarlingView]";
         Log.addCustomTag(TAG);
         
-        private var
-            _isFocus:Boolean,
-            _controller:Controller;
+        private var _isFocus:Boolean;
         
         /**
          * 画面表示オブジェクトクラス.
          * 画面のルートでViewControllerから制御される。
          */
-        public function View(controllerClass:Class)
+        public function View()
         {
-            pivotX = Starling.current.stage.stageWidth  >> 1;
-            pivotY = Starling.current.stage.stageHeight >> 1;
-            x = pivotX;
-            y = pivotY;
+            x = pivotX = Starling.current.stage.stageWidth  >> 1;
+            y = pivotY = Starling.current.stage.stageHeight >> 1;
             
             _isFocus = touchable = false;
-            
-            _controller = Controller.getInstance(controllerClass, new ViewModel(this));
         }
         
         override public function destroy(withReference:Boolean=false):void
         {
             super.destroy(withReference);
-            
-            _controller = null;
         }
         
         public function isFocus():Boolean { return _isFocus; }
-        
-        public function get controller():Controller { return _controller; }
         
         public function initializeProcess(r:Routine, t:Thread):void
         {
@@ -66,13 +49,13 @@ package jp.coremind.view.implement.starling
         public function getElement(path:String):IElement
         {
             var pathList:Array = path.split(".");
-            var child:IElement;
+            var child:IElement = getDisplayByName(pathList.shift()) as IElement;
             
-            for (var i:int, len:int = pathList.length; i < len; i++)
-            {
-                child = getDisplayByName(pathList[i]) as IElement;
-                if (!child) Log.error(pathList[i], "not found.", path);
-            }
+            for (var i:int, len:int = pathList.length; i < len && child; i++)
+                child = child.getDisplayByName(pathList[i]) as IElement;
+            
+            if (!child)
+                Log.error(pathList[i], "not found.", path);
             
             return child;
         }
@@ -82,11 +65,6 @@ package jp.coremind.view.implement.starling
             Log.custom(TAG, name, "focusInPreProcess");
             _isFocus = true;
             r.scceeded();
-        }
-        
-        public function get focusInTransition():Function
-        {
-            return TransitionTween.FAST_ADD;
         }
         
         public function focusInPostProcess(r:Routine, t:Thread):void
@@ -101,11 +79,6 @@ package jp.coremind.view.implement.starling
             Log.custom(TAG, name, "focusOutPreProcess");
             _isFocus = false;
             r.scceeded();
-        }
-        
-        public function get focusOutTransition():Function
-        {
-            return TransitionTween.SKIP;
         }
         
         public function focusOutPostProcess(r:Routine, t:Thread):void

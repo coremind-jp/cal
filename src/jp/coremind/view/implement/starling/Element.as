@@ -1,11 +1,12 @@
 package jp.coremind.view.implement.starling
 {
-    import jp.coremind.control.Controller;
+    import jp.coremind.core.Application;
+    import jp.coremind.core.StorageAccessor;
     import jp.coremind.event.ElementEvent;
+    import jp.coremind.event.ElementInfo;
     import jp.coremind.model.ElementModel;
     import jp.coremind.model.transaction.Diff;
     import jp.coremind.storage.IStorageListener;
-    import jp.coremind.storage.Storage;
     import jp.coremind.storage.StorageModelReader;
     import jp.coremind.utility.IRecycle;
     import jp.coremind.utility.Log;
@@ -14,6 +15,7 @@ package jp.coremind.view.implement.starling
     import jp.coremind.view.abstract.IStretchBox;
     import jp.coremind.view.abstract.IView;
     import jp.coremind.view.builder.IBackgroundBuilder;
+    import jp.coremind.view.interaction.StorageInteraction;
     import jp.coremind.view.layout.Layout;
     import jp.coremind.view.layout.PartsLayout;
     
@@ -26,11 +28,12 @@ package jp.coremind.view.implement.starling
         
         protected var
             _reader:StorageModelReader,
+            _elementModel:ElementModel,
             _layout:Layout,
+            _elementInfo:ElementInfo,
             _elementWidth:Number,
             _elementHeight:Number,
-            _elementId:String,
-            _elementModel:ElementModel,
+            _storageInteractionId:String,
             _partsLayout:PartsLayout,
             _background:IStretchBox;
         
@@ -59,7 +62,7 @@ package jp.coremind.view.implement.starling
         
         override public function destroy(withReference:Boolean = false):void
         {
-            Log.custom(TAG, "destroy", this, "storageId:", _reader ? _reader.id: null, "elementId:", _elementId);
+            Log.custom(TAG, "destroy", this, _elementInfo);
             
             if (_background)
                 _background = null;
@@ -72,7 +75,7 @@ package jp.coremind.view.implement.starling
             {
                 //StorageIdに紐づいていないElement（_readerIdがStorage.UNDEFINED_STORAGE_ID）の
                 //ElementModelはView切り替え時でも破棄されないため、明示的に破棄する必要がある。
-                controller.deleteElementModel(_elementId);
+                StorageAccessor.deleteElementModel(_elementInfo.elementId);
                 
                 _reader.removeListener(this);
                 _reader = null;
@@ -90,25 +93,13 @@ package jp.coremind.view.implement.starling
                 _partsLayout.reset();
                 _reader.removeListener(this);
             }
+            
+            if (parent) removeFromParent();
         }
         
-        public function get reader():StorageModelReader { return _reader; }
+        public function get elementInfo():ElementInfo   { return _elementInfo; }
         public function get elementWidth():Number       { return isNaN(_elementWidth)  ? width:  _elementWidth; }
         public function get elementHeight():Number      { return isNaN(_elementHeight) ? height: _elementHeight; }
-        public function get elementId():String          { return _elementId; }
-        public function get elementModel():ElementModel { return _elementModel; }
-        public function get controller():Controller
-        {
-            var parent:ICalSprite = this.parent as ICalSprite;
-            
-            while (parent)
-                if (parent is IView) return (parent as IView).controller;
-                else parent = parent.parentDisplay as ICalSprite;
-            
-            return Controller.getInstance();
-        }
-        
-        public function get storageId():String      { return _reader ? _reader.id: null; }
         
         //IListener interface
         public function addListener(type:String, listener:Function):void    { addEventListener(type, listener); }
@@ -117,22 +108,40 @@ package jp.coremind.view.implement.starling
         
         //IStorageListener interface
         public function preview(plainDiff:Diff):void {}
-        public function commit(plainDiff:Diff):void {}
-        
-        public function initialize(actualParentWidth:int, actualParentHeight:int, storageId:String = null):void
+        public function commit(plainDiff:Diff):void
         {
+            _applyStorageInteraction(plainDiff.createUpdatedKeyList());
+        }
+        
+        private function _applyStorageInteraction(updatedKeyList:Array):void
+        {
+            if (_storageInteractionId)
+            {
+                var si:StorageInteraction = Application.configure.interaction.getStorageInteraction(_storageInteractionId);
+                if (si) si.apply(this, updatedKeyList);
+            }
+        }
+        
+        public function initialize(actualParentWidth:int, actualParentHeight:int, storageId:String = null, storageInteractionId:String = null, runInteractionOnCreated:Boolean = false):void
+        {
+            _storageInteractionId = storageInteractionId;
             _initializeElementSize(actualParentWidth, actualParentHeight);
             
-            addEventListener(Event.ADDED_TO_STAGE, function(e:Event):void
+            var onAddedToStage:Function = function(e:Event):void
             {
-                removeListener(Event.ADDED_TO_STAGE, arguments.callee);
+                if (e) removeListener(Event.ADDED_TO_STAGE, arguments.callee);
                 
-                _createElementId();
+                _createElementInfo(storageId);
                 
-                _onLoadStorageReader(storageId);
+                _onLoadElementInfo();
+                
+                if (runInteractionOnCreated)
+                    _applyStorageInteraction(_reader.createModelKeyList());
                 
                 ready();
-            });
+            }
+            
+            stage ? onAddedToStage(): addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
         }
         
         protected function _initializeElementSize(actualParentWidth:Number, actualParentHeight:Number):void
@@ -154,42 +163,43 @@ package jp.coremind.view.implement.starling
             _refreshLayout(_elementWidth, _elementHeight);
         }
         
-        private function _createElementId():void
+        private function _createElementInfo(storageId:String = null):void
         {
-            _elementId = name;
-            
+            var elementId:String = name;
+            var ownerLayerId:String = "unknown";
+            var ownerViewId:String  = "unknown";
             var p:ICalSprite = parent as ICalSprite;
+            
             while (p)
             {
-                if (p is IView) break;
+                if (p is IView)
+                {
+                    ownerViewId  = p.name;
+                    ownerLayerId = p.parentDisplay ? p.parentDisplay.name: null;
+                    break;
+                }
                 else
                 {
-                    _elementId = p.name + "." + _elementId;
+                    elementId = p.name + "." + elementId;
                     p = p.parentDisplay as ICalSprite;
                 }
             }
+            
+            _elementInfo = new ElementInfo(ownerLayerId, ownerViewId, elementId, storageId);
+            Log.info("created info",　_elementInfo);
         }
         
-        protected function _onLoadStorageReader(id:String):void
+        protected function _onLoadElementInfo():void
         {
-            Log.custom(TAG, "onLoadStorageId", id);
-            if (id)
-            {
-                _reader = controller.requestModelReader(id);
-                _reader.addListener(this, StorageModelReader.LISTENER_PRIORITY_ELEMENT);
-            }
-            else
-            {
-                Log.info("undefined storageId", this, name);
-                _reader = controller.requestModelReader(Storage.UNDEFINED_STORAGE_ID);
-            }
+            _reader = _elementInfo.reader;
+            _reader.addListener(this, StorageModelReader.LISTENER_PRIORITY_ELEMENT);
             
             _initializeElementModel();
         }
         
         protected function _initializeElementModel():void
         {
-            _elementModel = controller.requestModelElementModel(_reader.id, _elementId);
+            _elementModel = _elementInfo.elementModel;
         }
         
         public function updateElementSize(elementWidth:Number, elementHeight:Number):void

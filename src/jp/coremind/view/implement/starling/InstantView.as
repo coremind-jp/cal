@@ -1,22 +1,15 @@
 package jp.coremind.view.implement.starling
 {
     import flash.events.MouseEvent;
-    import flash.geom.Point;
     
     import jp.coremind.core.Application;
-    
+    import jp.coremind.core.TransitionContainer;
+    import jp.coremind.core.ViewAccessor;
+
     public class InstantView extends View
     {
-        public function InstantView(controllerClass:Class)
+        public function InstantView()
         {
-            super(controllerClass);
-        }
-        
-        override public function destroy(withReference:Boolean=false):void
-        {
-            Application.stage.removeEventListener(MouseEvent.CLICK, _onClickStage);
-            
-            super.destroy(withReference);
         }
         
         override public function ready():void
@@ -28,41 +21,11 @@ package jp.coremind.view.implement.starling
         
         private function _onClickStage(e:MouseEvent):void
         {
-            if (controller.syncProcess.isRunning())
+            if (Application.sync.isRunning())
                 return;
             
-            var local:Point = globalToLocal(new Point(Application.pointerX, Application.pointerY));
-            if (!hitTest(local, false))
-            {
-                Application.stage.removeEventListener(MouseEvent.CLICK, _onClickStage);
-                controller.notifyClick(name);
-            }
+            Application.stage.removeEventListener(MouseEvent.CLICK, _onClickStage);
+            ViewAccessor.update(TransitionContainer.restore());
         }
     }
 }
-/*
-import jp.coremind.configure.IViewTransition;
-import jp.coremind.configure.LayerType;
-import jp.coremind.configure.ViewConfigure;
-import jp.coremind.configure.ViewInsertType;
-
-class InstantViewTransition implements IViewTransition
-{
-    private var _viewId:String;
-    
-    public function InstantViewTransition(viewId:String)
-    {
-        _viewId = viewId;
-    }
-    
-    public function get layerType():String
-    {
-        return LayerType.STARLING;
-    }
-    
-    public function getViewConfigure(layer:String):ViewConfigure
-    {
-        return new ViewConfigure(ViewInsertType.REQUEST_REMOVE, [_viewId]);
-    }
-}
-*/

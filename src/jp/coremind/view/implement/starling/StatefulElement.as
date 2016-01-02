@@ -68,8 +68,11 @@ package jp.coremind.view.implement.starling
             if (interaction) interaction.apply(this, group, status);
         }
         
+        private var _isReset:Boolean = false;
         override public function reset():void
         {
+            _isReset = true;
+            
             if (_reader)
             {
                 _elementModel.getModule(StatusModel).removeListener(_applyStatus);
@@ -81,7 +84,7 @@ package jp.coremind.view.implement.starling
         
         override public function destroy(withReference:Boolean = false):void
         {
-            if (_reader)
+            if (_reader && !_elementModel.isUndefined(StatusModel))
             {
                 _elementModel.getModule(StatusModel).removeListener(_applyStatus);
                 _elementModel.getModule(StatusModel).removeListener(_applyInteraction);

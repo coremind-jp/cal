@@ -22,8 +22,8 @@ package jp.coremind.model.transaction
         }
         
         public function get value():* { return _value; }
-        internal function get key():String { return String(_id); }
-        internal function get index():int  { return int(_id); }
+        public function get key():String { return _id; }
+        public function get index():int  { return _id === null ? -1: int(_id); }
         
         public function added():Boolean { return _action === _ADD_VALUE; }
         public function add(id:* = null):TransactionLog

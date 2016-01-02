@@ -4,6 +4,7 @@ package jp.coremind.storage
     
     import jp.coremind.core.StorageAccessor;
     import jp.coremind.model.transaction.Diff;
+    import jp.coremind.utility.Log;
     
     /**
      * Storageクラスに格納されているデータの読み出しと変更監視の制御するクラス.
@@ -45,12 +46,28 @@ package jp.coremind.storage
         /** reader alias */
         public function get id():String   { return _id; }
         public function get type():String { return _type; }
-        public function read():* { return _origin ? _origin: _origin = _storage.read(this); }
+        public function read():* { return _origin ? _origin: _origin = storage.read(this); }
         /** reader alias */
         
         public function hasListener():Boolean
         {
             return _listenerList.length != 0;
+        }
+        
+        public function createModelKeyList():Array
+        {
+            var result:Array = [];
+            var storageData:* = read();
+            
+            if ($.isArray(storageData))
+                for (var i:int = 0, len:int = storageData.length; i < len; i++) 
+                    result[i] = i;
+            else
+            if ($.isHash(storageData))
+                for (var p:String in storageData)
+                    result.push(p);
+            
+            return result;
         }
         
         public function addListener(listener:IStorageListener, priority:int = 0):void

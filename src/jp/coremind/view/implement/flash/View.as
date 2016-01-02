@@ -1,11 +1,6 @@
 package jp.coremind.view.implement.flash
 {
-    import jp.coremind.configure.IViewTransition;
-    import jp.coremind.configure.ViewConfigure;
-    import jp.coremind.control.Controller;
     import jp.coremind.core.Application;
-    import jp.coremind.core.TransitionTween;
-    import jp.coremind.model.ViewModel;
     import jp.coremind.utility.Log;
     import jp.coremind.utility.process.Routine;
     import jp.coremind.utility.process.Thread;
@@ -17,55 +12,34 @@ package jp.coremind.view.implement.flash
         public static const TAG:String = "[FlashView]";
         Log.addCustomTag(TAG);
         
-        private var
-            _isFocus:Boolean,
-            //_configure:ViewConfigure,
-            _controller:Controller;
+        private var _isFocus:Boolean;
         
         /**
          * 画面表示オブジェクトクラス.
          * 画面のルートでViewControllerから制御される。
          */
-        public function View(controllerClass:Class)
+        public function View()
         {
             _isFocus = false;
-            
-            //_configure = configure;
-            
-            _controller = Controller.getInstance(
-                controllerClass,
-                //_configure.controllerClass,
-                new ViewModel(this)
-            );
-            
-            //name = _configure.viewName;
         }
         
         override public function destroy(withReference:Boolean=false):void
         {
             super.destroy(withReference);
-            
-            _controller = null;
-            
-            //_configure = null;
         }
         
         public function isFocus():Boolean { return _isFocus; }
         
-        public function get controller():Controller { return _controller; }
-        
         public function initializeProcess(r:Routine, t:Thread):void
         {
+            Log.custom(TAG, name, "initializeProcess");
+            ready();
             r.scceeded();
-            /*
-            if (viewName)
-            {
-                var bluePrint:IElementBluePrint = Application.configure.elementBluePrint;
-                _buildBluePrint(bluePrint.createNavigationList(viewName));
-                r.scceeded();
-            }
-            else r.failed("'viewName' is null. please set value.");
-            */
+        }
+        
+        public function ready():void
+        {
+            Log.custom(TAG, name, "ready");
         }
         
         protected function _buildBluePrint(list:Array):void
@@ -101,11 +75,6 @@ package jp.coremind.view.implement.flash
             _isFocus = true;
         }
         
-        public function get focusInTransition():Function
-        {
-            return TransitionTween.FAST_ADD;
-        }
-        
         public function focusInPostProcess(r:Routine, t:Thread):void
         {
             r.scceeded(name + " focusInPostProcess");
@@ -115,11 +84,6 @@ package jp.coremind.view.implement.flash
         {
             r.scceeded(name + " focusOutPreProcess");
             _isFocus = false;
-        }
-        
-        public function get focusOutTransition():Function
-        {
-            return TransitionTween.SKIP;
         }
         
         public function focusOutPostProcess(r:Routine, t:Thread):void

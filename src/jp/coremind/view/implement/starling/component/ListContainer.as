@@ -3,6 +3,7 @@ package jp.coremind.view.implement.starling.component
     import flash.geom.Rectangle;
     import flash.utils.Dictionary;
     
+    import jp.coremind.core.Application;
     import jp.coremind.model.transaction.Diff;
     import jp.coremind.model.transaction.ListDiff;
     import jp.coremind.model.transaction.TransactionLog;
@@ -70,9 +71,9 @@ package jp.coremind.view.implement.starling.component
             _refreshLayout(_maxWidth, _maxHeight);
         }
         
-        override protected function _onLoadStorageReader(id:String):void
+        override protected function _onLoadElementInfo():void
         {
-            super._onLoadStorageReader(id);
+            super._onLoadElementInfo();
             
             _listLayout.initialize(_reader);
             
@@ -136,6 +137,8 @@ package jp.coremind.view.implement.starling.component
         
         override public function preview(plainDiff:Diff):void
         {
+            super.preview(plainDiff);
+            
             var pId:String = name + PREVIEW_PROCESS;
             var diff:ListDiff     = plainDiff as ListDiff;
             var moveThread:Thread = new Thread("move");
@@ -146,24 +149,26 @@ package jp.coremind.view.implement.starling.component
             
             beforePosition = _updateChildrenPosition(diff);
             
-            _applyRemoveDiff(diff.removed, pId);
+            _applyRemoveDiff(diff.removed, pId, len);
             
-            _applyFilteringDiff(diff.filtered, pId);
+            _applyFilteringDiff(diff.filtered, pId, len);
             
             _refreshElementOrder(diff, beforePosition, moveThread, addThread, pId);
             
             _applyAddDiff(diff.added, addThread, len);
             
-            controller.syncProcess
+            Application.sync
                 .pushThread(pId, addThread,  true, true)
                 .pushThread(pId, moveThread, true, true)
-                .run(pId, function (p:Process):void {
+                .exec(pId, function (p:Process):void {
                     if (p.result === Status.SCCEEDED) updateElementSize(r.width, r.height);
                 });
         }
         
         override public function commit(plainDiff:Diff):void
         {
+            super.commit(plainDiff);
+            
             var diff:ListDiff = plainDiff as ListDiff;
             var editedOrigin:Array = diff.editedOrigin;
             var i:int, len:int;
@@ -206,16 +211,17 @@ package jp.coremind.view.implement.starling.component
         /**
          * 差分(削除分)を画面に適用する.
          */
-        private function _applyRemoveDiff(removeDisplayList:Vector.<TransactionLog>, pId:String):void
+        private function _applyRemoveDiff(removeDisplayList:Vector.<TransactionLog>, pId:String, length:int):void
         {
             for (var i:int = 0, len:int = removeDisplayList.length; i < len; i++) 
             {
-                if (_listLayout.hasCache(removeDisplayList[i].value))
+                var data:* = removeDisplayList[i].value;
+                if (_listLayout.hasCache(data))
                 {
-                    var e:IElement = _listLayout.requestElement(0, 0, removeDisplayList[i].value);
-                    controller.syncProcess.pushThread(pId, new Thread("remove"+e)
-                        .pushRoutine(e.removeTransition(this, e))
-                        .pushRoutine(_createRecycleRoutine(removeDisplayList[i].value)),
+                    var e:IElement = _listLayout.requestElement(0, 0, data);
+                    Application.sync.pushThread(pId, new Thread("applyRemoveDiff[remove] "+e.name)
+                        .pushRoutine(_listLayout.getTweenRoutineByRemovedStage(data), [e])
+                        .pushRoutine(_createRecycleRoutine(data)),
                         false, true);
                 }
             }
@@ -224,16 +230,17 @@ package jp.coremind.view.implement.starling.component
         /**
          * 差分(フィルタリング対象分)を画面に適用する.
          */
-        private function _applyFilteringDiff(filteringList:Array, pId:String):void
+        private function _applyFilteringDiff(filteringList:Array, pId:String, length:int):void
         {
             for (var i:int = 0, len:int = filteringList.length; i < len; i++) 
             {
-                if (_listLayout.hasCache(filteringList[i]))
+                var data:* = filteringList[i];
+                if (_listLayout.hasCache(data))
                 {
                     var e:IElement = _listLayout.requestElement(0, 0, filteringList[i]);
-                    controller.syncProcess.pushThread(pId, new Thread("remove"+e)
-                        .pushRoutine(e.removeTransition(this, e))
-                        .pushRoutine(_createRecycleRoutine(filteringList[i])),
+                    Application.sync.pushThread(pId, new Thread("applyFilteringDiff[remove] "+e.name)
+                        .pushRoutine(_listLayout.getTweenRoutineByRemovedStage(data), [e])
+                        .pushRoutine(_createRecycleRoutine(data)),
                         false, true);
                 }
             }
@@ -251,32 +258,36 @@ package jp.coremind.view.implement.starling.component
                 var from:Object = beforePosition[data];
                 var to:Rectangle;
                 var e:IElement;
+                var tweenRoutine:Function;
                 
                 if (data in _simulation.added)
                 {
+                    tweenRoutine = _listLayout.getTweenRoutineByAddedStage(data);
                     to = _simulation.added[data];
                     e  = _listLayout.requestElement(to.width, to.height, data);
                     //このエレメントはフィルタリング解除されて追加されたか？
                     diff.filteringRestored.indexOf(data) == -1 ?
                         //そうでなければ、並び替え前の位置から移動してきたように見せる
-                        addThread.pushRoutine(e.addTransition(this, e, from.x, from.y, to.x, to.y)):
+                        addThread.pushRoutine(tweenRoutine, [addDisplay(e), from.x, from.y, to.x, to.y]):
                         //そうであれば、移動なしに表示させる
-                        addThread.pushRoutine(e.addTransition(this, e, to.x, to.y));
+                        addThread.pushRoutine(tweenRoutine, [addDisplay(e), to.x, to.y]);
                 }
                 else
                 if (data in _simulation.moved)
                 {
+                    tweenRoutine = _listLayout.getTweenRoutineByMoved(data);
                     to = _simulation.moved[data];
                     e  = _listLayout.requestElement(to.width, to.height, data);
-                    moveThread.pushRoutine(e.mvoeTransition(e, to.x, to.y));
+                    moveThread.pushRoutine(tweenRoutine, [e, to.x, to.y]);
                 }
                 else
                 if (data in _simulation.removed && _listLayout.hasCache(data))
                 {
+                    tweenRoutine = _listLayout.getTweenRoutineByRemovedStage(data);
                     to = _simulation.removed[data];
                     e  = _listLayout.requestElement(0, 0, data);
-                    controller.syncProcess.pushThread(pId, new Thread("remove"+e)
-                        .pushRoutine(e.removeTransition(this, e, to.x, to.y))
+                    Application.sync.pushThread(pId, new Thread("refreshElementOrder[remove] "+e.name)
+                        .pushRoutine(tweenRoutine, [e, to.x, to.y])
                         .pushRoutine(_createRecycleRoutine(data)),
                         false, true);
                 }
@@ -290,15 +301,16 @@ package jp.coremind.view.implement.starling.component
         {
             for (var i:int = 0, len:int = addElementList.length; i < len; i++) 
             {
-                if (addElementList[i].value in _simulation.contains)
+                var data:Object = addElementList[i].value;
+                if (data in _simulation.contains)
                 {
-                    var o:int       = addElementList[i].key;
-                    var r:Rectangle = _listLayout.calcElementRect(_maxWidth, _maxHeight, o);
-                    var e:IElement  = _listLayout.requestElement(r.width, r.height, addElementList[i].value);
+                    var n:int       = addElementList[i].index;
+                    var r:Rectangle = _listLayout.calcElementRect(_maxWidth, _maxHeight, n);
+                    var e:IElement  = _listLayout.requestElement(r.width, r.height, data);
                     
                     e.x = r.x;
                     e.y = r.y;
-                    addThread.pushRoutine(e.addTransition(this, e));
+                    addThread.pushRoutine(_listLayout.getTweenRoutineByAddedStage(data), [e]);
                 }
             }
         }

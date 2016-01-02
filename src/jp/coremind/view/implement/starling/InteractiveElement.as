@@ -1,5 +1,6 @@
 package jp.coremind.view.implement.starling
 {
+    import jp.coremind.core.Application;
     import jp.coremind.core.StatusModelType;
     import jp.coremind.model.module.StatusGroup;
     import jp.coremind.model.module.StatusModel;
@@ -37,9 +38,9 @@ package jp.coremind.view.implement.starling
             return StatusModelType.INTERACTIVE_ELEMENT;
         }
         
-        override public function initialize(actualParentWidth:int, actualParentHeight:int, storageId:String = null):void
+        override public function initialize(actualParentWidth:int, actualParentHeight:int, storageId:String = null, storageInteractionId:String = null, runInteractionOnCreated:Boolean = false):void
         {
-            super.initialize(actualParentWidth, actualParentHeight, storageId);
+            super.initialize(actualParentWidth, actualParentHeight, storageId, storageInteractionId);
             
             enablePointerDeviceControl();
         }
@@ -122,8 +123,15 @@ package jp.coremind.view.implement.starling
                 case StatusGroup.LOCK:
                     switch(status)
                     {
-                        case Status.UNLOCK: _onEnable(); return true;
-                        case Status.LOCK  : _onDisable(); return true;
+                        case Status.UNLOCK:
+                            _onEnable();
+                            Application.router.notify(_elementInfo, group, status);
+                            return true;
+                            
+                        case Status.LOCK:
+                            _onDisable();
+                            Application.router.notify(_elementInfo, group, status);
+                            return true;
                     }
                     break;
             }

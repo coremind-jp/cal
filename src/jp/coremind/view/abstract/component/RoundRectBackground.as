@@ -2,7 +2,7 @@ package jp.coremind.view.abstract.component
 {
     import jp.coremind.asset.Grid9ImageAsset;
     import jp.coremind.utility.Log;
-    import jp.coremind.view.abstract.IElement;
+    import jp.coremind.view.abstract.ICalSprite;
     import jp.coremind.view.abstract.IStretchBox;
     import jp.coremind.view.builder.IBackgroundBuilder;
 
@@ -37,7 +37,7 @@ package jp.coremind.view.abstract.component
             _topRight    = topRight;
         }
         
-        public function build(parent:IElement):IStretchBox
+        public function build(parent:ICalSprite):IStretchBox
         {
             var asset:Grid9ImageAsset = Grid9ImageAsset
                 .createRoundRect(_assetId, _color, _radius, _topLeft, _bottomLeft, _bottomRight, _topRight);

@@ -1,8 +1,6 @@
 package jp.coremind.view.abstract
 {
-    import jp.coremind.control.Controller;
-    import jp.coremind.model.ElementModel;
-    import jp.coremind.storage.StorageModelReader;
+    import jp.coremind.event.ElementInfo;
 
     public interface IElement extends ICalSprite
     {
@@ -10,17 +8,13 @@ package jp.coremind.view.abstract
          * インスタンスを初期化する.
          * @params  storageId   インスタンスに対になるStorageModeReaderのstorageId
          */
-        function initialize(actualParentWidth:int, actualParentHeight:int, storageId:String = null):void
+        function initialize(actualParentWidth:int, actualParentHeight:int, storageId:String = null, storageInteractionId:String = null, runInteractionOnCreated:Boolean = false):void
             
         function updateElementSize(elementWidth:Number, elementHeight:Number):void;
         
-        function get reader():StorageModelReader;
+        function get elementInfo():ElementInfo;
         function get elementWidth():Number;
         function get elementHeight():Number;
-        function get controller():Controller;
-        function get storageId():String;
-        function get elementId():String;
-        function get elementModel():ElementModel;
         
         function addListener(type:String, listener:Function):void
         function removeListener(type:String, listener:Function):void

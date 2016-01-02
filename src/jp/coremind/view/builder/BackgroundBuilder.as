@@ -3,13 +3,13 @@ package jp.coremind.view.builder
     import jp.coremind.asset.Asset;
     import jp.coremind.asset.painter.ColorPainter;
     import jp.coremind.utility.Log;
-    import jp.coremind.view.abstract.IElement;
+    import jp.coremind.view.abstract.ICalSprite;
     import jp.coremind.view.abstract.IStretchBox;
     import jp.coremind.view.implement.starling.BackgroundImage;
     
     public class BackgroundBuilder implements IBackgroundBuilder
     {
-        private static const NAME:String = "BackgroundBuilder";
+        public static const NAME:String = "_background_";
         
         private var
             _assetId:String,
@@ -21,7 +21,7 @@ package jp.coremind.view.builder
             _color   = color;
         }
         
-        public function build(parent:IElement):IStretchBox
+        public function build(parent:ICalSprite):IStretchBox
         {
             var image:BackgroundImage = new BackgroundImage(Asset.texture(_assetId).getPaintTexture(ColorPainter, _color));
             

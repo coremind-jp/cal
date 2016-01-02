@@ -10,9 +10,9 @@ package jp.coremind.view.interaction
     {
         private var _bitmapFont:BitmapFont;
         
-        public function BitmapFontTextInteraction(applyTargetName:String, text:String, isStaticText:Boolean, assetId:String, fontface:String=null, fontSize:int=-1, fontColor:uint=16777215, hAlign:String="center", vAlign:String="center", autoScale:Boolean=true, kerning:Boolean=true)
+        public function BitmapFontTextInteraction(applyTargetName:String, text:String, assetId:String, replacer:Function = null, fontface:String=null, fontSize:int=-1, fontColor:uint=16777215, hAlign:String="center", vAlign:String="center", autoScale:Boolean=true, kerning:Boolean=true)
         {
-            super(applyTargetName, text, isStaticText);
+            super(applyTargetName, text, replacer);
             
             _bitmapFont = new BitmapFont(
                 assetId, fontface, fontSize, fontColor,
@@ -29,7 +29,7 @@ package jp.coremind.view.interaction
             if (before)
             {
                 var createdSprite:Sprite = _bitmapFont.create(
-                    _getText(parent.reader),
+                    _getText(parent.elementInfo.reader),
                     parent.elementWidth,
                     parent.elementHeight);
                 createdSprite.name = _name;
