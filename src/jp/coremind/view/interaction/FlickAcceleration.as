@@ -3,6 +3,8 @@ package jp.coremind.view.interaction
     import jp.coremind.core.Application;
     import jp.coremind.utility.data.NumberTracker;
     
+    import starling.core.Starling;
+    
     /**
      * フリック時の加速度を計算するクラス.
      */
@@ -63,7 +65,12 @@ package jp.coremind.view.interaction
          */
         public function initialize(v:NumberTracker):void
         {
-            _slidAcceleration = requireUpdate(v) ? v.preventDelta / Application.stage.frameRate: 0;
+            var scale:Number = 1 + Starling.contentScaleFactor * .4;
+            
+            _slidAcceleration = requireUpdate(v) ?
+                v.preventDelta / Application.stage.frameRate * scale:
+                0;
+            
             _springAcceleration = 0;
         }
         

@@ -3,6 +3,8 @@ package jp.coremind.view.implement.starling
     import jp.coremind.utility.Log;
     import jp.coremind.utility.process.Routine;
     import jp.coremind.utility.process.Thread;
+    import jp.coremind.view.abstract.IDisplayObject;
+    import jp.coremind.view.abstract.IDisplayObjectContainer;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.abstract.IView;
     
@@ -49,15 +51,24 @@ package jp.coremind.view.implement.starling
         public function getElement(path:String):IElement
         {
             var pathList:Array = path.split(".");
-            var child:IElement = getDisplayByName(pathList.shift()) as IElement;
+            var result:IElement = findChild(this, pathList.shift()) as IElement;
             
-            for (var i:int, len:int = pathList.length; i < len && child; i++)
-                child = child.getDisplayByName(pathList[i]) as IElement;
+            for (var i:int, len:int = pathList.length; i < len && result; i++)
+                result = findChild(result, pathList[i]) as IElement;
             
-            if (!child)
+            if (!result)
                 Log.error(pathList[i], "not found.", path);
             
-            return child;
+            return result;
+        }
+        
+        private function findChild(parent:IDisplayObjectContainer, name:String):IDisplayObject
+        {
+            var result:IDisplayObject = parent.getDisplayByName(name);
+            if (result) return result;
+            
+            var wrapper:IDisplayObject = parent.getDisplayByName(name+ContainerWrapper.NAME_SUFFIX);
+            return wrapper ? (wrapper as IDisplayObjectContainer).getDisplayByName(name): null;
         }
         
         public function focusInPreProcess(r:Routine, t:Thread):void

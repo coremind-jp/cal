@@ -2,6 +2,7 @@ package jp.coremind.view.implement.flash.buildin
 {
     import flash.display.DisplayObject;
     import flash.display.Sprite;
+    import flash.geom.Point;
     
     import jp.coremind.view.abstract.IDisplayObject;
     import jp.coremind.view.abstract.IDisplayObjectContainer;
@@ -78,6 +79,28 @@ package jp.coremind.view.implement.flash.buildin
         public function swapDisplays(child1:IDisplayObject, child2:IDisplayObject):void
         {
             swapChildren(child1 as DisplayObject, child2 as DisplayObject);
+        }
+        
+        public function toGlobalPoint(localPoint:Point, resultPoint:Point = null):Point
+        {
+            var p:Point = localToGlobal(localPoint);
+            if (resultPoint)
+            {
+                resultPoint.setTo(p.x, p.y);
+                return resultPoint;
+            }
+            else return p;
+        }
+        
+        public function toLocalPoint(globalPoint:Point, resultPoint:Point = null):Point
+        {
+            var p:Point = globalToLocal(globalPoint);
+            if (resultPoint)
+            {
+                resultPoint.setTo(p.x, p.y);
+                return resultPoint;
+            }
+            else return p;
         }
     }
 }

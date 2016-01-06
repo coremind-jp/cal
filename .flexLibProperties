@@ -174,7 +174,6 @@
     <classEntry path="jp.coremind.view.implement.starling.buildin.Quad"/>
     <classEntry path="jp.coremind.view.implement.starling.buildin.Sprite"/>
     <classEntry path="jp.coremind.view.implement.starling.buildin.TextField"/>
-    <classEntry path="jp.coremind.view.implement.starling.component.ListContainer"/>
     <classEntry path="jp.coremind.view.implement.starling.component.MouseSwitch"/>
     <classEntry path="jp.coremind.view.implement.starling.component.ScrollContainer"/>
     <classEntry path="jp.coremind.view.implement.starling.component.TouchSwitch"/>
@@ -203,6 +202,11 @@
     <classEntry path="jp.coremind.view.interaction.Interaction"/>
     <classEntry path="jp.coremind.event.ElementInfo"/>
     <classEntry path="jp.coremind.view.interaction.StorageInteraction"/>
+    <classEntry path="jp.coremind.model.module.ScrollModule"/>
+    <classEntry path="jp.coremind.view.implement.starling.ContainerWrapper"/>
+    <classEntry path="jp.coremind.utility.Repeater"/>
+    <classEntry path="jp.coremind.model.module.ScrollType"/>
+    <classEntry path="jp.coremind.utility.process.JugglerLoop"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

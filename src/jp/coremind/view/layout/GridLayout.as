@@ -70,6 +70,16 @@ package jp.coremind.view.layout
             return this;
         }
         
+        public function getScrollSizeX(actualParentWidth:Number):Number
+        {
+            return _horizontal.calcScrollSize(actualParentWidth);
+        }
+        
+        public function getScrollSizeY(actualParentHeight:Number):Number
+        {
+            return _vertical.calcScrollSize(actualParentHeight);
+        }
+        
         public function hasCache(modelData:*):Boolean
         {
             return _elementfactory.hasElement(modelData);
@@ -339,6 +349,11 @@ class Calculator
         
         rect[position] = letterbox + grid_gap * positionDensity;
         rect[size]     = grid_gap * sizeDensity - gap;
+    }
+    
+    public function calcScrollSize(actualBoxSize:int):Number
+    {
+        return _grid.calc(actualBoxSize) + _gap.calc(actualBoxSize);
     }
     
     public function calcContainerSize(actualBoxSize:int, density:int, position:String, size:String, rect:Rectangle):void

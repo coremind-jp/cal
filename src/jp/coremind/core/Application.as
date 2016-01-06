@@ -5,6 +5,7 @@ package jp.coremind.core
     import flash.events.Event;
     import flash.events.EventDispatcher;
     import flash.events.IEventDispatcher;
+    import flash.geom.Point;
     import flash.system.System;
     
     import jp.coremind.asset.Asset;
@@ -20,6 +21,16 @@ package jp.coremind.core
         public static function get stage():Stage { return _STAGE; }
         public static function get pointerX():Number { return _STAGE.mouseX / Starling.contentScaleFactor; }
         public static function get pointerY():Number { return _STAGE.mouseY / Starling.contentScaleFactor; }
+        
+        private static const _DEVICE_POINT:Point = new Point();
+        public static function get pointer():Point
+        {
+            _DEVICE_POINT.setTo(
+                _STAGE.mouseX / Starling.contentScaleFactor,
+                _STAGE.mouseY / Starling.contentScaleFactor
+            );
+            return _DEVICE_POINT;
+        }
         
         private static var _CONFIGURE:IApplicationConfigure;
         public static function get configure():IApplicationConfigure { return _CONFIGURE; }

@@ -4,6 +4,8 @@ package jp.coremind.view.implement.starling.component
     import flash.utils.Dictionary;
     
     import jp.coremind.core.Application;
+    import jp.coremind.event.ElementEvent;
+    import jp.coremind.model.module.ScrollModule;
     import jp.coremind.model.transaction.Diff;
     import jp.coremind.model.transaction.ListDiff;
     import jp.coremind.model.transaction.TransactionLog;
@@ -71,6 +73,21 @@ package jp.coremind.view.implement.starling.component
             _refreshLayout(_maxWidth, _maxHeight);
         }
         
+        override public function updateElementSize(elementWidth:Number, elementHeight:Number):void
+        {
+            if (_elementWidth != elementWidth || _elementHeight != elementHeight)
+            {
+                _elementWidth  = elementWidth;
+                _elementHeight = elementHeight;
+                
+                _refreshLayout(_elementWidth, _elementHeight);
+                
+                (_elementModel.getModule(ScrollModule) as ScrollModule).refreshContentSize();
+                
+                dispatchEventWith(ElementEvent.UPDATE_SIZE);
+            }
+        }
+        
         override protected function _onLoadElementInfo():void
         {
             super._onLoadElementInfo();
@@ -82,23 +99,30 @@ package jp.coremind.view.implement.starling.component
                 _simulation.addChild(list[i], _listLayout.calcElementRect(_maxWidth, _maxHeight, i).clone());
             
             var r:Rectangle = _listLayout.calcTotalRect(_maxWidth, _maxHeight, len);
-            var beforeX:Number = x;
-            var beforeY:Number = y;
-            //updateElementSizeでScrollContainerがupdatePositionを呼び場合によってはこのオブジェクトの座標を変える
             updateElementSize(r.width, r.height);
-            //座標が変わっていればリスト生成処理が呼ばれるが、変わらない場合ScrollContainerからの
-            //updatePositionの呼び出しが発生しないので明示的にupdatePositionを呼びリストを生成する必要がある。
-            if (x == beforeX && y == beforeY)
-                updatePosition(x, y);
+            updatePosition(x, y);
+        }
+        
+        override protected function _initializeElementModel():void
+        {
+            super._initializeElementModel();
+            
+            if (_elementModel.isUndefined(ScrollModule))
+                _elementModel.addModule(new ScrollModule(this));
+            
+            (_elementModel.getModule(ScrollModule) as ScrollModule).setScrollVolume(
+                _listLayout.getScrollSizeX(_maxWidth),
+                _listLayout.getScrollSizeY(_maxHeight));
         }
         
         override public function updatePosition(x:Number, y:Number):void
         {
             super.updatePosition(x, y);
-            
-            if (!_requireRefresh())
-                return;
-            
+            if (_requireRefresh()) _refreshList();
+        }
+        
+        private function _refreshList():void
+        {
             var e:IElement;
             var to:Rectangle;
             var data:*;

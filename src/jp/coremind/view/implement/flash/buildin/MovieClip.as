@@ -1,6 +1,7 @@
 package jp.coremind.view.implement.flash.buildin
 {
     import flash.display.MovieClip;
+    import flash.geom.Point;
     
     import jp.coremind.view.abstract.IDisplayObject;
     import jp.coremind.view.abstract.IDisplayObjectContainer;
@@ -15,6 +16,28 @@ package jp.coremind.view.implement.flash.buildin
         public function get parentDisplay():IDisplayObjectContainer
         {
             return parent as IDisplayObjectContainer;
+        }
+        
+        public function toGlobalPoint(localPoint:Point, resultPoint:Point = null):Point
+        {
+            var p:Point = localToGlobal(localPoint);
+            if (resultPoint)
+            {
+                resultPoint.setTo(p.x, p.y);
+                return resultPoint;
+            }
+            else return p;
+        }
+        
+        public function toLocalPoint(globalPoint:Point, resultPoint:Point = null):Point
+        {
+            var p:Point = globalToLocal(globalPoint);
+            if (resultPoint)
+            {
+                resultPoint.setTo(p.x, p.y);
+                return resultPoint;
+            }
+            else return p;
         }
     }
 }

@@ -28,7 +28,7 @@ package jp.coremind.core
             var controllerList:Array = _getControllerList(viewId);
             
             for (var i:int, len:int = controllerList.length; i < len; i++)
-                _instantiateController(controllerList[i]);
+                _instantiate(controllerList[i]);
             
             r.scceeded();
         }
@@ -38,7 +38,7 @@ package jp.coremind.core
             var controllerList:Array = _getControllerList(viewId);
             
             for (var i:int, len:int = controllerList.length; i < len; i++)
-                _destroyController(controllerList[i]);
+                _destroy(controllerList[i]);
             
             r.scceeded();
         }
@@ -50,7 +50,7 @@ package jp.coremind.core
                 _BIND_LIST[viewId] = [];
         }
         
-        private static function _instantiateController(controllerClass:Class):void
+        private static function _instantiate(controllerClass:Class):void
         {
             if (_REFERENCE_COUNTER[controllerClass])
                 _REFERENCE_COUNTER[controllerClass]++;
@@ -66,7 +66,7 @@ package jp.coremind.core
             }
         }
         
-        private static function _destroyController(controllerClass:Class):void
+        private static function _destroy(controllerClass:Class):void
         {
             if (!(controllerClass in _REFERENCE_COUNTER))
                 return;

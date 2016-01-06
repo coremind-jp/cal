@@ -49,6 +49,16 @@ package jp.coremind.view.layout
             _elementfactory.recycle(modelData);
         }
         
+        public function getScrollSizeX(actualParentWidth:Number):Number
+        {
+            return 1;
+        }
+        
+        public function getScrollSizeY(actualParentHeight:Number):Number
+        {
+            return 1;
+        }
+        
         public function hasCache(modelData:*):Boolean
         {
             return _elementfactory.hasElement(modelData);

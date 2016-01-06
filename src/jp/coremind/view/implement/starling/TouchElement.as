@@ -10,6 +10,8 @@ package jp.coremind.view.implement.starling
     import jp.coremind.utility.data.Status;
     import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.layout.Layout;
+    
+    import starling.core.Starling;
 
     public class TouchElement extends InteractiveElement
     {
@@ -28,7 +30,7 @@ package jp.coremind.view.implement.starling
             touchHandling = true;
             
             _triggerRect = new Rectangle();
-            inflateClickRange(6, 6);
+            inflateClickRange(6 * Starling.contentScaleFactor, 6 * Starling.contentScaleFactor);
             
             _hold = false;
         }
@@ -49,6 +51,9 @@ package jp.coremind.view.implement.starling
          * マウスダウン(タッチダウン)した座標からダウン状態までのサイズを拡張する.
          * (デフォルトは6なのでダウン位置から少しずらすとタップ扱いにならなくなる仕様)
          * ボタンの表示領域全体をタッチ領域にするにはオブジェクトの横幅、高さの1/2の値を指定する。
+         * 
+         * 16/01/03 この仕様を実機で確認してみたが想像していたよりも判定がシビアなのでこの領域によるダウン状態の判定チェックを外した。
+         * (何かに使えるかも知れないのでコメントアウトのみ)MouseElementの方では健在。
          */
         public function inflateClickRange(w:Number, h:Number):void
         {
@@ -57,9 +62,10 @@ package jp.coremind.view.implement.starling
         
         override protected function began():void
         {
+            /*
             _triggerRect.x = _touch.globalX - (_triggerRect.width  >> 1);
             _triggerRect.y = _touch.globalY - (_triggerRect.height >> 1);
-            
+            */
             _hold = true;
             _elementModel.getModule(StatusModel).update(StatusGroup.PRESS, Status.DOWN);
         }
@@ -69,7 +75,7 @@ package jp.coremind.view.implement.starling
             _POINTER_RECT.x = _touch.globalX;
             _POINTER_RECT.y = _touch.globalY;
             
-            var bIntersects:Boolean = _triggerRect.intersects(_POINTER_RECT);
+            var bIntersects:Boolean = true;//_triggerRect.intersects(_POINTER_RECT);
             var bHitTest:Boolean = hitTest(_touch.getLocation(this), true);
             
             _hold = bIntersects && bHitTest;

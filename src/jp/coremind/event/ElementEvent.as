@@ -5,6 +5,7 @@ package jp.coremind.event
     public class ElementEvent extends Event
     {
         public static const UPDATE_SIZE:String = "updateElementSize";
+        public static const READY:String = "ready";
         
         public function ElementEvent(type:String, bubbles:Boolean=false, data:Object=null)
         {

@@ -30,6 +30,12 @@ package jp.coremind.view.layout
         /** modelDataパラメータにマッチするIElementオブジェクトが存在するかを示す値を返す. */
         function hasCache(modelData:*):Boolean;
         
+        /** このレイアウトのX座標のスクロールサイズを取得する. */
+        function getScrollSizeX(actualParentWidth:Number):Number
+        
+        /** このレイアウトのY座標のスクロールサイズを取得する. */
+        function getScrollSizeY(actualParentHeight:Number):Number
+        
         /**
          * パラメータを元にレイアウト(表示オブジェクトの座標、サイズ)を計算する.
          * @param   actualParentWidth       親表示オブジェクトの横幅

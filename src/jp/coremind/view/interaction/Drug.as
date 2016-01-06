@@ -6,6 +6,8 @@ package jp.coremind.view.interaction
     import jp.coremind.core.Application;
     import jp.coremind.utility.data.NumberTracker;
     
+    import starling.core.Starling;
+    
     /**
      * ドラッグの座標計算を行うクラス.
      * ドラッグ領域をステージ座標で割り出し、flash.display.Stageで取得できるmouseX, mouseYで移動量を計算することを留意。
@@ -26,7 +28,7 @@ package jp.coremind.view.interaction
         public function Drug(adsorbThreshold:Number = 10)
         {
             _druging = false;
-            _adsorbThreshold = Math.abs(adsorbThreshold);
+            _adsorbThreshold = Math.abs(adsorbThreshold * Starling.contentScaleFactor);
         }
         
         public function destory():void
@@ -50,7 +52,7 @@ package jp.coremind.view.interaction
          * @param   drugListener    ドラッグを開始してからドロップするまでフレーム更新毎に呼ばれる関数
          * @param   drupListener    ドロップした際に呼ばれる関数
          */
-        public function observe(offset:Rectangle, drugArea:Rectangle, drugListener:Function, dropListener:Function = null):void
+        public function initialize(offset:Rectangle, drugArea:Rectangle, drugListener:Function, dropListener:Function = null):void
         {
             if (_druging) return;
             
@@ -59,9 +61,22 @@ package jp.coremind.view.interaction
             _dropListener = dropListener;
             
             createTracker(offset, drugArea);
-            
-            $.loop.highResolution.setInterval(_onUpdate);
+        }
+        
+        public function beginPointerDeviceListening():void
+        {
+            $.loop.juggler.setInterval(_onUpdate);
             Application.stage.addEventListener(MouseEvent.MOUSE_UP, _onUp);
+        }
+        
+        public function moveTo(x:Number, y:Number):void
+        {
+            _update(Application.pointerX + x, Application.pointerY + y);
+        }
+        
+        public function drop():void
+        {
+            _onUp();
         }
         
         /**
@@ -108,7 +123,7 @@ package jp.coremind.view.interaction
         private function _update(x:Number, y:Number):Boolean
         {
             if (!_druging) return true;
-
+            
             var w:int = Application.configure.appViewPort.width;
             var h:int = Application.configure.appViewPort.height;
             x = _applyOutOfRangeResistance(x, _trackX, w);
@@ -158,7 +173,7 @@ package jp.coremind.view.interaction
                 return n;
         }
         
-        protected function _onUp(e:MouseEvent):void
+        protected function _onUp(e:MouseEvent = null):void
         {
             if (_dropListener is Function)
                 _dropListener(_trackX, _trackY);

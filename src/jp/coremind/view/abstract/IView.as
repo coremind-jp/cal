@@ -1,6 +1,5 @@
 package jp.coremind.view.abstract
 {
-    import jp.coremind.core.Controller;
     import jp.coremind.utility.process.Routine;
     import jp.coremind.utility.process.Thread;
 

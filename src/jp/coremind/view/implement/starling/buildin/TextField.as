@@ -1,5 +1,7 @@
 package jp.coremind.view.implement.starling.buildin
 {
+    import flash.geom.Point;
+    
     import jp.coremind.view.abstract.IDisplayObject;
     import jp.coremind.view.abstract.IDisplayObjectContainer;
     
@@ -15,6 +17,16 @@ package jp.coremind.view.implement.starling.buildin
         public function get parentDisplay():IDisplayObjectContainer
         {
             return parent as IDisplayObjectContainer;
+        }
+        
+        public function toGlobalPoint(localPoint:Point, resultPoint:Point = null):Point
+        {
+            return localToGlobal(localPoint, resultPoint);
+        }
+        
+        public function toLocalPoint(globalPoint:Point, resultPoint:Point = null):Point
+        {
+            return globalToLocal(globalPoint, resultPoint);
         }
     }
 }

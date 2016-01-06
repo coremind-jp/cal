@@ -18,6 +18,8 @@ package jp.coremind.core
         {
             StarlingMain.INITIALIZE_HANDLER = function(instance:StarlingMain):void
             {
+                $.loop.run();
+                
                 initializeLayer(instance, CalSprite);
                 
                 getLayerProcessor(Layer.NAVIGATION).dispatcher = Application.globalEvent;

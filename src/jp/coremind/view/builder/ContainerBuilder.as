@@ -32,15 +32,16 @@ package jp.coremind.view.builder
         {
             Log.info("build ContainerElement", _elementClass);
             
-            var container:IContainer = new ListContainer(_listLayout, _layout, null);
-            
-            container.name = name;
+            var container:IContainer;
             
             if (_scrollOption)
             {
-                var scrollContainer:ScrollContainer = new ScrollContainer(_layout, _backgroundBuilder);
+                //ScrollOptionが定義されている場合、LayoutインスタンスはScrollContainerへ渡す
+                container = new ListContainer(_listLayout, new Layout(), null);
+                container.name = name;
                 
-                scrollContainer.wrap(container);
+                var scrollContainer:ScrollContainer = new ScrollContainer(_layout, _backgroundBuilder);
+                scrollContainer.wrapContainer(container);
                 scrollContainer.initialize(actualParentWidth, actualParentHeight, _storageId);
                 
                 for (var i:int; i < _scrollOption.length; i++)
@@ -50,6 +51,8 @@ package jp.coremind.view.builder
             }
             else
             {
+                container = new ListContainer(_listLayout, _layout, null);
+                container.name = name;
                 container.initialize(actualParentWidth, actualParentHeight, _storageId);
                 
                 return container;

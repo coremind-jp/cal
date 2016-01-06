@@ -26,6 +26,8 @@ package jp.coremind.view.implement.starling
         public static const TAG:String = "[Element]";
         Log.addCustomTag(TAG);
         
+        private static const READY_EVENT:ElementEvent = new ElementEvent(ElementEvent.READY);
+        
         protected var
             _reader:StorageModelReader,
             _elementModel:ElementModel,
@@ -180,7 +182,8 @@ package jp.coremind.view.implement.starling
                 }
                 else
                 {
-                    elementId = p.name + "." + elementId;
+                    //ContainerWrapperは暗黙的レイヤーなのでパスとして含まない
+                    if (!(p is ContainerWrapper)) elementId = p.name + "." + elementId;
                     p = p.parentDisplay as ICalSprite;
                 }
             }
@@ -228,6 +231,7 @@ package jp.coremind.view.implement.starling
         
         public function ready():void
         {
+            dispatchEventWith(ElementEvent.READY);
             //Log.custom(TAG, "ready", "\nname:", name, "\nelementId:", elementId, "\nstorageId:", _reader.id, "\ncontroller:", controller);
         }
     }

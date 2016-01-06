@@ -12,6 +12,8 @@ package jp.coremind.view.interaction
      */
     public class Flick extends Drug
     {
+        public var fromPointerDevice:Boolean;
+        
         private var
             _flickX:FlickAcceleration,
             _flickY:FlickAcceleration,
@@ -20,6 +22,8 @@ package jp.coremind.view.interaction
         public function Flick()
         {
             super(0);
+            
+            fromPointerDevice = true;
             
             _destroy = false;
             _flickX = new FlickAcceleration();
@@ -34,7 +38,7 @@ package jp.coremind.view.interaction
             super.destory();
         }
         
-        override public function observe(offset:Rectangle, drugArea:Rectangle, drugListener:Function, dropListener:Function = null):void
+        override public function initialize(offset:Rectangle, drugArea:Rectangle, drugListener:Function, dropListener:Function = null):void
         {
             if (_druging)
                 return;
@@ -42,18 +46,16 @@ package jp.coremind.view.interaction
             _flickX.terminate();
             _flickY.terminate();
             
-            super.observe(offset, drugArea, drugListener, dropListener);
+            super.initialize(offset, drugArea, drugListener, dropListener);
         }
         
         override protected function _createTracker(offset:Rectangle, drugArea:Rectangle):void
         {
             super._createTracker(offset, drugArea);
-            
-            _trackX.enabledRound = false;
-            _trackY.enabledRound = false;
+            if (fromPointerDevice) _trackX.enabledRound = _trackY.enabledRound = false;
         }
         
-        override protected function _onUp(e:MouseEvent):void
+        override protected function _onUp(e:MouseEvent = null):void
         {
             Application.stage.removeEventListener(MouseEvent.MOUSE_UP, _onUp);
             
@@ -63,11 +65,12 @@ package jp.coremind.view.interaction
             if (_dropListener is Function)
                 _dropListener(_trackX, _trackY);
             
-            if (_flickX.requireUpdate(_trackX) || _flickY.requireUpdate(_trackY))
+            //ポインターデバイスでフリックしたときのみ加速度による座標移動を行う
+            if (e && (_flickX.requireUpdate(_trackX) || _flickY.requireUpdate(_trackY)))
             {
                 _flickX.initialize(_trackX);
                 _flickY.initialize(_trackY);
-                $.loop.highResolution.setInterval(_update);
+                $.loop.juggler.setInterval(_update);
             }
         }
         
