@@ -4,19 +4,17 @@ package jp.coremind.view.layout
     import flash.geom.Rectangle;
     
     import jp.coremind.model.transaction.Diff;
-    import jp.coremind.storage.IStorageListener;
-    import jp.coremind.storage.StorageModelReader;
+    import jp.coremind.storage.IModelStorageListener;
+    import jp.coremind.storage.ModelReader;
     import jp.coremind.utility.Log;
     import jp.coremind.utility.process.Routine;
-    import jp.coremind.utility.process.Thread;
-    import jp.coremind.view.abstract.IDisplayObject;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.builder.GridListElementFactory;
     
-    public class GridLayout implements IListLayout, IStorageListener
+    public class GridLayout implements IListLayout, IModelStorageListener
     {
         private var
-            _reader:StorageModelReader,
+            _reader:ModelReader,
             _searchIndexList:Vector.<int>,
             _positionList:Vector.<int>,
             _headGridRect:Rectangle,
@@ -90,6 +88,11 @@ package jp.coremind.view.layout
             _elementfactory.recycle(modelData);
         }
         
+        public function refreshCacheKey():void
+        {
+            _elementfactory.refreshKey();
+        }
+        
         public function calcElementRect(actualParentWidth:int, actualParentHeight:int, index:int, length:int = 0):Rectangle
         {
             var i:int = index << 1;
@@ -128,10 +131,10 @@ package jp.coremind.view.layout
             return r;
         }
         
-        public function initialize(reader:StorageModelReader):void
+        public function initialize(reader:ModelReader):void
         {
             _reader = reader;
-            _reader.addListener(this, StorageModelReader.LISTENER_PRIORITY_GRID_LAYOUT);
+            _reader.addListener(this, ModelReader.LISTENER_PRIORITY_GRID_LAYOUT);
             
             _elementfactory.initialize(reader);
             
@@ -141,6 +144,11 @@ package jp.coremind.view.layout
         public function requestElement(actualParentWidth:int, actualParentHeight:int, modelData:*, index:int = -1, length:int = -1):IElement
         {
             return _elementfactory.request(actualParentWidth, actualParentHeight, modelData, index, length);
+        }
+        
+        public function createElement(actualParentWidth:int, actualParentHeight:int, modelData:*, index:int):IElement
+        {
+            return _elementfactory.create(actualParentWidth, actualParentHeight, modelData, index);
         }
         
         public function destroy(withReference:Boolean = false):void
@@ -298,26 +306,17 @@ package jp.coremind.view.layout
         
         public function getTweenRoutineByAddedStage(modelData:*):Function
         {
-            return function(r:Routine, t:Thread, child:IDisplayObject, fromX:Number = NaN, fromY:Number = NaN, toX:Number = NaN, toY:Number = NaN):Function
-            {
-                r.scceeded();
-            };
+            return Routine.SKIP;
         }
         
         public function getTweenRoutineByMoved(modelData:*):Function
         {
-            return function(r:Routine, t:Thread, child:IDisplayObject, toX:Number, toY:Number, fromX:Number = NaN, fromY:Number = NaN):Function
-            {
-                r.scceeded();
-            };
+            return Routine.SKIP;
         }
         
         public function getTweenRoutineByRemovedStage(modelData:*):Function
         {
-            return function(r:Routine, t:Thread, child:IDisplayObject, toX:Number = NaN, toY:Number = NaN):Function
-            {
-                r.scceeded();
-            };
+            return Routine.SKIP;
         }
     }
 }

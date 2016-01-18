@@ -2,7 +2,7 @@ package jp.coremind.view.layout
 {
     import flash.geom.Rectangle;
     
-    import jp.coremind.storage.StorageModelReader;
+    import jp.coremind.storage.ModelReader;
     import jp.coremind.view.abstract.IElement;
 
     /**
@@ -14,7 +14,7 @@ package jp.coremind.view.layout
         function destroy(withReference:Boolean = false):void;
         
         /** 初期化する. */
-        function initialize(reader:StorageModelReader):void;
+        function initialize(reader:ModelReader):void;
         
         /**
          * パラメータにマッチするIElementオブジェクトを要求する.
@@ -24,11 +24,19 @@ package jp.coremind.view.layout
          */
         function requestElement(actualParentWidth:int, actualParentHeight:int, modelData:*, index:int = -1, length:int = -1):IElement;
         
+        /**
+         * パラメータにマッチするIElementオブジェクトを生成する.
+         */
+        function createElement(actualParentWidth:int, actualParentHeight:int, modelData:*, index:int):IElement;
+        
         /** modelDataパラメータにマッチするIElementオブジェクトを未使用(再使用可)状態にする. */
         function requestRecycle(modelData:*):void;
         
         /** modelDataパラメータにマッチするIElementオブジェクトが存在するかを示す値を返す. */
         function hasCache(modelData:*):Boolean;
+            
+        /** 生成されたIElementオブジェクトに紐づくmodlDataキーを更新する. */
+        function refreshCacheKey():void;
         
         /** このレイアウトのX座標のスクロールサイズを取得する. */
         function getScrollSizeX(actualParentWidth:Number):Number

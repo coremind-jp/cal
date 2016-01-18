@@ -1,6 +1,6 @@
 package jp.coremind.storage
 {
-    public interface IStorage
+    public interface IModelStorage
     {
         function isDefined(id:String):Boolean;
         function create(id:String, value:*):void;

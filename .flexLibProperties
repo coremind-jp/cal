@@ -44,11 +44,11 @@
     <classEntry path="jp.coremind.core.routine.WebRequest"/>
     <classEntry path="jp.coremind.event.ElementEvent"/>
     <classEntry path="jp.coremind.event.TransitionEvent"/>
-    <classEntry path="jp.coremind.model.ElementModel"/>
-    <classEntry path="jp.coremind.model.IElementModel"/>
+    <classEntry path="jp.coremind.model.ModuleList"/>
+    <classEntry path="jp.coremind.model.IModule"/>
     <classEntry path="jp.coremind.model.module.StatusConfigure"/>
     <classEntry path="jp.coremind.model.module.StatusGroup"/>
-    <classEntry path="jp.coremind.model.module.StatusModel"/>
+    <classEntry path="jp.coremind.model.module.StatusModule"/>
     <classEntry path="jp.coremind.model.module.UpdateRule"/>
     <classEntry path="jp.coremind.model.transaction.Diff"/>
     <classEntry path="jp.coremind.model.transaction.HashDiff"/>
@@ -68,15 +68,15 @@
     <classEntry path="jp.coremind.resource.TextContent"/>
     <classEntry path="jp.coremind.resource.XmlContent"/>
     <classEntry path="jp.coremind.resource.mp3Content"/>
-    <classEntry path="jp.coremind.storage.ElementModelStorage"/>
+    <classEntry path="jp.coremind.storage.ModuleStorage"/>
     <classEntry path="jp.coremind.storage.HashStorage"/>
-    <classEntry path="jp.coremind.storage.IStorage"/>
-    <classEntry path="jp.coremind.storage.IStorageListener"/>
+    <classEntry path="jp.coremind.storage.IModelStorage"/>
+    <classEntry path="jp.coremind.storage.IModelStorageListener"/>
     <classEntry path="jp.coremind.storage.SharedObjectStrage"/>
     <classEntry path="jp.coremind.storage.SqLiteStorage"/>
-    <classEntry path="jp.coremind.storage.Storage"/>
-    <classEntry path="jp.coremind.storage.StorageModel"/>
-    <classEntry path="jp.coremind.storage.StorageModelReader"/>
+    <classEntry path="jp.coremind.storage.ModelStorage"/>
+    <classEntry path="jp.coremind.storage.ModelWriter"/>
+    <classEntry path="jp.coremind.storage.ModelReader"/>
     <classEntry path="jp.coremind.storage.StorageType"/>
     <classEntry path="jp.coremind.utility.Dispatcher"/>
     <classEntry path="jp.coremind.utility.IDispatcher"/>
@@ -207,6 +207,11 @@
     <classEntry path="jp.coremind.utility.Repeater"/>
     <classEntry path="jp.coremind.model.module.ScrollType"/>
     <classEntry path="jp.coremind.utility.process.JugglerLoop"/>
+    <classEntry path="jp.coremind.model.module.DrugModule"/>
+    <classEntry path="jp.coremind.core.DragDropController"/>
+    <classEntry path="jp.coremind.core.ElementPathParser"/>
+    <classEntry path="jp.coremind.core.IDragDropControl"/>
+    <classEntry path="jp.coremind.utility.Id"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

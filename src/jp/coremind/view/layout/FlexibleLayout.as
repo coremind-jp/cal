@@ -4,7 +4,7 @@ package jp.coremind.view.layout
     
     import jp.coremind.configure.IElementBluePrint;
     import jp.coremind.core.Application;
-    import jp.coremind.storage.StorageModelReader;
+    import jp.coremind.storage.ModelReader;
     import jp.coremind.utility.Log;
     import jp.coremind.utility.process.Routine;
     import jp.coremind.view.abstract.IElement;
@@ -44,9 +44,19 @@ package jp.coremind.view.layout
             return _elementfactory.request(actualParentWidth, actualParentHeight, modelData, index, length);
         }
         
+        public function createElement(actualParentWidth:int, actualParentHeight:int, modelData:*, index:int):IElement
+        {
+            return _elementfactory.create(actualParentWidth, actualParentHeight, modelData, index, length);
+        }
+        
         public function requestRecycle(modelData:*):void
         {
             _elementfactory.recycle(modelData);
+        }
+        
+        public function refreshCacheKey():void
+        {
+            _elementfactory.refreshKey();
         }
         
         public function getScrollSizeX(actualParentWidth:Number):Number
@@ -64,7 +74,7 @@ package jp.coremind.view.layout
             return _elementfactory.hasElement(modelData);
         }
         
-        public function initialize(reader:StorageModelReader):void
+        public function initialize(reader:ModelReader):void
         {
             
         }

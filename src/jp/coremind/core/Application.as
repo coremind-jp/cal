@@ -11,7 +11,7 @@ package jp.coremind.core
     import jp.coremind.asset.Asset;
     import jp.coremind.configure.IApplicationConfigure;
     import jp.coremind.event.TransitionEvent;
-    import jp.coremind.storage.Storage;
+    import jp.coremind.storage.ModelStorage;
     
     import starling.core.Starling;
 
@@ -57,7 +57,7 @@ package jp.coremind.core
                 
                 Asset.initialize();
                 
-                StorageAccessor.initialize(new Storage());
+                StorageAccessor.initialize(new ModelStorage());
                 
                 ViewAccessor.initialize(_STAGE, callback);
             };

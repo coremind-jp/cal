@@ -1,5 +1,7 @@
 package jp.coremind.model.transaction
 {
+    import flash.utils.Dictionary;
+
     /**
      * データ構造にプリミティブ型を採用しているデータのトランザクションを処理するクラス.
      */
@@ -47,7 +49,7 @@ package jp.coremind.model.transaction
             sortNames:* = null,
             sortOptions:* = 0,
             filter:Function = null,
-            latestFilteringList:Array = null):void
+            latestFilteringList:Dictionary = null):void
         {
             for (var i:int = 0; i < history.length; i++)
                 _applyTransactionLog(history[i]);

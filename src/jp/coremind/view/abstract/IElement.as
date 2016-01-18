@@ -19,5 +19,7 @@ package jp.coremind.view.abstract
         function addListener(type:String, listener:Function):void
         function removeListener(type:String, listener:Function):void
         function hasListener(type:String):void
+        function clone():IElement;
+        function changeIdSuffix(idSuffix:String):void;
     }
 }

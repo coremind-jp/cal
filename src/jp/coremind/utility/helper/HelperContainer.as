@@ -1,6 +1,7 @@
 package jp.coremind.utility.helper
 {
     import flash.utils.ByteArray;
+    import flash.utils.describeType;
     import flash.utils.getDefinitionByName;
     
     import avmplus.getQualifiedClassName;
@@ -106,6 +107,13 @@ package jp.coremind.utility.helper
                 return null;
             
             return (instance as Object).constructor;
+        }
+        
+        public function isImplements(tagetClass:Class, interfaceClass:Class):Boolean
+        {
+            for each (var xml:XML in describeType(tagetClass).factory.implementsInterface)
+                if (xml.@type == getQualifiedClassName(interfaceClass)) return true;
+            return false;
         }
         
         public function bind(f:Function, ...rest):Function

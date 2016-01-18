@@ -1,6 +1,6 @@
 package jp.coremind.storage
 {
-    public class HashStorage implements IStorage
+    public class HashStorage implements IModelStorage
     {
         private var _storage:Object;
         

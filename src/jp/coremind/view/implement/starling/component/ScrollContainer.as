@@ -26,7 +26,6 @@ package jp.coremind.view.implement.starling.component
             backgroundBuilder:IBackgroundBuilder = null)
         {
             super(layoutCalculator, backgroundBuilder);
-            touchHandling = true;
         }
         
         override public function destroy(withReference:Boolean = false):void
@@ -50,7 +49,7 @@ package jp.coremind.view.implement.starling.component
         
         private function get scrollModule():ScrollModule
         {
-            return _wrappedContainer.elementInfo.elementModel.getModule(ScrollModule) as ScrollModule;
+            return _wrappedContainer.elementInfo.modules.getModule(ScrollModule) as ScrollModule;
         }
         
         public function set sliderX(gauge:Slider):void { _sliderX = gauge; }
@@ -71,6 +70,7 @@ package jp.coremind.view.implement.starling.component
         {
             _wrappedContainer.removeListener(ElementEvent.READY, _onLoadWrappedContainer);
             
+            touchHandling = true;
             _updateSlider();
             scrollModule.addListener(_onScroll);
         }

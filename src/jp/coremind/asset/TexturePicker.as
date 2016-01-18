@@ -1,12 +1,10 @@
 package jp.coremind.asset
 {
-    import flash.display.Bitmap;
     import flash.display.BitmapData;
     import flash.geom.Rectangle;
     import flash.utils.Dictionary;
     
     import jp.coremind.asset.painter.RuntimeTexturePainter;
-    import jp.coremind.core.Application;
     import jp.coremind.utility.Log;
     import jp.coremind.view.implement.starling.buildin.Image;
     

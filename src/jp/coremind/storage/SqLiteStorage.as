@@ -1,6 +1,6 @@
 package jp.coremind.storage
 {
-    public class SqLiteStorage implements IStorage
+    public class SqLiteStorage implements IModelStorage
     {
         public function SqLiteStorage()
         {

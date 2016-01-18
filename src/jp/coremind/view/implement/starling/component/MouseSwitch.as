@@ -3,7 +3,7 @@ package jp.coremind.view.implement.starling.component
     import jp.coremind.core.Application;
     import jp.coremind.core.StatusModelType;
     import jp.coremind.model.module.StatusGroup;
-    import jp.coremind.model.module.StatusModel;
+    import jp.coremind.model.module.StatusModule;
     import jp.coremind.utility.data.Status;
     import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.implement.starling.MouseElement;
@@ -28,7 +28,7 @@ package jp.coremind.view.implement.starling.component
         {
             super._initializeStatus();
             
-            _elementModel.getModule(StatusModel).update(StatusGroup.SELECT, null);
+            _info.modules.getModule(StatusModule).update(StatusGroup.SELECT, null);
         }
         
         override protected function _applyStatus(group:String, status:String):Boolean
@@ -40,12 +40,12 @@ package jp.coremind.view.implement.starling.component
                     {
                         case Status.ON:
                             _onSelected();
-                            Application.router.notify(_elementInfo, group, status);
+                            Application.router.notify(_info, group, status);
                             return true;
                             
                         case Status.OFF:
                             _onDeselected();
-                            Application.router.notify(_elementInfo, group, status);
+                            Application.router.notify(_info, group, status);
                             return true;
                     }
             }
@@ -54,7 +54,7 @@ package jp.coremind.view.implement.starling.component
         
         override protected function _onClick():void
         {
-            var status:StatusModel = _elementModel.getModule(StatusModel) as StatusModel;
+            var status:StatusModule = _info.modules.getModule(StatusModule) as StatusModule;
             
             status.getGroupStatus(StatusGroup.SELECT).equal(Status.ON) ?
                 status.update(StatusGroup.SELECT, Status.OFF):

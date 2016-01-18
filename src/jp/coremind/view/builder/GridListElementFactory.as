@@ -2,7 +2,7 @@ package jp.coremind.view.builder
 {
     import jp.coremind.model.transaction.Diff;
     import jp.coremind.model.transaction.ListDiff;
-    import jp.coremind.storage.StorageModelReader;
+    import jp.coremind.storage.ModelReader;
     
     /**
      */
@@ -23,7 +23,7 @@ package jp.coremind.view.builder
             super.destroy();
         }
         
-        override public function initialize(reader:StorageModelReader):void
+        override public function initialize(reader:ModelReader):void
         {
             super.initialize(reader);
             
@@ -40,8 +40,13 @@ package jp.coremind.view.builder
             var dataList:Array = diff.editedOrigin;
             
             _densityList.length = 0;
-            for (var i:int = 0, len:int = dataList.length; i < len; i++)
-                _pushDensity(_densityList, dataList[ diff.order[i] ], i, len);
+            
+            if (diff.order)
+                for (var i:int = 0, iLen:int = diff.order.length; i < iLen; i++)
+                    _pushDensity(_densityList, dataList[ diff.order[i] ], i, iLen);
+            else
+                for (var j:int = 0, jLen:int = dataList.length; i < jLen; i++)
+                    _pushDensity(_densityList, dataList[i], i, jLen);
         }
         
         /**

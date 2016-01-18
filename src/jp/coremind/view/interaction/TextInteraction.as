@@ -1,13 +1,13 @@
 package jp.coremind.view.interaction
 {
-    import jp.coremind.storage.StorageModelReader;
+    import jp.coremind.storage.ModelReader;
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.implement.starling.buildin.TextField;
     
     public class TextInteraction extends ElementInteraction implements IElementInteraction
     {
-        public static function REPLACE_TO_READER(sourceText:String, reader:StorageModelReader):String
+        public static function REPLACE_TO_READER(sourceText:String, reader:ModelReader):String
         {
             return sourceText.replace(/<\$\w*>/gm, function(...result):String
             {
@@ -51,7 +51,7 @@ package jp.coremind.view.interaction
             else Log.warning("undefined Parts(TextField). name=", _name);
         }
         
-        protected function _getText(reader:StorageModelReader):String
+        protected function _getText(reader:ModelReader):String
         {
             return _replacer is Function ? _replacer(_text, reader): _text;
         }

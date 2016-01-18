@@ -4,7 +4,9 @@ package jp.coremind.model.transaction
     {
         private static const _NONE:String          = "none";
         private static const _ADD_VALUE:String     = "addValue";
+        private static const _SWAP_VALUE:String    = "swapValue";
         private static const _UPDATE_VALUE:String  = "updateValue";
+        private static const _MOVE_VALUE:String    = "moveValue";
         private static const _REMOVE_VALUE:String  = "removeValue";
         private static const _FILTER_VALUE:String  = "filterValue";
         private static const _RESTORE_VALUE:String = "restoreValue";
@@ -22,6 +24,7 @@ package jp.coremind.model.transaction
         }
         
         public function get value():* { return _value; }
+        public function get swapKey():*  { return _id; }
         public function get key():String { return _id; }
         public function get index():int  { return _id === null ? -1: int(_id); }
         
@@ -29,7 +32,7 @@ package jp.coremind.model.transaction
         public function add(id:* = null):TransactionLog
         {
             _action = _ADD_VALUE;
-            _id = key;
+            _id = id;
             return this;
         }
         
@@ -45,6 +48,22 @@ package jp.coremind.model.transaction
         public function remove(id:* = null):TransactionLog
         {
             _action = _REMOVE_VALUE;
+            _id = id;
+            return this;
+        }
+        
+        public function swapped():Boolean { return _action === _SWAP_VALUE; }
+        public function swap(id:* = null):TransactionLog
+        {
+            _action = _SWAP_VALUE;
+            _id = id;
+            return this;
+        }
+        
+        public function moved():Boolean { return _action === _MOVE_VALUE; }
+        public function move(id:* = null):TransactionLog
+        {
+            _action = _MOVE_VALUE;
             _id = id;
             return this;
         }

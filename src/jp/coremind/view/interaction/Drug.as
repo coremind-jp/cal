@@ -128,13 +128,13 @@ package jp.coremind.view.interaction
             var h:int = Application.configure.appViewPort.height;
             x = _applyOutOfRangeResistance(x, _trackX, w);
             y = _applyOutOfRangeResistance(y, _trackY, h);
-            
+            /*
             if (_isAdsorb(_trackX.start - x, _trackY.start - y))
             {
                 x = _trackX.start;
                 y = _trackY.start;
             }
-            
+            */
             var changedX:Boolean = _trackX.update(x);
             var changedY:Boolean = _trackY.update(y);
             if (changedX || changedY) _drugListener(_trackX, _trackY);

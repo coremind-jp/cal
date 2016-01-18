@@ -1,12 +1,17 @@
 package jp.coremind.view.abstract.component
 {
-    import jp.coremind.utility.Log;
     import jp.coremind.utility.data.Progress;
+    
+    import starling.animation.Transitions;
+    import starling.animation.Tween;
+    import starling.core.Starling;
     
     public class Slider
     {
         private var
             _grid:Grid3,
+            _fadeIn:Tween,
+            _fadeOut:Tween,
             _percentage:Number,
             _size:Number,
             _position:Number,
@@ -31,6 +36,10 @@ package jp.coremind.view.abstract.component
         
         public function destroy(withReference:Boolean):void
         {
+            _fadeIn = _fadeOut = null;
+            Starling.juggler.remove(_fadeIn);
+            Starling.juggler.remove(_fadeOut);
+            
             if (withReference) _grid.destroy();
             
             _grid = null;
@@ -50,6 +59,8 @@ package jp.coremind.view.abstract.component
             _grid.size          = _size * _percentage;
             
             _progress.setRange(0, _containerSize - _grid.size, false);
+            
+            _beginFadeAnimation();
         }
         
         /**
@@ -90,6 +101,28 @@ package jp.coremind.view.abstract.component
                 _grid.size     = _size * _percentage;
                 _grid.position = _position + defaultSize * (1 - _progress.rate);
             }
+            
+            _beginFadeAnimation();
+        }
+        
+        private function _beginFadeAnimation():void
+        {
+            if (_fadeIn || !_grid.asset.visible) return;
+            
+            if (_fadeOut) Starling.juggler.remove(_fadeOut);
+            
+            _fadeIn = new Tween(_grid.asset, .2, Transitions.LINEAR);
+            _fadeIn.animate("alpha", 1);
+            _fadeIn.onComplete = function():void
+            {
+                _fadeIn  = null;
+                _fadeOut = new Tween(_grid.asset, .2, Transitions.LINEAR);
+                _fadeOut.delay = .2;
+                _fadeOut.animate("alpha", 0);
+                _fadeOut.onComplete = function():void { _fadeOut = null; }
+                Starling.juggler.add(_fadeOut);
+            };
+            Starling.juggler.add(_fadeIn);
         }
         
         public function toString():String

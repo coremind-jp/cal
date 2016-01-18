@@ -46,10 +46,15 @@ package jp.coremind.view.layout
             displayObject.y      = _verticalAlign.calc(actualParentHeight, displayObject.height);
         }
         
+        /**
+         * このレイアウトオブジェクトで定義されている相対サイズ、相対ポジションを
+         * actualParentWidth, actualParentHeightパラメータを元に算出し結果をRectangleオブジェクトとして返す.
+         * rectパラメータが指定されている場合、そのオブジェクトに算出結果を反映して返す。
+         */
         public function exportRectangle(
             actualParentWidth:int,
             actualParentHeight:int,
-            rect:Rectangle):Rectangle
+            rect:Rectangle = null):Rectangle
         {
             rect = rect || new Rectangle();
             

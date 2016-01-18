@@ -2,6 +2,7 @@ package jp.coremind.view.implement.starling
 {
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IContainer;
+    import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.layout.Layout;
     
@@ -30,6 +31,12 @@ package jp.coremind.view.implement.starling
         {
             this.x = x;
             this.y = y;
+        }
+        
+        override public function clone():IElement
+        {
+            Log.warning("can't clone IContainer implement instance.");
+            return null;
         }
         
         override protected function _initializeElementSize(actualParentWidth:Number, actualParentHeight:Number):void

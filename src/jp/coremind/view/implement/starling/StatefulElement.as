@@ -2,7 +2,8 @@ package jp.coremind.view.implement.starling
 {
     import jp.coremind.core.Application;
     import jp.coremind.core.StatusModelType;
-    import jp.coremind.model.module.StatusModel;
+    import jp.coremind.model.module.StatusModule;
+    import jp.coremind.utility.Log;
     import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.interaction.StatefulElementInteraction;
     import jp.coremind.view.layout.Layout;
@@ -34,15 +35,15 @@ package jp.coremind.view.implement.starling
             _interactionId = id;
         }
         
-        override protected function _initializeElementModel():void
+        override protected function _initializeModules():void
         {
-            super._initializeElementModel();
+            super._initializeModules();
             
-            if (_elementModel.isUndefined(StatusModel))
-                _elementModel.addModule(new StatusModel(statusModelType))
+            if (_info.modules.isUndefined(StatusModule))
+                _info.modules.addModule(new StatusModule(statusModelType))
             
-            _elementModel.getModule(StatusModel).addListener(_applyStatus);
-            _elementModel.getModule(StatusModel).addListener(_applyInteraction);
+            _info.modules.getModule(StatusModule).addListener(_applyStatus);
+            _info.modules.getModule(StatusModule).addListener(_applyInteraction);
             
             _initializeStatus();
         }
@@ -72,11 +73,12 @@ package jp.coremind.view.implement.starling
         override public function reset():void
         {
             _isReset = true;
+            Log.info(name, _info.modules.dump());
             
             if (_reader)
             {
-                _elementModel.getModule(StatusModel).removeListener(_applyStatus);
-                _elementModel.getModule(StatusModel).removeListener(_applyInteraction);
+                _info.modules.getModule(StatusModule).removeListener(_applyStatus);
+                _info.modules.getModule(StatusModule).removeListener(_applyInteraction);
             }
             
             super.reset();
@@ -84,10 +86,10 @@ package jp.coremind.view.implement.starling
         
         override public function destroy(withReference:Boolean = false):void
         {
-            if (_reader && !_elementModel.isUndefined(StatusModel))
+            if (_reader && !_info.modules.isUndefined(StatusModule))
             {
-                _elementModel.getModule(StatusModel).removeListener(_applyStatus);
-                _elementModel.getModule(StatusModel).removeListener(_applyInteraction);
+                _info.modules.getModule(StatusModule).removeListener(_applyStatus);
+                _info.modules.getModule(StatusModule).removeListener(_applyInteraction);
             }
             
             super.destroy(withReference);

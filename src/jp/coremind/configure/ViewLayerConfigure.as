@@ -32,6 +32,7 @@ package jp.coremind.configure
             insertCustomLayer(Layer.CONTENT);
             insertCustomLayer(Layer.NAVIGATION);
             insertCustomLayer(Layer.POPUP);
+            insertCustomLayer(Layer.SYSTEM);
         }
         
         public function insertCustomLayer(name:String, index:int = -1):void

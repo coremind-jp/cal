@@ -12,6 +12,7 @@ package jp.coremind.asset.painter
 
     public class RuntimeTexturePainter
     {
+        public static var MAX_SCALE_FACTOR:int = 4;
         private static const _TEMP:Rectangle = new Rectangle();
         
         protected var
@@ -21,7 +22,7 @@ package jp.coremind.asset.painter
             
         public function RuntimeTexturePainter(drawSizeWidth:int, drawSizeHeight:int)
         {
-            _rect = new Rectangle(0, 0, drawSizeWidth, drawSizeHeight);
+            _rect = new Rectangle(0, 0, drawSizeWidth * MAX_SCALE_FACTOR, drawSizeHeight * MAX_SCALE_FACTOR);
         }
         
         public function initialize(...values):RuntimeTexturePainter
@@ -48,7 +49,6 @@ package jp.coremind.asset.painter
         public function draw(sourceBitmapData:BitmapData, drawableArea:Rectangle):void
         {
             _copyRectValue(_TEMP, _rect);
-            _applyScaleFactor(_rect);
             
             var globalX:int = _rect.x = drawableArea.x;
             var globalY:int = _rect.y = drawableArea.y;
@@ -92,15 +92,6 @@ package jp.coremind.asset.painter
             else Log.error("RuntimeTextureDrawer.draw failed.", this, "max drawable num", maxDrawableX * maxDrawableY, "defined drawCount", _drawCount);
             
             _copyRectValue(_rect, _TEMP);
-        }
-        
-        private function _applyScaleFactor(targetRect:Rectangle):void
-        {
-            var sf:Number = Starling.contentScaleFactor;
-            targetRect.x      *= sf;
-            targetRect.y      *= sf;
-            targetRect.width  *= sf;
-            targetRect.height *= sf;
         }
         
         private function _copyRectValue(toRect:Rectangle, from:Rectangle):void

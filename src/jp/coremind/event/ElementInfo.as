@@ -1,59 +1,87 @@
 package jp.coremind.event
 {
+    import jp.coremind.core.ElementPathParser;
     import jp.coremind.core.StorageAccessor;
-    import jp.coremind.model.ElementModel;
-    import jp.coremind.storage.Storage;
-    import jp.coremind.storage.StorageModelReader;
+    import jp.coremind.model.ModuleList;
+    import jp.coremind.storage.ModelReader;
+    import jp.coremind.storage.ModelStorage;
     import jp.coremind.utility.Log;
 
     public class ElementInfo
     {
-        private var
-            _ownerLayerId:String,
-            _ownerViewId:String,
-            _elementId:String,
-            _storageId:String;
+        public static const TAG:String = "[ElementInfo]";
+        Log.addCustomTag(TAG);
         
-        public function ElementInfo(ownerLayerId:String, ownerViewId:String, elementId:String, storageId:String)
+        private var
+            _modules:ModuleList,
+            _storageId:String,
+            _pathParser:ElementPathParser;
+        
+        public function ElementInfo(storageId:String)
         {
-            _ownerLayerId = ownerLayerId;
-            _ownerViewId  = ownerViewId;
-            _elementId    = elementId;
-            _storageId    = storageId;
+            _storageId  = storageId;
+            _pathParser = new ElementPathParser();
         }
         
-        public function get reader():StorageModelReader
+        public function get reader():ModelReader
         {
             if (_storageId)
                 return StorageAccessor.requestModelReader(_storageId);
             else
             {
-                Log.info("undefined storageId", this);
-                return StorageAccessor.requestModelReader(Storage.UNDEFINED_STORAGE_ID);
+                Log.custom(TAG, "undefined storageId", this);
+                return StorageAccessor.requestModelReader(ModelStorage.UNDEFINED_STORAGE_ID);
             }
         }
         
-        public function get elementModel():ElementModel
+        public function get modules():ModuleList
         {
-            return StorageAccessor.requestElementModel(_storageId, _elementId);
+            return _modules;
         }
         
-        public function get elementId():String
+        public function initialize(layerId:String, viewId:String, elementId:String, idSuffix:String):void
         {
-            return _elementId;
+            if (_modules)
+            {
+                var b:ModuleList = _modules;
+                
+                var splitedId:Array = _storageId.split(".");
+                if (splitedId.length == 1) return;
+                splitedId[splitedId.length-1] = idSuffix;
+                
+                StorageAccessor.overwriteModuleList(
+                    _storageId, _pathParser.elementId,
+                    elementId, _storageId = splitedId.join("."),
+                    _modules);
+            }
+            
+            _pathParser.initialize(layerId, viewId, elementId);
+            _modules = StorageAccessor.requestModule(_storageId, _pathParser.elementId);
+            Log.custom(TAG, "initialized",　this);
+            /*
+            Log.custom(TAG, "hasBeforeModuleList", Boolean(b), "equalReference", _modules === b);
+            if (b && _modules !== b)
+            {
+                b.dump();
+                _modules.dump();
+            }
+            */
         }
         
-        public function createRouterKey(statusGroup:String, statusValue:String):String
+        public function get path():ElementPathParser
         {
-            return _ownerViewId+_elementId+statusGroup+statusValue;
+            return _pathParser;
+        }
+        
+        public function get storageId():String
+        {
+            return _storageId;
         }
         
         public function toString():String
         {
-            return "ownerLayerId:" + _ownerLayerId
-                + " ownerViewId:"  + _ownerViewId
-                + " elementId:"    + _elementId
-                + " storageId:"    + _storageId;
+            return _pathParser.toString()
+                + " storageId:" + _storageId;
         }
     }
 }

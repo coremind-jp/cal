@@ -2,7 +2,7 @@ package jp.coremind.storage
 {
     import jp.coremind.model.transaction.Diff;
 
-    public interface IStorageListener
+    public interface IModelStorageListener
     {
         /**
          * トランザクション実行中にデータに変化があった場合のハンドリングメソッド.

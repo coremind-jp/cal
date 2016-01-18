@@ -159,5 +159,12 @@ package jp.coremind.utility.helper
             
             return _result.join("&");
         }
+        
+        public function findKey(o:Object, v:*):*
+        {
+            for (var p:String in o) 
+                if (o[p] === v) return p;
+            return null;
+        }
     }
 }

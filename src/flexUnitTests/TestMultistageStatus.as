@@ -3,7 +3,7 @@ package flexUnitTests
     import flexunit.framework.Assert;
     
     import jp.coremind.core.StatusModelType;
-    import jp.coremind.model.module.StatusModel;
+    import jp.coremind.model.module.StatusModule;
     import jp.coremind.utility.data.Status;
     
     import org.flexunit.assertThat;
@@ -11,12 +11,12 @@ package flexUnitTests
     
     public class TestMultistageStatus
     {		
-        private var _stats:StatusModel;
+        private var _stats:StatusModule;
         
         [Before]
         public function setUp():void
         {
-            _stats = new StatusModel(StatusModelType.STATEFUL_ELEMENT);
+            _stats = new StatusModule(StatusModelType.STATEFUL_ELEMENT);
         }
         
         [After]

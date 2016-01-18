@@ -1,6 +1,6 @@
 package jp.coremind.storage
 {
-    public class SharedObjectStrage implements IStorage
+    public class SharedObjectStrage implements IModelStorage
     {
         public function SharedObjectStrage()
         {

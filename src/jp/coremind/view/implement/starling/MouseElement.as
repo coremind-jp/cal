@@ -3,7 +3,8 @@ package jp.coremind.view.implement.starling
     import jp.coremind.core.Application;
     import jp.coremind.core.StatusModelType;
     import jp.coremind.model.module.StatusGroup;
-    import jp.coremind.model.module.StatusModel;
+    import jp.coremind.model.module.StatusModule;
+    import jp.coremind.utility.Log;
     import jp.coremind.utility.data.Status;
     import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.layout.Layout;
@@ -31,14 +32,14 @@ package jp.coremind.view.implement.starling
         
         override protected function _onTouch(e:TouchEvent):void
         {
-            if (!_reader) return;
+            e.stopPropagation();
             
             _touch = e.getTouch(this);
             
             if (!_touch)
             {
                 if (_bHover)
-                    _elementModel.getModule(StatusModel).update(StatusGroup.RELEASE, Status.ROLL_OUT);
+                    _info.modules.getModule(StatusModule).update(StatusGroup.RELEASE, Status.ROLL_OUT);
                 _bHover = false;
             }
             else
@@ -54,7 +55,7 @@ package jp.coremind.view.implement.starling
             if (_bHover) return;
             
             _bHover = true;
-            _elementModel.getModule(StatusModel).update(StatusGroup.RELEASE, Status.ROLL_OVER);
+            _info.modules.getModule(StatusModule).update(StatusGroup.RELEASE, Status.ROLL_OVER);
         }
         
         override protected function began():void
@@ -63,7 +64,7 @@ package jp.coremind.view.implement.starling
             _triggerRect.y = _touch.globalY - (_triggerRect.height >> 1);
             
             _bHitTest = _hold = true;
-            _elementModel.getModule(StatusModel).update(StatusGroup.PRESS, Status.DOWN);
+            _info.modules.getModule(StatusModule).update(StatusGroup.PRESS, Status.DOWN);
         }
         
         override protected function moved():void
@@ -76,7 +77,7 @@ package jp.coremind.view.implement.starling
             
             var isRollOver:Boolean = _bHitTest && !_hold;
             var isClick:Boolean    = _bHitTest &&  _hold;
-            var status:StatusModel = _elementModel.getModule(StatusModel) as StatusModel;
+            var status:StatusModule = _info.modules.getModule(StatusModule) as StatusModule;
             
             isClick ?
                 status.update(StatusGroup.PRESS, Status.DOWN):
@@ -89,10 +90,9 @@ package jp.coremind.view.implement.starling
         {
             var isRollOver:Boolean = _bHitTest && !_hold;
             var isClick:Boolean    = _bHitTest &&  _hold;
-            var status:StatusModel = _elementModel.getModule(StatusModel) as StatusModel;
+            var status:StatusModule = _info.modules.getModule(StatusModule) as StatusModule;
             
             _bHover = isRollOver;
-            
             if (isClick)
             {
                 status.update(StatusGroup.PRESS, Status.CLICK);
@@ -122,12 +122,12 @@ package jp.coremind.view.implement.starling
                     {
                         case Status.ROLL_OVER:
                             _onRollOver();
-                            Application.router.notify(_elementInfo, group, status);
+                            Application.router.notify(_info, group, status);
                             return true;
                             
                         case Status.ROLL_OUT:
                             _onRollOut();
-                            Application.router.notify(_elementInfo, group, status);
+                            Application.router.notify(_info, group, status);
                             return true;
                     }
                     break;
@@ -137,12 +137,12 @@ package jp.coremind.view.implement.starling
                     {
                         case Status.ROLL_OVER:
                             _onRollOver();
-                            Application.router.notify(_elementInfo, group, status);
+                            Application.router.notify(_info, group, status);
                             return true;
                             
                         case Status.ROLL_OUT:
                             _onRollOut();
-                            Application.router.notify(_elementInfo, group, status);
+                            Application.router.notify(_info, group, status);
                             return true;
                     }
                     break;

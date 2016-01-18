@@ -1,6 +1,6 @@
 package jp.coremind.view.builder
 {
-    import jp.coremind.storage.Storage;
+    import jp.coremind.storage.ModelStorage;
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IBox;
     import jp.coremind.view.abstract.IElement;
@@ -23,7 +23,7 @@ package jp.coremind.view.builder
         {
             super(layout);
             
-            _storageId    = Storage.UNDEFINED_STORAGE_ID;
+            _storageId    = ModelStorage.UNDEFINED_STORAGE_ID;
             _elementClass = Element;
             _runInteractionOnCreated = false;
         }

@@ -1,5 +1,7 @@
 package jp.coremind.view.implement.starling
 {
+    import flash.display.DisplayObject;
+    
     import jp.coremind.utility.Log;
     import jp.coremind.utility.process.Routine;
     import jp.coremind.utility.process.Thread;
@@ -9,6 +11,7 @@ package jp.coremind.view.implement.starling
     import jp.coremind.view.abstract.IView;
     
     import starling.core.Starling;
+    import starling.display.DisplayObjectContainer;
     
     public class View extends CalSprite implements IView
     {
@@ -48,7 +51,7 @@ package jp.coremind.view.implement.starling
             Log.custom(TAG, name, "ready");
         }
         
-        public function getElement(path:String):IElement
+        public function getElement(path:String, ignoreError:Boolean = false):IElement
         {
             var pathList:Array = path.split(".");
             var result:IElement = findChild(this, pathList.shift()) as IElement;
@@ -57,9 +60,20 @@ package jp.coremind.view.implement.starling
                 result = findChild(result, pathList[i]) as IElement;
             
             if (!result)
-                Log.error(pathList[i], "not found.", path);
+                ignoreError ?
+                    1://Log.custom(TAG, "element not found. path:", path, " suspendPosition:", pathList[i-1], " view:", name):
+                    Log.error("element not found. path:", path, " suspendPosition:", pathList[i-1], " view:", name);
             
             return result;
+        }
+        
+        private function dumpChildrenNameList(container:DisplayObjectContainer):void
+        {
+            var r:Array = [];
+            for (var i:int = 0; i < container.numChildren; i++) 
+                r.push(container.getChildAt(i).name);
+            
+            Log.info(container.name, "children list:", r);
         }
         
         private function findChild(parent:IDisplayObjectContainer, name:String):IDisplayObject

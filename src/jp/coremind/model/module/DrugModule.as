@@ -9,31 +9,34 @@ package jp.coremind.model.module
     import jp.coremind.utility.data.NumberTracker;
     import jp.coremind.view.abstract.IContainer;
     import jp.coremind.view.interaction.Drug;
-    import jp.coremind.view.interaction.Flick;
-    
-    public class ScrollModule extends Dispatcher implements IModule
+
+    public class DrugModule extends Dispatcher implements IModule
     {
         //再利用インスタンス
         private static const _ZERO:Point = new Point();
         private static const _POINT:Point = new Point();
         private static const _OFFSET:Rectangle = new Rectangle();
         
+        protected var _drugControl:Drug;
+
         private var
-            _scrollVolume:Point,
             _container:IContainer,
-            _drugControl:Drug,
             _before:Before,
             _drugSize:Point,
             _drugArea:Rectangle;
         
-        public function ScrollModule(container:IContainer)
+        public function DrugModule(container:IContainer)
         {
             _container    = container;
             _before       = new Before();
             _drugArea     = new Rectangle();
             _drugSize     = new Point();
-            _drugControl  = new Flick();
-            _scrollVolume = new Point(1, 1);
+            _initializeDrugControl();
+        }
+        
+        protected function _initializeDrugControl():void
+        {
+            _drugControl  = new Drug();
         }
         
         override public function destroy():void
@@ -44,46 +47,8 @@ package jp.coremind.model.module
             _before = null;
             _drugSize = null;
             _drugArea = null;
-            _scrollVolume = null;
             
             super.destroy();
-        }
-        
-        /**
-         * 一度の呼び出しで何pixelスクロールするかを示す値を設定する.
-         * ※gridDensityと動議
-         */
-        public function setScrollVolume(x:Number, y:Number):void
-        {
-            _scrollVolume.setTo(x, y);
-        }
-        
-        public function toHead(x:Boolean = true, y:Boolean = true):void
-        {
-            _moveTo(x ? int.MAX_VALUE: 0, y ? int.MAX_VALUE: 0);
-        }
-        
-        public function toTail(x:Boolean = true, y:Boolean = true):void
-        {
-            _moveTo(x ? -int.MAX_VALUE: 0, y ? -int.MAX_VALUE: 0);
-        }
-        
-        public function pixelTo(x:Number, y:Number):void
-        {
-            _moveTo(x, y);
-        }
-        
-        public function gridTo(x:int, y:int):void
-        {
-            _moveTo(x * _scrollVolume.x, y * _scrollVolume.y);
-        }
-        
-        private function _moveTo(x:Number, y:Number):void
-        {
-            _initialize();
-            
-            _drugControl.moveTo(x, y);
-            _drugControl.drop();
         }
         
         public function update(...params):void {}
@@ -194,8 +159,10 @@ package jp.coremind.model.module
             _container.updatePosition(resultX, resultY);
             dispatch(trackerX, trackerY);
         }
+        
     }
 }
+
 import flash.geom.Point;
 
 class Before

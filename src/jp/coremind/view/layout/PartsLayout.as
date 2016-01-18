@@ -32,7 +32,7 @@ package jp.coremind.view.layout
         ];
         
         public static const TAG:String = "[PartsLayout]";
-        Log.addCustomTag(TAG);
+        //Log.addCustomTag(TAG);
         
         private var
             _element:IElement,

@@ -6,7 +6,7 @@ package jp.coremind.view.implement.starling
     import jp.coremind.core.Application;
     import jp.coremind.core.StatusModelType;
     import jp.coremind.model.module.StatusGroup;
-    import jp.coremind.model.module.StatusModel;
+    import jp.coremind.model.module.StatusModule;
     import jp.coremind.utility.data.Status;
     import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.layout.Layout;
@@ -44,7 +44,7 @@ package jp.coremind.view.implement.starling
         {
             super._initializeStatus();
             
-            _elementModel.getModule(StatusModel).update(StatusGroup.RELEASE, Status.ROLL_OUT);
+            _info.modules.getModule(StatusModule).update(StatusGroup.RELEASE, Status.ROLL_OUT);
         }
         
         /**
@@ -67,7 +67,7 @@ package jp.coremind.view.implement.starling
             _triggerRect.y = _touch.globalY - (_triggerRect.height >> 1);
             */
             _hold = true;
-            _elementModel.getModule(StatusModel).update(StatusGroup.PRESS, Status.DOWN);
+            _info.modules.getModule(StatusModule).update(StatusGroup.PRESS, Status.DOWN);
         }
         
         override protected function moved():void
@@ -80,14 +80,14 @@ package jp.coremind.view.implement.starling
             
             _hold = bIntersects && bHitTest;
             _hold ?
-                _elementModel.getModule(StatusModel).update(StatusGroup.PRESS, Status.DOWN):
-                _elementModel.getModule(StatusModel).update(StatusGroup.PRESS, Status.UP);
+                _info.modules.getModule(StatusModule).update(StatusGroup.PRESS, Status.DOWN):
+                _info.modules.getModule(StatusModule).update(StatusGroup.PRESS, Status.UP);
         }
         
         override protected function ended():void
         {
             if (_hold)
-                _elementModel.getModule(StatusModel).update(StatusGroup.PRESS, Status.CLICK);
+                _info.modules.getModule(StatusModule).update(StatusGroup.PRESS, Status.CLICK);
         }
         
         override protected function _applyStatus(group:String, status:String):Boolean
@@ -99,12 +99,12 @@ package jp.coremind.view.implement.starling
                     {
                         case Status.ROLL_OUT:
                             _onUp();
-                            Application.router.notify(_elementInfo, group, status);
+                            Application.router.notify(_info, group, status);
                             return true;
                             
                         case Status.UP:
                             _onUp();
-                            Application.router.notify(_elementInfo, group, status);
+                            Application.router.notify(_info, group, status);
                             return true;
                     }
                     break;
@@ -114,17 +114,17 @@ package jp.coremind.view.implement.starling
                     {
                         case Status.DOWN:
                             _onDown();
-                            Application.router.notify(_elementInfo, group, status);
+                            Application.router.notify(_info, group, status);
                             return true;
                             
                         case Status.UP:
                             _onUp();
-                            Application.router.notify(_elementInfo, group, status);
+                            Application.router.notify(_info, group, status);
                             return true;
                             
                         case Status.CLICK:
                             _onClick();
-                            Application.router.notify(_elementInfo, group, status);
+                            Application.router.notify(_info, group, status);
                             return true;
                     }
                     break;

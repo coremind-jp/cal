@@ -1,50 +1,77 @@
 package jp.coremind.core
 {
-    import flash.events.EventDispatcher;
-    
-    import jp.coremind.model.ElementModel;
-    import jp.coremind.storage.Storage;
-    import jp.coremind.storage.StorageModelReader;
+    import jp.coremind.model.ModuleList;
+    import jp.coremind.storage.ModelReader;
+    import jp.coremind.storage.ModelStorage;
+    import jp.coremind.storage.ModuleStorage;
+    import jp.coremind.utility.Log;
 
-    public class StorageAccessor extends EventDispatcher
+    public class StorageAccessor
     {
-        private static var _STORAGE:Storage;
+        public static const TAG:String = "[StorageAccessor]";
+        Log.addCustomTag(TAG);
         
-        public  static function initialize(storage:Storage):void
+        private static const _MODULE:ModuleStorage = new ModuleStorage();
+        private static var   _MODEL:ModelStorage;
+        
+        public  static function initialize(storage:ModelStorage):void
         {
-            _STORAGE = storage;
+            _MODEL = storage;
+            _MODEL.destroyListener = _MODULE.destroy;
         }
         
         /**
          * storageIdパラメータに紐づくStorageModelReaderオブジェクトを要求する.
          * @param   storageId   ストレージID. initializeStorageModelで初期化が済んでいるStorageModelReaderのStorageIdまたはその子となるStorageIdでなければならない。
          */
-        public static function requestModelReader(storageId:String):StorageModelReader
+        public static function requestModelReader(storageId:String):ModelReader
         {
-            return _STORAGE.requestModelReader(storageId, Application.configure.storage.getStorageType(storageId));
+            return _MODEL.requestReader(storageId, Application.configure.storage.getStorageType(storageId));
         }
         
         /**
          * storageIdパラメータに紐づくStorageModelReaderオブジェクトを要求する.
          * @param   storageId   ストレージID. initializeStorageModelで初期化が済んでいるStorageModelReaderのStorageIdまたはその子となるStorageIdでなければならない。
          */
-        public static function requestElementModel(storageId:String, elementId:String):ElementModel
+        public static function requestModule(storageId:String, elementId:String):ModuleList
         {
-            return _STORAGE.requestElementModel(storageId, elementId);
+            if (!_MODULE.isDefined(storageId, elementId)) _MODULE.create(storageId, elementId);
+            return _MODULE.read(storageId, elementId);
+        }
+        
+        public static function overwriteModuleList(
+            storageId:String, elementId:String,
+            newStorageId:String, newElementId,
+            currentModule:ModuleList):void
+        {
+            Log.custom(TAG, "overwriteModuleList",
+                "\nfrom:", storageId, elementId,
+                "\n  to:", newStorageId, newElementId);
+            
+            var realModule:ModuleList = _MODULE.purge(storageId, elementId);
+            
+            if (realModule !== currentModule)
+                Log.warning("different reference trying to overwrite ModuleList");
+            
+            if (_MODULE.isDefined(storageId, elementId))
+                Log.warning("already defined ModuleList. but overwrited.", storageId, elementId);
+            
+            _MODULE.create(newStorageId, newElementId, currentModule);
         }
         
         /**
          * storageIdパラメータに紐づくStorageModelReaderオブジェクトを要求する.
          * @param   storageId   ストレージID. initializeStorageModelで初期化が済んでいるStorageModelReaderのStorageIdまたはその子となるStorageIdでなければならない。
          */
-        public static function deleteElementModel(elementId:String):void
+        public static function destroyModuleList(elementId:String):void
         {
-            _STORAGE.deleteElementModel(elementId);
+            if (_MODULE.isDefined(ModelStorage.UNDEFINED_STORAGE_ID, elementId))
+                _MODULE.destroy(ModelStorage.UNDEFINED_STORAGE_ID, elementId);
         }
         
-        protected function get storage():Storage
+        protected function get storage():ModelStorage
         {
-            return _STORAGE;
+            return _MODEL;
         }
     }
 }

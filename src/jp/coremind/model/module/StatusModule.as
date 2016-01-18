@@ -3,15 +3,15 @@ package jp.coremind.model.module
     import flash.utils.getQualifiedClassName;
     
     import jp.coremind.core.Application;
-    import jp.coremind.model.IElementModel;
+    import jp.coremind.model.IModule;
     import jp.coremind.utility.Dispatcher;
     import jp.coremind.utility.Log;
     import jp.coremind.utility.data.HashList;
     import jp.coremind.utility.data.Status;
 
-    public class StatusModel extends Dispatcher implements IElementModel
+    public class StatusModule extends Dispatcher implements IModule
     {
-        public static const TAG:String = "[StatusModel]";
+        public static const TAG:String = "[StatusModule]";
         //Log.addCustomTag(TAG);
         
         private var
@@ -20,7 +20,7 @@ package jp.coremind.model.module
             _sortedConfigList:HashList,
             _statusList:Object;
         
-        public function StatusModel(configureId:String)
+        public function StatusModule(configureId:String)
         {
             var configList:Array = Application.configure.statusModel.getConfigure(configureId);
             Log.custom(TAG, "create", configureId);
@@ -94,7 +94,7 @@ package jp.coremind.model.module
             return _statusList[group];
         }
         
-        public function createGroup(group:String, priority:int, decrementCondition:Array):StatusModel
+        public function createGroup(group:String, priority:int, decrementCondition:Array):StatusModule
         {
             if (getGroupStatus(group))
                 return this;

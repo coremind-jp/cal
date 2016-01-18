@@ -49,7 +49,7 @@ package jp.coremind.asset.painter
             var map:TextureMap = _getTextureMap(value);
             if (!map) return new Rectangle();
             
-            var diameter:int = _rect.width;
+            var diameter:int = _rect.width / Starling.contentScaleFactor;
             var result:Rectangle = new Rectangle(map.x, map.y, diameter, diameter);
             var radius:int = diameter >> 1;
             switch (clipOption)

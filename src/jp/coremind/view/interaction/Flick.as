@@ -12,8 +12,6 @@ package jp.coremind.view.interaction
      */
     public class Flick extends Drug
     {
-        public var fromPointerDevice:Boolean;
-        
         private var
             _flickX:FlickAcceleration,
             _flickY:FlickAcceleration,
@@ -22,8 +20,6 @@ package jp.coremind.view.interaction
         public function Flick()
         {
             super(0);
-            
-            fromPointerDevice = true;
             
             _destroy = false;
             _flickX = new FlickAcceleration();
@@ -49,10 +45,12 @@ package jp.coremind.view.interaction
             super.initialize(offset, drugArea, drugListener, dropListener);
         }
         
-        override protected function _createTracker(offset:Rectangle, drugArea:Rectangle):void
+        override public function beginPointerDeviceListening():void
         {
-            super._createTracker(offset, drugArea);
-            if (fromPointerDevice) _trackX.enabledRound = _trackY.enabledRound = false;
+            _trackX.enabledRound = _trackY.enabledRound = false;
+            
+            $.loop.juggler.setInterval(_onUpdate);
+            Application.stage.addEventListener(MouseEvent.MOUSE_UP, _onUp);
         }
         
         override protected function _onUp(e:MouseEvent = null):void

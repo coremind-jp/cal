@@ -55,7 +55,7 @@ package jp.coremind.view.implement.flash
             }
         }
         
-        public function getElement(path:String):IElement
+        public function getElement(path:String, ignoreError:Boolean = false):IElement
         {
             var pathList:Array = path.split(".");
             var child:IElement;
@@ -63,7 +63,10 @@ package jp.coremind.view.implement.flash
             for (var i:int, len:int = pathList.length; i < len; i++)
             {
                 child = getDisplayByName(pathList[i]) as IElement;
-                if (!child) Log.error(pathList[i], "not found.", path);
+                if (!child)
+                    ignoreError ?
+                        Log.warning("element not found. path:", path, " suspendPosition:", pathList[i-1], " view:", name):
+                        Log.error("element not found. path:", path, " suspendPosition:", pathList[i-1], " view:", name);
             }
             
             return child;

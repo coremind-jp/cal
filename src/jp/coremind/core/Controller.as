@@ -83,9 +83,9 @@ package jp.coremind.core
             }
         }
         
-        public static function exec(controllerClass:Class, method:String, params:Array):void
+        public static function exec(controllerClass:Class, method:String, params:Array):*
         {
-            controllerClass in _REFERENCE_COUNTER ?
+            return controllerClass in _REFERENCE_COUNTER ?
                 (_ENTITY_LIST[controllerClass] as Controller).exec(method, params):
                 Log.info("undefined controller", controllerClass);
         }
@@ -94,13 +94,12 @@ package jp.coremind.core
         
         /**
          * ビューからの呼び出しを処理する.
-         * @param   storageId       呼び出しもとのElementオブジェクトが保持するStorageModelReaderオブジェクトのStorageId
-         * @param   elementId       呼び出しもとのElementオブジェクトが保持するElementModelIdオブジェクト
-         * @param   ...params       拡張パラメータ
+         * @param   method       呼び出し先クラスに実装されているメソッド名
+         * @param   ...params    呼び出し先クラスに実装されているメソッドへ渡すパラメータ
          */
-        public function exec(method:String, params:Array):void
+        public function exec(method:String, params:Array):*
         {
-            method in this && this[method] is Function ?
+            return method in this && this[method] is Function ?
                 this[method].apply(null, params):
                 Log.warning("undefined Controller method.", this,
                     "\n[undefined method]", method,
@@ -114,14 +113,14 @@ package jp.coremind.core
         
         /**
          * fの引数は次の通り
-         * f(storageValue:*, elementModel:ElementModel)
+         * f(storageValue:*, moduls:ModulList):void
          */
         protected function each(func:Function, layerId:String, viewId:String, path:String):void
         {
             var info:ElementInfo;
             var view:IView = starlingRoot.getLayerProcessor(layerId).getView(viewId);
             
-            var element:IElement = view.getElement(path);
+            var element:IElement = view.getElement(path, true);
             if (!element) return;
             
             var eachTarget:* = element.elementInfo.reader.read();
@@ -130,12 +129,12 @@ package jp.coremind.core
                 var list:Array = eachTarget;
                 for (var i:int = 0, len:int = list.length; i < len; i++) 
                 {
-                    var listElement:IElement = view.getElement(path+"."+i);
-                    if (listElement)
-                        func(
-                            listElement.elementInfo.reader.read(),
-                            listElement.elementInfo.elementModel
-                        );
+                    var listElement:IElement = view.getElement(path+"."+i, true);
+                    if (listElement && func(
+                        listElement.elementInfo.reader.read(),
+                        listElement.elementInfo.modules,
+                        listElement.elementInfo)
+                    ) break;
                 }
             }
             else
@@ -144,12 +143,12 @@ package jp.coremind.core
                 var hash:Object = eachTarget;
                 for (var p:String in hash) 
                 {
-                    var hashElement:IElement = view.getElement(path+"."+p);
-                    if (hashElement)
-                        func(
-                            hashElement.elementInfo.reader.read(),
-                            hashElement.elementInfo.elementModel
-                        );
+                    var hashElement:IElement = view.getElement(path+"."+p, true);
+                    if (hashElement && func(
+                        hashElement.elementInfo.reader.read(),
+                        hashElement.elementInfo.modules,
+                        hashElement.elementInfo)
+                    ) break;
                 }
             }
         }

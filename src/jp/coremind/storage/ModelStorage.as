@@ -4,31 +4,29 @@ package jp.coremind.storage
     import jp.coremind.core.Application;
     import jp.coremind.core.Layer;
     import jp.coremind.event.TransitionEvent;
-    import jp.coremind.model.ElementModel;
     import jp.coremind.utility.Log;
 
-    public class Storage
+    public class ModelStorage
     {
         public static const UNDEFINED_STORAGE_ID:String = "undefinedStorageId";
         public static const TAG:String = "[Storage]";
         //Log.addCustomTag(TAG);
         
+        public var destroyListener:Function;
+        
         private var
-            _modelCache:Object,
+            _writerCache:Object,
             _readerCache:Object,
-            _elementModelStorage:ElementModelStorage,
             _storageContainer:Object;
         
         /**
          * アプリケーション内で利用される記憶領域への操作を制御するクラス.
          * @param   sharedObjectName    アプリケーションで利用するSharedObjectのドメイン名
          */
-        public function Storage(sharedObjectName:String = ""):void
+        public function ModelStorage(sharedObjectName:String = ""):void
         {
-            _modelCache   = {};
-            _readerCache  = {};
-            
-            _elementModelStorage = new ElementModelStorage();
+            _writerCache = {};
+            _readerCache = {};
             
             _storageContainer = {};
             _storageContainer[StorageType.HASH]    = new HashStorage();
@@ -42,7 +40,7 @@ package jp.coremind.storage
          * パラメータtypeの基づいてIStorageインターフェースを実装したインスタンスを返す.
          * @param   type    ストレージタイプ(StorageType定数で指定)
          */
-        private function _selectStorage(type:String):IStorage
+        private function _selectStorage(type:String):IModelStorage
         {
             if (type in _storageContainer)
                 return _storageContainer[type];
@@ -58,13 +56,14 @@ package jp.coremind.storage
          * @param   id              ストレージid。指定したidが見つからない場合、そのidを利用できるように領域を作成する
          * @param   type            ストレージタイプ(StorageType定数で指定)
          */
-        public function requestModel(id:String, storageType:String = StorageType.HASH):StorageModel
+        public function requestWriter(id:String, storageType:String = StorageType.HASH):ModelWriter
         {
-            if (id in _modelCache) return _modelCache[id];
+            if (id in _writerCache)
+                return _writerCache[id];
             else
             {
-                _setupStorage(id, storageType);
-                return _modelCache[id] = new StorageModel(id, storageType);
+                _setup(id, storageType);
+                return _writerCache[id] = new ModelWriter(id, storageType);
             }
         }
         
@@ -73,17 +72,18 @@ package jp.coremind.storage
          * @param   id              ストレージid。指定したidが見つからない場合、そのidを利用できるように領域を作成する
          * @param   type            ストレージタイプ(StorageType定数で指定)
          */
-        public function requestModelReader(id:String, storageType:String = StorageType.HASH):StorageModelReader
+        public function requestReader(id:String, storageType:String = StorageType.HASH):ModelReader
         {
-            if (id in _readerCache) return _readerCache[id];
+            if (id in _readerCache)
+                return _readerCache[id];
             else
             {
-                _setupStorage(id, storageType);
-                return  _readerCache[id] = new StorageModelReader(id, storageType);
+                _setup(id, storageType);
+                return  _readerCache[id] = new ModelReader(id, storageType);
             }
         }
         
-        private function _setupStorage(id:String, storageType:String = StorageType.HASH):void
+        private function _setup(id:String, storageType:String = StorageType.HASH):void
         {
             var configure:IStorageConfigure = Application.configure.storage;
             
@@ -92,6 +92,13 @@ package jp.coremind.storage
                 Log.custom(TAG, "create StorageModelReader("+id+")");
                 _create(storageType, id, configure.createInitialValue(id));
             }
+        }
+        
+        private function _create(type:String, id:String, value:*):void
+        {
+            var initialValue:* = value || {};
+            Log.custom(TAG, "create("+type+")", id);//, "initialValue:", initialValue);
+            _selectStorage(type).create(id, initialValue);
         }
         
         /** 
@@ -104,49 +111,22 @@ package jp.coremind.storage
             return _selectStorage(type).isDefined(storageId);
         }
         
-        /** 
-         */
-        public function requestElementModel(storageId:String, elementId:String):ElementModel
-        {
-            if (!_elementModelStorage.isDefined(storageId, elementId))
-            {
-                Log.custom(TAG, "create ElementModel(", storageId, elementId, ")");
-                _elementModelStorage.create(storageId, elementId);
-            }
-            
-            return _elementModelStorage.read(storageId, elementId);
-        }
-        
-        public function deleteElementModel(elementId:String):void
-        {
-            if (_elementModelStorage.isDefined(UNDEFINED_STORAGE_ID, elementId))
-            {
-                Log.custom(TAG, "de1ete ElementModel(", elementId, ")");
-                _elementModelStorage.de1ete(UNDEFINED_STORAGE_ID, elementId);
-            }
-        }
-        
-        /** 現存するStorageModelをダンプする. */
-        public function dumpCachedModel():void { Log.info(_modelCache); }
-        /** 現存するStorageModelReaderをダンプする. */
-        public function dumpCachedReader():void { Log.info(_readerCache); }
-        
         /**
-         * requestModelメソッド, requestModelReaderメソッドで生成されたインスタンスを破棄する.
+         * requestWriterメソッド, requestReaderメソッドで生成されたインスタンスを破棄する.
          * 領域自体を消す訳ではない。　領域自体を消したい場合はStorageModelのupdateで空データを入れる。
          */
-        public function de1ete(id:String, storageType:String = StorageType.HASH):void
+        public function destroy(id:String, storageType:String = StorageType.HASH):void
         {
-            var reader:StorageModelReader, model:StorageModel, eModel:ElementModel;
+            var reader:ModelReader, writer:ModelWriter;
             Log.custom(TAG, "delete ", id);
             
-            if (id in _modelCache)
+            if (id in _writerCache)
             {
-                model = _modelCache[id];
-                delete _modelCache[id];
+                writer = _writerCache[id];
+                delete _writerCache[id];
                 
-                Log.custom(TAG, "\tStorageModel");
-                model.destroy();
+                Log.custom(TAG, "\tModelWriter");
+                writer.destroy();
             }
             
             if (id in _readerCache)
@@ -154,22 +134,25 @@ package jp.coremind.storage
                 reader = _readerCache[id];
                 delete _readerCache[id];
                 
-                Log.custom(TAG, "\tStorageModelReader");
+                Log.custom(TAG, "\tModelReader");
                 reader.destroy();
             }
             
-            if (id !== UNDEFINED_STORAGE_ID)
-                _elementModelStorage.de1ete(id);
+            if (id !== UNDEFINED_STORAGE_ID && destroyListener is Function)
+                destroyListener(id);
         }
         
+        /**
+         * キャッシュされているModelReaderを走査し各インスタンスに対してリスナーが存在しないModelreaderを破棄する.
+         */
         public function refresh(e:TransitionEvent = null):void
         {
             Log.custom("refresh");
             
             for (var id:String in _readerCache)
             {
-                var reader:StorageModelReader = _readerCache[id];
-                if (!reader.hasListener()) de1ete(id, reader.type);
+                var  reader:ModelReader = _readerCache[id];
+                if (!reader.hasListener()) destroy(id, reader.type);
             }
             
             if (e.layer == Layer.CONTENT)
@@ -179,22 +162,20 @@ package jp.coremind.storage
             }
         }
         
-        private function _create(type:String, id:String, value:*):void
-        {
-            var initialValue:* = value || {};
-            Log.custom(TAG, "create("+type+")", id);//, "initialValue:", initialValue);
-            _selectStorage(type).create(id, initialValue);
-        }
+        /** 現存するStorageModelをダンプする. */
+        public function dumpCachedModel():void { Log.info(_writerCache); }
+        /** 現存するStorageModelReaderをダンプする. */
+        public function dumpCachedReader():void { Log.info(_readerCache); }
         
-        internal function read(accessor:StorageModelReader):*
+        internal function read(accessor:ModelReader):*
         {
             Log.custom(TAG, "read("+accessor.type+")", accessor.id);
             return _selectStorage(accessor.type).read(accessor.id);
         }
         
-        internal function update(accessor:StorageModel, value:*):void
+        internal function update(accessor:ModelWriter, value:*):void
         {
-            Log.custom(TAG, "update("+accessor.type+")", accessor.id);
+            Log.custom(TAG, "update("+accessor.type+")", accessor.id, value);
             _selectStorage(accessor.type).update(accessor.id, value);
         }
     }

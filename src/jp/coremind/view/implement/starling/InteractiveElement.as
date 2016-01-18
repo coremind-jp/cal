@@ -3,7 +3,7 @@ package jp.coremind.view.implement.starling
     import jp.coremind.core.Application;
     import jp.coremind.core.StatusModelType;
     import jp.coremind.model.module.StatusGroup;
-    import jp.coremind.model.module.StatusModel;
+    import jp.coremind.model.module.StatusModule;
     import jp.coremind.utility.data.Status;
     import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.layout.Layout;
@@ -49,7 +49,7 @@ package jp.coremind.view.implement.starling
         {
             super._initializeStatus();
             
-            _elementModel.getModule(StatusModel).update(StatusGroup.LOCK, null);
+            _info.modules.getModule(StatusModule).update(StatusGroup.LOCK, null);
         }
         
         public function get button():Boolean
@@ -125,12 +125,12 @@ package jp.coremind.view.implement.starling
                     {
                         case Status.UNLOCK:
                             _onEnable();
-                            Application.router.notify(_elementInfo, group, status);
+                            Application.router.notify(_info, group, status);
                             return true;
                             
                         case Status.LOCK:
                             _onDisable();
-                            Application.router.notify(_elementInfo, group, status);
+                            Application.router.notify(_info, group, status);
                             return true;
                     }
                     break;

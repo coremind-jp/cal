@@ -5,10 +5,11 @@ package jp.coremind.view.builder
     import jp.coremind.configure.IElementBluePrint;
     import jp.coremind.core.Application;
     import jp.coremind.model.transaction.Diff;
-    import jp.coremind.storage.IStorageListener;
-    import jp.coremind.storage.StorageModelReader;
+    import jp.coremind.storage.IModelStorageListener;
+    import jp.coremind.storage.ModelReader;
     import jp.coremind.utility.IRecycle;
     import jp.coremind.utility.InstancePool;
+    import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IElement;
     
     /**
@@ -18,13 +19,16 @@ package jp.coremind.view.builder
      * 明示的に不要になった事を通知(recycleメソッドの呼び出し)する必要がある。
      * @see InstancePool
      */
-    public class ListElementFactory implements IStorageListener
+    public class ListElementFactory implements IModelStorageListener
     {
+        public static const TAG:String = "[ListElementFactory]";
+        Log.addCustomTag(TAG);
+        
         protected var
-            _reader:StorageModelReader,
+            _reader:ModelReader,
             _pool:InstancePool,
             _createdInstance:Dictionary,
-            _builderCache:Object;/** こまめにElementが追加削除を繰り返す場合Builder取得(呼び出し時に生成している)コストが高くなるので一度使ったbuilderはキャッシュしておく */
+            _builderCache:Object;//こまめにElementが追加削除を繰り返す場合Builder取得(呼び出し時に生成している)コストが高くなるので一度使ったbuilderはキャッシュしておく 
 
         public function ListElementFactory()
         {
@@ -45,10 +49,10 @@ package jp.coremind.view.builder
             for (var p:* in _builderCache) delete _builderCache[p];
         }
         
-        public function initialize(reader:StorageModelReader):void
+        public function initialize(reader:ModelReader):void
         {
             _reader = reader;
-            _reader.addListener(this, StorageModelReader.LISTENER_PRIORITY_LIST_ELEMENT_FACTORY);
+            _reader.addListener(this, ModelReader.LISTENER_PRIORITY_LIST_ELEMENT_FACTORY);
         }
         
         /**
@@ -64,7 +68,8 @@ package jp.coremind.view.builder
         
         /**
          * データに紐付くエレメントを取得する.
-         * 存在しない場合、暗黙的に新たにエレメントインスタンスが生成される。
+         * 存在しない場合、暗黙的にプールを介してインスタンスを取得する。
+         * プールにも再利用可能なインスタンスがない場合、新規生成する。
          */
         public function request(actualParentWidth:int, actualParentHeight:int, modelData:*, index:int = -1, length:int = -1):IElement
         {
@@ -80,7 +85,6 @@ package jp.coremind.view.builder
                 }
                 
                 var builder:ElementBuilder = _getBuilder(modelData, index, length);
-                
                 var  element:IElement = _pool.request(builder.getElementClass()) as IElement;
                 if (!element) element = builder.buildForListElement();
                 element.initialize(actualParentWidth, actualParentHeight, _reader.id + "." + index);
@@ -88,9 +92,53 @@ package jp.coremind.view.builder
                 _createdInstance[modelData] = element;
             }
             
-            _createdInstance[modelData].name = index.toString();
+            if (index > -1)
+                _createdInstance[modelData].name = index.toString();
             
             return _createdInstance[modelData];
+        }
+        
+        /**
+         * IElementオブジェクトに紐付けているmodlDataが書き換えられていた場合更新する.
+         */
+        public function refreshKey():void
+        {
+            Log.custom(TAG, "requireCacheKeyRefresh");
+            var _result:Dictionary = new Dictionary(true);
+            
+            for (var modelData:* in _createdInstance)
+            {
+                var e:IElement = _createdInstance[modelData];
+                var realData:* = e.elementInfo.reader.read();
+                _result[realData] = e;
+                
+                if (realData !== modelData)
+                    Log.custom(TAG, "refresh => keyModel:", modelData, "realModel:", realData);
+            }
+            
+            _createdInstance = _result;
+        }
+        
+        /**
+         * プールを介さずにインスタンスを新規生成する.
+         */
+        public function create(actualParentWidth:int, actualParentHeight:int, modelData:*, index:int = -1, length:int = -1):IElement
+        {
+            var l:Array = _reader.read();
+            if (length == -1) length = l.length;
+            
+            if (index == -1)
+            {
+                var n:int = l.indexOf(modelData);
+                index = n == -1 ? length: n;
+            }
+            
+            var builder:ElementBuilder = _getBuilder(modelData, index, length);
+            var  element:IElement = builder.buildForListElement();
+            element.initialize(actualParentWidth, actualParentHeight, _reader.id + "." + index);
+            element.name = index.toString();
+            
+            return element;
         }
         
         protected function _getBuilder(modelData:*, index:int, length:int):ElementBuilder

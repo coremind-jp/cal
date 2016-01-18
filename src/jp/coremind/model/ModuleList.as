@@ -4,21 +4,21 @@ package jp.coremind.model
     
     import jp.coremind.utility.Log;
 
-    public class ElementModel
+    public class ModuleList
     {
-        private var _moduleList:Dictionary;
+        private var _list:Dictionary;
         
-        public function ElementModel()
+        public function ModuleList()
         {
-            _moduleList = new Dictionary(true);
+            _list = new Dictionary(true);
         }
         
         public function destroy():void
         {
-            for (var p:* in _moduleList)
+            for (var p:* in _list)
                 removeModule(p);
             
-            _moduleList = null;
+            _list = null;
         }
         
         public function isUndefined(module:Class):Boolean
@@ -38,23 +38,29 @@ package jp.coremind.model
             
             //その結果、非表示扱いになっているElementオブジェクトを格納するInstancePoolが役目を終えて破棄されるときに、
             //既にnullになっている_moduleListを参照しようするので、nullエラーを防ぐために_moduleListがnullかもチェックする必要がある。
-            return !_moduleList || !(module in _moduleList);
+            return !_list || !(module in _list);
         }
         
-        public function getModule(module:Class):IElementModel
+        public function getModule(module:Class):IModule
         {
             if (isUndefined(module))
             {
-                Log.error("undefined ElementModelModule", module);
+                Log.error("undefined Module", module);
                 return null;
             }
             else
-                return _moduleList[module];
+                return _list[module];
         }
         
-        public function addModule(instance:IElementModel):void
+        public function dump():void
         {
-            _moduleList[$.getClassByInstance(instance)] = instance;
+            Log.info("dump ModuleList");
+            for (var p:Class in _list) Log.info(p, _list[p]);
+        }
+        
+        public function addModule(instance:IModule):void
+        {
+            _list[$.getClassByInstance(instance)] = instance;
         }
         
         public function removeModule(module:Class):void
@@ -62,12 +68,12 @@ package jp.coremind.model
             if (isUndefined(module)) return;
             else getModule(module).destroy();
             
-            delete _moduleList[module];
+            delete _list[module];
         }
         
         public function toString():String
         {
-            return Log.toString(_moduleList);
+            return Log.toString(_list);
         }
     }
 }

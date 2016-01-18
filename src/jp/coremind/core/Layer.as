@@ -8,5 +8,7 @@ package jp.coremind.core
         public static const NAVIGATION:String = "NavigationLayer";
         /** ポップアップレイヤー */
         public static const POPUP:String      = "PopupLayer";
+        /** システムレイヤー */
+        public static const SYSTEM:String     = "SystemLayer";
     }
 }
