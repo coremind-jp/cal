@@ -69,12 +69,8 @@ package jp.coremind.view.implement.starling
             if (interaction) interaction.apply(this, group, status);
         }
         
-        private var _isReset:Boolean = false;
         override public function reset():void
         {
-            _isReset = true;
-            Log.info(name, _info.modules.dump());
-            
             if (_reader)
             {
                 _info.modules.getModule(StatusModule).removeListener(_applyStatus);

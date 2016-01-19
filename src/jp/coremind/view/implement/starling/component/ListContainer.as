@@ -159,7 +159,7 @@ package jp.coremind.view.implement.starling.component
             
             _simulation.beginChildPositionEdit();
             
-            _applyRemoveAndFilteringDiff(diff, pId);
+            _applyRemoveAndFiltering(diff, pId);
             
             _updateChildrenPosition(diff);
             
@@ -178,7 +178,7 @@ package jp.coremind.view.implement.starling.component
         /**
          * 差分(削除, フィルタリング, フィルタリング解除対象分)を画面に適用する.
          */
-        private function _applyRemoveAndFilteringDiff(diff:Diff, pId:String):void
+        private function _applyRemoveAndFiltering(diff:Diff, pId:String):void
         {
             var data:*;
             

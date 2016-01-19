@@ -13,8 +13,8 @@ package jp.coremind.storage
         Log.addCustomTag(TAG);
         
         private var
-            _latestDiff:Diff,
             _reader:ModelReader,
+            _latestDiff:Diff,
             _transaction:Transaction;
         
         public function ModelWriter(id:String, type:String = StorageType.HASH)
@@ -82,15 +82,14 @@ package jp.coremind.storage
                     _latestDiff:
                     _transaction.apply(_reader.read());
                 
+                _transaction.rollback();
+                _transaction = null;
+                _latestDiff  = null;
+                
                 storage.update(this, diff.editedOrigin);
                 
                 _reader.dispatchByCommit(diff);
-                
-                _transaction.rollback();
             }
-            
-            _transaction = null;
-            _latestDiff  = null;
         }
     }
 }

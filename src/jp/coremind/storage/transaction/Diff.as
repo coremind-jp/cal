@@ -2,7 +2,7 @@ package jp.coremind.storage.transaction
 {
     public class Diff
     {
-        internal var
+        private var
             _editedOrigin:*,
             _listInfo:DiffListInfo,
             _hashInfo:DiffHashInfo;
