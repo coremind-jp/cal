@@ -12,7 +12,7 @@ package jp.coremind.core
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.implement.starling.ContainerWrapper;
     import jp.coremind.view.implement.starling.component.ListContainer;
-    import jp.coremind.view.interaction.Drug;
+    import jp.coremind.view.interaction.Drag;
     
     import starling.core.Starling;
     
@@ -29,24 +29,24 @@ package jp.coremind.core
             _latestHitArea:Rectangle,
             _currentConfigure:Configure;
         
-        public function beginDrug(info:ElementInfo, confId:int):void
+        public function beginDrag(info:ElementInfo, confId:int):void
         {
-            var drugElement:IElement = info.path.fetchElement(starlingRoot);
-            if (drugElement)
+            var dragElement:IElement = info.path.fetchElement(starlingRoot);
+            if (dragElement)
             {
                 _currentConfigure = _CONFIGURE_LIST[confId];
                 
-                if (drugElement is ContainerWrapper)
-                    Log.warning("ContainerWrapper(SuperClass) not Supported Drug.");
+                if (dragElement is ContainerWrapper)
+                    Log.warning("ContainerWrapper(SuperClass) not Supported Drag.");
                 else
                 if (Controller.exec(_currentConfigure.controllerClass, "dragFiltering", [info]))
-                    _beginDrug(drugElement);
+                    _beginDrag(dragElement);
             }
         }
         
         private static const _TMP_POINT:Point    = new Point();
         private static const _TMP_RECT:Rectangle = new Rectangle();
-        private function _beginDrug(from:IElement):void
+        private function _beginDrag(from:IElement):void
         {
             //ドラッグしたオブジェクトの座標, サイズ情報を_latestHitAreaオブジェクトに与える為に一度ヒットテストを行っておく.
             _hitTestByElement(from, true);
@@ -126,7 +126,7 @@ package jp.coremind.core
             from.toLocalPoint(Application.pointer, _TMP_POINT);
             _TMP_RECT.setTo(_TMP_POINT.x, _TMP_POINT.y, from.elementWidth, from.elementHeight);
             
-            var dragger:Drug = new Drug(0);
+            var dragger:Drag = new Drag(0);
             dragger.initialize(_TMP_RECT, new Rectangle(0, 55, 320, 568 - 55), onDrag, onDrop);
             dragger.beginPointerDeviceListening();
             

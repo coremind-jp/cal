@@ -149,17 +149,7 @@ package jp.coremind.view.implement.starling.component
         override public function preview(diff:Diff):void
         {
             super.preview(diff);
-            _listUpdate(diff);
-        }
-        
-        override public function commit(diff:Diff):void
-        {
-            super.commit(diff);
-            //_listUpdate(diff);
-        }
-        
-        private function _listUpdate(diff:Diff):void
-        {
+            
             var pId:String = name + PREVIEW_PROCESS;
             var moveThread:Thread = new Thread("move");
             var addThread:Thread  = new Thread("add");

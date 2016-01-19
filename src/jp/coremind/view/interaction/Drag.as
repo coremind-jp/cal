@@ -12,12 +12,12 @@ package jp.coremind.view.interaction
      * ドラッグの座標計算を行うクラス.
      * ドラッグ領域をステージ座標で割り出し、flash.display.Stageで取得できるmouseX, mouseYで移動量を計算することを留意。
      */
-    public class Drug
+    public class Drag
     {
         protected var
-            _druging:Boolean,
+            _draging:Boolean,
             _adsorbThreshold:Number,
-            _drugListener:Function,
+            _dragListener:Function,
             _dropListener:Function,
             _trackX:NumberTracker,
             _trackY:NumberTracker;
@@ -25,9 +25,9 @@ package jp.coremind.view.interaction
         /**
          * @param   adsorbThreshold 吸着閾値。この閾値以下の場合、ドラッグは発生しない。
          */
-        public function Drug(adsorbThreshold:Number = 10)
+        public function Drag(adsorbThreshold:Number = 10)
         {
-            _druging = false;
+            _draging = false;
             _adsorbThreshold = Math.abs(adsorbThreshold * Starling.contentScaleFactor);
         }
         
@@ -35,32 +35,32 @@ package jp.coremind.view.interaction
         {
             Application.stage.removeEventListener(MouseEvent.MOUSE_UP, _onUp);
             
-            _druging = false;
-            _drugListener = _dropListener = null;
+            _draging = false;
+            _dragListener = _dropListener = null;
             _trackX = _trackY = null;
         }
         
         /**
          * ドラッグを開始する.
-         * メソッド呼出し後にドロップするまでdrugListenerパラメータへ計算結果(x, yそれぞれを監視したNumberTrackerオブジェクト)を渡して呼び出す。
+         * メソッド呼出し後にドロップするまでdragListenerパラメータへ計算結果(x, yそれぞれを監視したNumberTrackerオブジェクト)を渡して呼び出す。
          * 呼び出し側ではこの引数を元にドラッグ対象となっている表示オブジェクトの座標更新を行う。
          * 
          * パラメータdropListenerを引数に与えていた場合、ドロップした時にこの関数を呼び出す。
-         * 関数へ渡す引数はdrugListenerと同様。
+         * 関数へ渡す引数はdragListenerと同様。
          * @param   offset          コンテナのローカル座標上のポインタの位置とコンテナの縦・横を格納するRectangleオブジェクト
-         * @param   drugArea        ステージ座標上のドラッグ領域を格納するRectangleオブジェクト
-         * @param   drugListener    ドラッグを開始してからドロップするまでフレーム更新毎に呼ばれる関数
+         * @param   dragArea        ステージ座標上のドラッグ領域を格納するRectangleオブジェクト
+         * @param   dragListener    ドラッグを開始してからドロップするまでフレーム更新毎に呼ばれる関数
          * @param   drupListener    ドロップした際に呼ばれる関数
          */
-        public function initialize(offset:Rectangle, drugArea:Rectangle, drugListener:Function, dropListener:Function = null):void
+        public function initialize(offset:Rectangle, dragArea:Rectangle, dragListener:Function, dropListener:Function = null):void
         {
-            if (_druging) return;
+            if (_draging) return;
             
-            _druging = true;
-            _drugListener = drugListener;
+            _draging = true;
+            _dragListener = dragListener;
             _dropListener = dropListener;
             
-            createTracker(offset, drugArea);
+            createTracker(offset, dragArea);
         }
         
         public function beginPointerDeviceListening():void
@@ -82,15 +82,15 @@ package jp.coremind.view.interaction
         /**
          * コンテナとドラッグ対象との現在の距離情報を求めるためのオブジェクトを生成する.
          * このメソッドの用途はドラッグの開始をせずに状態データを取得するのが目的。
-         * ※observeメソッドのdrugListener, dropListenerへ渡されるNumberTrackerオブジェクトを利用した表示オブジェクトの更新が必要な場合等
+         * ※observeメソッドのdragListener, dropListenerへ渡されるNumberTrackerオブジェクトを利用した表示オブジェクトの更新が必要な場合等
          * 
          * @param   offset      コンテナのローカル座標上のポインタの位置とコンテナの縦・横を格納するRectangleオブジェクト
-         * @param   drugArea    ステージ座標上のドラッグ領域を格納するRectangleオブジェクト
+         * @param   dragArea    ステージ座標上のドラッグ領域を格納するRectangleオブジェクト
          * @param   callback    生成された現在の距離情報(NumberTrackerオブジェクト)の渡し先となる関数
          */
-        public function createTracker(offset:Rectangle, drugArea:Rectangle, callback:Function = null):void
+        public function createTracker(offset:Rectangle, dragArea:Rectangle, callback:Function = null):void
         {
-            _createTracker(offset, drugArea);
+            _createTracker(offset, dragArea);
             
             _trackX.initialize(Application.pointerX);
             _trackY.initialize(Application.pointerY);
@@ -101,15 +101,15 @@ package jp.coremind.view.interaction
         /**
          * 座標計測用オブジェクトを生成しドラッグ領域を確定する.
          * @param   offset      コンテナのローカル座標上のポインタの位置とコンテナの縦・横を格納するRectangleオブジェクト
-         * @param   drugArea    ステージ座標上のドラッグ領域を格納するRectangleオブジェクト
+         * @param   dragArea    ステージ座標上のドラッグ領域を格納するRectangleオブジェクト
          */
-        protected function _createTracker(offset:Rectangle, drugArea:Rectangle):void
+        protected function _createTracker(offset:Rectangle, dragArea:Rectangle):void
         {
             _trackX = new NumberTracker();
-            _trackX.setRange(drugArea.left + offset.x, drugArea.right - offset.width + offset.x, false);
+            _trackX.setRange(dragArea.left + offset.x, dragArea.right - offset.width + offset.x, false);
             
             _trackY = new NumberTracker();
-            _trackY.setRange(drugArea.top + offset.y, drugArea.bottom - offset.height + offset.y, false);
+            _trackY.setRange(dragArea.top + offset.y, dragArea.bottom - offset.height + offset.y, false);
         }
         
         protected function _onUpdate(elapsed:int):Boolean
@@ -122,7 +122,7 @@ package jp.coremind.view.interaction
          */
         private function _update(x:Number, y:Number):Boolean
         {
-            if (!_druging) return true;
+            if (!_draging) return true;
             
             var w:int = Application.configure.appViewPort.width;
             var h:int = Application.configure.appViewPort.height;
@@ -137,7 +137,7 @@ package jp.coremind.view.interaction
             */
             var changedX:Boolean = _trackX.update(x);
             var changedY:Boolean = _trackY.update(y);
-            if (changedX || changedY) _drugListener(_trackX, _trackY);
+            if (changedX || changedY) _dragListener(_trackX, _trackY);
             
             return false;
         }

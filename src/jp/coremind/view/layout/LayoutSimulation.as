@@ -145,6 +145,7 @@ package jp.coremind.view.layout
             //直前に行われたupdateContainerPositionの結果(_preventVisible)から
             //この処理で判定に入った子を除外していけば結果的に残ったものが削除すべき対象(_invisible)となる
             _invisible = _preventVisible || _EMPTY;
+            
             _visible   = new Dictionary(true);
             _create    = new Dictionary(true);
             if (!_preventPosition) _preventPosition = _EMPTY;

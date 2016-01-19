@@ -117,14 +117,11 @@ package jp.coremind.view.implement.starling
         }
         
         //IStorageListener interface
+        public function commit(diff:Diff):void {}
         public function preview(diff:Diff):void
         {
             if (diff.hashInfo)
                 _applyStorageInteraction(diff.hashInfo.edited, diff.editedOrigin);
-        }
-        
-        public function commit(diff:Diff):void
-        {
         }
         
         private function _applyStorageInteraction(updatedKeyList:Vector.<String>, previewData:Object = null):void

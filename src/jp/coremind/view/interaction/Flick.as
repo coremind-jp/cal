@@ -8,9 +8,9 @@ package jp.coremind.view.interaction
     /**
      * フリック時の座標計算を行うクラス.
      * 正確にはFlickAccelerationクラスで計算した結果を然るべきコールバック関数へ返すフリック制御クラス。
-     * Drugクラスの派生であるので同様にStage座標に依存ことを留意。
+     * Dragクラスの派生であるので同様にStage座標に依存ことを留意。
      */
-    public class Flick extends Drug
+    public class Flick extends Drag
     {
         private var
             _flickX:FlickAcceleration,
@@ -34,15 +34,15 @@ package jp.coremind.view.interaction
             super.destory();
         }
         
-        override public function initialize(offset:Rectangle, drugArea:Rectangle, drugListener:Function, dropListener:Function = null):void
+        override public function initialize(offset:Rectangle, dragArea:Rectangle, dragListener:Function, dropListener:Function = null):void
         {
-            if (_druging)
+            if (_draging)
                 return;
             
             _flickX.terminate();
             _flickY.terminate();
             
-            super.initialize(offset, drugArea, drugListener, dropListener);
+            super.initialize(offset, dragArea, dragListener, dropListener);
         }
         
         override public function beginPointerDeviceListening():void
@@ -57,8 +57,8 @@ package jp.coremind.view.interaction
         {
             Application.stage.removeEventListener(MouseEvent.MOUSE_UP, _onUp);
             
-            //terminate drug loop.
-            _druging = false;
+            //terminate drag loop.
+            _draging = false;
             
             if (_dropListener is Function)
                 _dropListener(_trackX, _trackY);
@@ -81,7 +81,7 @@ package jp.coremind.view.interaction
             
             if (_changedX || _changedY)
             {
-                _drugListener(_trackX, _trackY);
+                _dragListener(_trackX, _trackY);
                 return false;
             }
             else

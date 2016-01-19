@@ -13,6 +13,7 @@ package jp.coremind.storage
         Log.addCustomTag(TAG);
         
         private var
+            _latestDiff:Diff,
             _reader:ModelReader,
             _transaction:Transaction;
         
@@ -30,6 +31,8 @@ package jp.coremind.storage
                 _transaction.rollback();
                 _transaction = null;
             }
+            
+            _latestDiff = null;
         }
         
         public function get id():String   { return _reader.id; }
@@ -60,25 +63,34 @@ package jp.coremind.storage
         
         public function preview():void
         {
-            Log.custom(TAG, "preview");
-            if (_transaction) _reader.dispatchByPreview(_transaction.apply(_reader.read()));
+            if (_transaction)
+            {
+                Log.custom(TAG, "preview");
+                
+                _latestDiff = _transaction.apply(_reader.read());
+                _reader.dispatchByPreview(_latestDiff);
+            }
         }
         
-        public function commit():void
+        public function commit(useLatestDiff:Boolean = true):void
         {
-            Log.custom(TAG, "commit");
-            
             if (_transaction) 
             {
-                var diff:Diff = _transaction.apply(_reader.read());
+                Log.custom(TAG, "commit");
+                
+                var diff:Diff = useLatestDiff && _latestDiff !== null ?
+                    _latestDiff:
+                    _transaction.apply(_reader.read());
                 
                 storage.update(this, diff.editedOrigin);
                 
                 _reader.dispatchByCommit(diff);
+                
+                _transaction.rollback();
             }
             
-            _transaction.rollback();
             _transaction = null;
+            _latestDiff  = null;
         }
     }
 }

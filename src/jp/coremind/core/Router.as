@@ -31,20 +31,20 @@ package jp.coremind.core
             }
         }
         
-        public function listenDrug(controllerClass:Class, drugTargetList:Array, dropAreaList:Array, absorb:Boolean):void
+        public function listenDrag(controllerClass:Class, dragTargetList:Array, dropAreaList:Array, absorb:Boolean):void
         {
             if ($.isImplements(controllerClass, IDragDropControl))
             {
                 var confId:int = DragDropController.addConfigure(controllerClass, absorb, dropAreaList);
                 var params:Array = [confId];
                 
-                for (var i:int = 0; i < drugTargetList.length; i++) 
+                for (var i:int = 0; i < dragTargetList.length; i++) 
                 {
-                    Controller.bindView(drugTargetList[i][1], controllerClass);
-                    listen(DragDropController, "beginDrug", drugTargetList[i], StatusGroup.PRESS, Status.DOWN, params);
+                    Controller.bindView(dragTargetList[i][1], controllerClass);
+                    listen(DragDropController, "beginDrag", dragTargetList[i], StatusGroup.PRESS, Status.DOWN, params);
                 }
             }
-            else Log.warning("failed listenDrug. ", controllerClass, " require implements IDrugDropControl interface.");
+            else Log.warning("failed listenDrag. ", controllerClass, " require implements IDragDropControl interface.");
         }
         
         public function notify(info:ElementInfo, statusGroup:String, statusValue:String):void

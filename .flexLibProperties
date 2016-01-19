@@ -176,7 +176,7 @@
     <classEntry path="jp.coremind.view.implement.starling.component.ScrollContainer"/>
     <classEntry path="jp.coremind.view.implement.starling.component.TouchSwitch"/>
     <classEntry path="jp.coremind.view.interaction.BitmapFontTextInteraction"/>
-    <classEntry path="jp.coremind.view.interaction.Drug"/>
+    <classEntry path="jp.coremind.view.interaction.Drag"/>
     <classEntry path="jp.coremind.view.interaction.ElementInteraction"/>
     <classEntry path="jp.coremind.view.interaction.Flick"/>
     <classEntry path="jp.coremind.view.interaction.FlickAcceleration"/>
@@ -205,7 +205,7 @@
     <classEntry path="jp.coremind.utility.Repeater"/>
     <classEntry path="jp.coremind.module.ScrollType"/>
     <classEntry path="jp.coremind.utility.process.JugglerLoop"/>
-    <classEntry path="jp.coremind.module.DrugModule"/>
+    <classEntry path="jp.coremind.module.DragModule"/>
     <classEntry path="jp.coremind.core.DragDropController"/>
     <classEntry path="jp.coremind.core.ElementPathParser"/>
     <classEntry path="jp.coremind.core.IDragDropControl"/>
