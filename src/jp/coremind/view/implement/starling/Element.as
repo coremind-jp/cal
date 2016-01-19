@@ -117,18 +117,22 @@ package jp.coremind.view.implement.starling
         }
         
         //IStorageListener interface
-        public function preview(plainDiff:Diff):void {}
-        public function commit(plainDiff:Diff):void
+        public function preview(diff:Diff):void
         {
-            _applyStorageInteraction(plainDiff.createUpdatedKeyList());
+            if (diff.hashInfo)
+                _applyStorageInteraction(diff.hashInfo.edited, diff.editedOrigin);
         }
         
-        private function _applyStorageInteraction(updatedKeyList:Array):void
+        public function commit(diff:Diff):void
+        {
+        }
+        
+        private function _applyStorageInteraction(updatedKeyList:Vector.<String>, previewData:Object = null):void
         {
             if (_storageInteractionId)
             {
                 var si:StorageInteraction = Application.configure.interaction.getStorageInteraction(_storageInteractionId);
-                if (si) si.apply(this, updatedKeyList);
+                if (si) si.apply(this, updatedKeyList, previewData);
             }
         }
         

@@ -26,11 +26,11 @@ package jp.coremind.event
         public function get reader():ModelReader
         {
             if (_storageId)
-                return StorageAccessor.requestModelReader(_storageId);
+                return StorageAccessor.requestReader(_storageId);
             else
             {
                 Log.custom(TAG, "undefined storageId", this);
-                return StorageAccessor.requestModelReader(ModelStorage.UNDEFINED_STORAGE_ID);
+                return StorageAccessor.requestReader(ModelStorage.UNDEFINED_STORAGE_ID);
             }
         }
         

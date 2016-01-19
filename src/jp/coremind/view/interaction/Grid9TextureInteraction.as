@@ -6,7 +6,7 @@ package jp.coremind.view.interaction
     
     import starling.textures.Texture;
 
-    public class Grid9TextureInteraction extends ElementInteraction implements IElementInteraction
+    public class Grid9TextureInteraction extends ElementInteraction
     {
         private var
             _tl:Texture, _t :Texture, _tr:Texture,
@@ -30,19 +30,26 @@ package jp.coremind.view.interaction
             _bl = bottomLeft;
             _b  = bottom;
             _br = bottomRight;
+            
+            _injectionCode = function(previewValue:*, child:Grid9ImageAsset):void
+            {
+                child.update(_tl, _t, _tr, _l, _c, _r, _bl, _b, _br);
+            };
         }
         
-        public function destroy():void
+        override public function destroy():void
         {
             _tl =  _t  = _tr =
             _l  =  _c  =  _r =
             _bl =  _b  = _br = null;
+            
+            super.destroy();
         }
         
-        public function apply(parent:IElement):void
+        override public function apply(parent:IElement, previewData:*):void
         {
             var asset:Grid9ImageAsset = parent.getDisplayByName(_name) as Grid9ImageAsset;
-            if (asset) asset.update(_tl, _t, _tr, _l, _c, _r, _bl, _b, _br);
+            if (asset) doInteraction(parent, previewData, asset);
             else Log.warning("undefined Parts(Grid9ImageTexture). name=", _name);
         }
     }

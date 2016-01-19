@@ -5,7 +5,7 @@ package jp.coremind.view.interaction
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.implement.starling.buildin.Image;
     
-    public class AtlasTextureInteraction extends ElementInteraction implements IElementInteraction
+    public class AtlasTextureInteraction extends ElementInteraction
     {
         private var
             _assetId:String,
@@ -17,17 +17,18 @@ package jp.coremind.view.interaction
             
             _assetId = assetId;
             _atlasId = atlasId;
+            
+            _injectionCode = function(previewValue:*, child:Image):void
+            {
+                child.texture = Asset.texture(_assetId).getAtlasTexture(_atlasId);
+            };
         }
         
-        public function destroy():void
-        {
-        }
-        
-        public function apply(parent:IElement):void
+        override public function apply(parent:IElement, previewData:*):void
         {
             var child:Image = parent.getDisplayByName(_name) as Image;
             
-            if (child) child.texture = Asset.texture(_assetId).getAtlasTexture(_atlasId);
+            if (child) doInteraction(parent, previewData, child);
             else Log.warning("undefined Parts(AtlasTextureInteraction). name=", _name);
         }
     }

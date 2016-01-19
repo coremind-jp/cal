@@ -7,8 +7,7 @@ package jp.coremind.view.implement.starling.component
     import jp.coremind.event.ElementInfo;
     import jp.coremind.model.module.ScrollModule;
     import jp.coremind.model.transaction.Diff;
-    import jp.coremind.model.transaction.ListDiff;
-    import jp.coremind.model.transaction.TransactionLog;
+    import jp.coremind.model.transaction.DiffListInfo;
     import jp.coremind.utility.Log;
     import jp.coremind.utility.data.Status;
     import jp.coremind.utility.process.Process;
@@ -148,19 +147,19 @@ package jp.coremind.view.implement.starling.component
             return _listLayout.createElement(child.width, child.height, data, splitedId[splitedId.length-1]);
         }
         
-        override public function preview(plainDiff:Diff):void
+        override public function preview(diff:Diff):void
         {
-            super.preview(plainDiff);
-            _listUpdate(plainDiff as ListDiff, true);
+            super.preview(diff);
+            _listUpdate(diff);
         }
         
-        override public function commit(plainDiff:Diff):void
+        override public function commit(diff:Diff):void
         {
-            super.commit(plainDiff);
-            _listUpdate(plainDiff as ListDiff, false);
+            super.commit(diff);
+            //_listUpdate(diff);
         }
         
-        private function _listUpdate(diff:ListDiff, isPreview:Boolean):void
+        private function _listUpdate(diff:Diff):void
         {
             var pId:String = name + PREVIEW_PROCESS;
             var moveThread:Thread = new Thread("move");
@@ -171,9 +170,7 @@ package jp.coremind.view.implement.starling.component
             
             _simulation.beginChildPositionEdit();
             
-            _applyRemoveDiff(diff.removed, pId);
-            
-            _applyFilteringDiff(diff, pId);
+            _applyRemoveAndFilteringDiff(diff, pId);
             
             _updateChildrenPosition(diff);
             
@@ -190,35 +187,35 @@ package jp.coremind.view.implement.starling.component
         }
         
         /**
-         * 差分(削除分)を画面に適用する.
+         * 差分(削除, フィルタリング, フィルタリング解除対象分)を画面に適用する.
          */
-        private function _applyRemoveDiff(removeDisplayList:Vector.<TransactionLog>, pId:String):void
-        {
-            for (var i:int = 0, len:int = removeDisplayList.length; i < len; i++) 
-            {
-                Log.custom(TAG, "applyRemoveDiff", removeDisplayList[i].value);
-                _simulation.removeChild(removeDisplayList[i].value);
-                _removeElement(pId, removeDisplayList[i].value, null);
-            }
-        }
-        
-        /**
-         * 差分(フィルタリング対象分)を画面に適用する.
-         */
-        private function _applyFilteringDiff(diff:ListDiff, pId:String):void
+        private function _applyRemoveAndFilteringDiff(diff:Diff, pId:String):void
         {
             var data:*;
             
-            for (data in diff.filteringRestored)
+            if (diff.listInfo.filteringRestored)
             {
-                Log.custom(TAG, "filteringRestored", data);
-                _simulation.showChild(data);
+                for (data in diff.listInfo.filteringRestored)
+                {
+                    //Log.custom(TAG, "filteringRestored", data);
+                    _simulation.showChild(data);
+                }
             }
             
-            for (data in diff.filtered)
+            if (diff.listInfo.filtered)
             {
-                Log.custom(TAG, "filtered", data);
-                _simulation.hideChild(data);
+                for (data in diff.listInfo.filtered)
+                {
+                    //Log.custom(TAG, "filtered", data);
+                    _simulation.hideChild(data);
+                    _removeElement(pId, data, null);
+                }
+            }
+            
+            for (data in diff.listInfo.removed)
+            {
+                //Log.custom(TAG, "applyRemoveDiff", data);
+                _simulation.removeChild(data);
                 _removeElement(pId, data, null);
             }
         }
@@ -227,29 +224,28 @@ package jp.coremind.view.implement.starling.component
          * 可視状態に関係なくデータと紐付く全てのエレメント位置座標を最新の並び順に更新する.
          * 更新前の座標を戻り値として返す。
          */
-        private function _updateChildrenPosition(diff:ListDiff):void
+        private function _updateChildrenPosition(diff:Diff):void
         {
             var edited:Array = diff.editedOrigin;
             var i:int, len:int, r:Rectangle, e:IElement;
+            var order:Vector.<int> = diff.listInfo.order;
             
-            if (diff.order)
+            if (order)
             {
-                for (i = 0, len = diff.order.length; i < len; i++) 
+                for (i = 0, len = order.length; i < len; i++) 
                 {
                     r = _listLayout.calcElementRect(_maxWidth, _maxHeight, i);
                     
-                    var n:int = diff.order[i];
-                    if (_simulation.hasChild(edited[n]))
+                    var n:int = order[i];
+                    _simulation.hasChild(edited[n]) ?
+                        _simulation.updateChildPosition(edited[n], r):
+                        _simulation.addChild(edited[n], r);
+                    
+                    if (_listLayout.hasCache(edited[n]))
                     {
-                        _simulation.updateChildPosition(edited[n], r);
-                        
-                        if (_listLayout.hasCache(edited[n]))
-                        {
-                            e = _listLayout.requestElement(_maxWidth, _maxHeight, edited[n]);
-                            if (int(e.name) != n) e.changeIdSuffix(n.toString());
-                        }
+                        e = _listLayout.requestElement(_maxWidth, _maxHeight, edited[n]);
+                        if (int(e.name) != n) e.changeIdSuffix(n.toString());
                     }
-                    else _simulation.addChild(edited[n], r);
                 }
             }
             else
@@ -258,16 +254,15 @@ package jp.coremind.view.implement.starling.component
                 {
                     r = _listLayout.calcElementRect(_maxWidth, _maxHeight, i);
                     
-                    if (_simulation.hasChild(edited[i]))
+                    _simulation.hasChild(edited[i]) ?
+                        _simulation.updateChildPosition(edited[i], r):
+                        _simulation.addChild(edited[i], r);
+                    
+                    if (_listLayout.hasCache(edited[i]))
                     {
-                        _simulation.updateChildPosition(edited[i], r);
-                        if (_listLayout.hasCache(edited[i]))
-                        {
-                            e = _listLayout.requestElement(_maxWidth, _maxHeight, edited[i]);
-                            if (int(e.name) != i) e.changeIdSuffix(i.toString());
-                        }
+                        e = _listLayout.requestElement(_maxWidth, _maxHeight, edited[i]);
+                        if (int(e.name) != i) e.changeIdSuffix(i.toString());
                     }
-                    else _simulation.addChild(edited[i], r);
                 }
             }
         }
@@ -279,7 +274,7 @@ package jp.coremind.view.implement.starling.component
                 var e:IElement = _listLayout.requestElement(0, 0, data);
                 var tweenRoutine:Function = _listLayout.getTweenRoutineByRemovedStage(data);
                 var params:Array = to ? [e, to.x, to.y]: [e];
-                Log.info("[EO] remove", e.elementInfo, to, data);
+                //Log.info("[EO] remove", e.elementInfo, to, data);
                 
                 Application.sync.pushThread(pId, new Thread("applyDiff[remove] "+e.name)
                     .pushRoutine(_listLayout.getTweenRoutineByRemovedStage(data), params)
@@ -291,15 +286,17 @@ package jp.coremind.view.implement.starling.component
         /**
          * 差分(並び替え)を画面に適用する.
          */
-        private function _refreshElementOrder(diff:ListDiff, moveThread:Thread, addThread:Thread, pId:String):void
+        private function _refreshElementOrder(diff:Diff, moveThread:Thread, addThread:Thread, pId:String):void
         {
             var createClosure:Function = function(data:*, to:Rectangle, from:Rectangle):void
             {
                 var e:IElement = _listLayout.requestElement(to.width, to.height, data);
                 var tweenRoutine:Function = _listLayout.getTweenRoutineByAddedStage(data);
-                Log.info("[EO] add", e.elementInfo, from, "=>", to, data);
+                var info:DiffListInfo = diff.listInfo;
                 
-                data in diff.filteringRestored ?//このエレメントはフィルタリング解除されて追加されたか？
+                //Log.info("[EO] add", e.elementInfo, from, "=>", to, data);
+                //このエレメントはフィルタリング解除されて追加されたか？
+                info.filteringRestored && data in info.filteringRestored ?
                     addThread.pushRoutine(tweenRoutine, [addDisplay(e), to.x, to.y])://そうであれば、移動なしに表示させる
                     addThread.pushRoutine(tweenRoutine, [addDisplay(e), from.x, from.y, to.x, to.y]);//そうでなければ、並び替え前の位置から移動してきたように見せる
             };
@@ -308,7 +305,8 @@ package jp.coremind.view.implement.starling.component
             {
                 var e:IElement = _listLayout.requestElement(to.width, to.height, data);
                 var tweenRoutine:Function = _listLayout.getTweenRoutineByMoved(data);
-                Log.info("[EO] move", e.elementInfo, from, "=>", to, data);
+                
+                //Log.info("[EO] move", e.elementInfo, from, "=>", to, data);
                 moveThread.pushRoutine(tweenRoutine, [e, to.x, to.y]);
             };
             
@@ -318,9 +316,10 @@ package jp.coremind.view.implement.starling.component
             };
             
             var i:int, len:int;
-            if (diff.order)
-                for (i = 0, len = diff.order.length; i < len; i++) 
-                    _simulation.switchClosure(diff.editedOrigin[ diff.order[i] ], createClosure, visibleClosure, invisibleClosure);
+            var order:Vector.<int> = diff.listInfo.order;
+            if (order)
+                for (i = 0, len = order.length; i < len; i++) 
+                    _simulation.switchClosure(diff.editedOrigin[ order[i] ], createClosure, visibleClosure, invisibleClosure);
             else
                 for (i = 0, len = diff.editedOrigin.length; i < len; i++) 
                     _simulation.switchClosure(diff.editedOrigin[i], createClosure, visibleClosure, invisibleClosure);

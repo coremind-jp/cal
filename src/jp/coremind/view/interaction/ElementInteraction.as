@@ -1,18 +1,52 @@
 package jp.coremind.view.interaction
 {
-    public class ElementInteraction
+    import jp.coremind.view.abstract.IElement;
+
+    public class ElementInteraction implements IElementInteraction
     {
-        protected var _name:String;
+        protected var
+            _bindKey:String,
+            _name:String,
+            _injectionCode:Function;
         
         public function ElementInteraction(applyTargetName:String)
         {
             _name = applyTargetName;
         }
         
+        public function destroy():void
+        {
+            _name = _bindKey = null;
+            _injectionCode = null;
+        }
+        
         public function get applyTargetName():String
         {
             return _name;
         }
+        
+        public function bindKey(key:String, injectionCode:Function = null):ElementInteraction
+        {
+            _bindKey = key;
+            _injectionCode = injectionCode;
+            return this;
+        }
+        
+        public function doInteraction(parent:IElement, previewData:*, child:* = null):*
+        {
+            if (_bindKey)
+            {
+                var value:* = previewData ?
+                    previewData[_bindKey]:
+                    parent.elementInfo.reader.read()[_bindKey];
+                
+                return _injectionCode is Function ? _injectionCode(value, child): value;
+            }
+            else
+                return _injectionCode is Function ? _injectionCode(null, child): null;
+        }
+        
+        public function apply(parent:IElement, previewData:*):void {}
         
         public function getRuntimeValue(parent:*, params:Array):*
         {

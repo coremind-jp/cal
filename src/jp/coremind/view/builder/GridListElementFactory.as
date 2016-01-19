@@ -34,16 +34,16 @@ package jp.coremind.view.builder
                 _pushDensity(_densityList, dataList[i], i, len);
         }
         
-        override public function preview(plainDiff:Diff):void
+        override public function preview(diff:Diff):void
         {
-            var diff:ListDiff = plainDiff as ListDiff;
             var dataList:Array = diff.editedOrigin;
+            var order:Vector.<int> = diff.listInfo.order;
             
             _densityList.length = 0;
             
-            if (diff.order)
-                for (var i:int = 0, iLen:int = diff.order.length; i < iLen; i++)
-                    _pushDensity(_densityList, dataList[ diff.order[i] ], i, iLen);
+            if (order)
+                for (var i:int = 0, iLen:int = order.length; i < iLen; i++)
+                    _pushDensity(_densityList, dataList[ order[i] ], i, iLen);
             else
                 for (var j:int = 0, jLen:int = dataList.length; i < jLen; i++)
                     _pushDensity(_densityList, dataList[i], i, jLen);

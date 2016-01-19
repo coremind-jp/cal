@@ -24,7 +24,7 @@ package jp.coremind.core
          * storageIdパラメータに紐づくStorageModelReaderオブジェクトを要求する.
          * @param   storageId   ストレージID. initializeStorageModelで初期化が済んでいるStorageModelReaderのStorageIdまたはその子となるStorageIdでなければならない。
          */
-        public static function requestModelReader(storageId:String):ModelReader
+        public static function requestReader(storageId:String):ModelReader
         {
             return _MODEL.requestReader(storageId, Application.configure.storage.getStorageType(storageId));
         }
@@ -57,16 +57,6 @@ package jp.coremind.core
                 Log.warning("already defined ModuleList. but overwrited.", storageId, elementId);
             
             _MODULE.create(newStorageId, newElementId, currentModule);
-        }
-        
-        /**
-         * storageIdパラメータに紐づくStorageModelReaderオブジェクトを要求する.
-         * @param   storageId   ストレージID. initializeStorageModelで初期化が済んでいるStorageModelReaderのStorageIdまたはその子となるStorageIdでなければならない。
-         */
-        public static function destroyModuleList(elementId:String):void
-        {
-            if (_MODULE.isDefined(ModelStorage.UNDEFINED_STORAGE_ID, elementId))
-                _MODULE.destroy(ModelStorage.UNDEFINED_STORAGE_ID, elementId);
         }
         
         protected function get storage():ModelStorage

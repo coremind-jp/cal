@@ -51,8 +51,6 @@
     <classEntry path="jp.coremind.model.module.StatusModule"/>
     <classEntry path="jp.coremind.model.module.UpdateRule"/>
     <classEntry path="jp.coremind.model.transaction.Diff"/>
-    <classEntry path="jp.coremind.model.transaction.HashDiff"/>
-    <classEntry path="jp.coremind.model.transaction.ListDiff"/>
     <classEntry path="jp.coremind.model.transaction.TransactionLog"/>
     <classEntry path="jp.coremind.network.RequestConfigure"/>
     <classEntry path="jp.coremind.network.ResponseContainer"/>
@@ -212,6 +210,19 @@
     <classEntry path="jp.coremind.core.ElementPathParser"/>
     <classEntry path="jp.coremind.core.IDragDropControl"/>
     <classEntry path="jp.coremind.utility.Id"/>
+    <classEntry path="jp.coremind.model.transaction.ITransactionLog"/>
+    <classEntry path="jp.coremind.model.transaction.ListAdd"/>
+    <classEntry path="jp.coremind.model.transaction.ListRemove"/>
+    <classEntry path="jp.coremind.model.transaction.ListSwap"/>
+    <classEntry path="jp.coremind.model.transaction.ListMove"/>
+    <classEntry path="jp.coremind.model.transaction.ListTransaction"/>
+    <classEntry path="jp.coremind.model.transaction.Transaction"/>
+    <classEntry path="jp.coremind.model.transaction.HashTransaction"/>
+    <classEntry path="jp.coremind.model.transaction.HashAdd"/>
+    <classEntry path="jp.coremind.model.transaction.HashRemove"/>
+    <classEntry path="jp.coremind.model.transaction.HashUpdate"/>
+    <classEntry path="jp.coremind.model.transaction.DiffListInfo"/>
+    <classEntry path="jp.coremind.model.transaction.DiffHashInfo"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

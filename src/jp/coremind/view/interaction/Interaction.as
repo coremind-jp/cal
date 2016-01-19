@@ -12,7 +12,7 @@ package jp.coremind.view.interaction
         {
         }
         
-        public function apply(parent:IElement):void
+        public function apply(parent:IElement, previewData:*):void
         {
         }
         

@@ -54,18 +54,19 @@ package jp.coremind.storage
             return _listenerList.length != 0;
         }
         
-        public function createModelKeyList():Array
+        public function createModelKeyList():Vector.<String>
         {
-            var result:Array = [];
+            var result:Vector.<String>;
             var storageData:* = read();
             
             if (storageData is Array)
-                for (var i:int = 0, len:int = storageData.length; i < len; i++) 
-                    result[i] = i;
+                result = new Vector.<String>([storageData]);
             else
             if ($.isHash(storageData))
-                for (var p:String in storageData)
-                    result.push(p);
+            {
+                result = new <String>[];
+                for (var p:String in storageData) result.push(p);
+            }
             
             return result;
         }

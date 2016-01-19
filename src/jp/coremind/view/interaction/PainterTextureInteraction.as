@@ -5,7 +5,7 @@ package jp.coremind.view.interaction
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.implement.starling.buildin.Image;
     
-    public class PainterTextureInteraction extends ElementInteraction implements IElementInteraction
+    public class PainterTextureInteraction extends ElementInteraction
     {
         private var
             _assetId:String,
@@ -21,17 +21,18 @@ package jp.coremind.view.interaction
             _painterClass = painterClass;
             _paintValue = paintValue;
             _clipOption = clipOption;
+            
+            _injectionCode = function(previewValue:*, child:Image):void
+            {
+                child.texture = Asset.texture(_assetId).getPaintTexture(_painterClass, _paintValue, _clipOption);
+            };
         }
         
-        public function destroy():void
-        {
-        }
-        
-        public function apply(parent:IElement):void
+        override public function apply(parent:IElement, previewData:*):void
         {
             var child:Image = parent.getDisplayByName(_name) as Image;
             
-            if (child) child.texture = Asset.texture(_assetId).getPaintTexture(_painterClass, _paintValue, _clipOption);
+            if (child) doInteraction(parent, previewData, child);
             else Log.warning("undefined Parts(PainterTextureInteraction). name=", _name);
         }
     }

@@ -25,7 +25,7 @@ package jp.coremind.view.interaction
             var configure:InteractionConfigure = Application.configure.interaction;
             
             for (var i:int, len:int = interactionList.length; i < len; i++)
-                configure.getInteraction(interactionList[i]).apply(parent);
+                configure.getInteraction(interactionList[i]).apply(parent, null);
         }
         
         private function _getInteractionNameList(group:String, status:String):Vector.<String>

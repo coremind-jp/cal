@@ -19,19 +19,19 @@ package jp.coremind.view.interaction
             return this;
         }
         
-        public function apply(parent:IElement, updatedKeyList:Array):void
+        public function apply(parent:IElement, updatedKeyList:Vector.<String>, previewData:*):void
         {
             for (var i:int = 0; i < updatedKeyList.length; i++) 
-                _apply(parent, updatedKeyList[i]);
+                _apply(parent, updatedKeyList[i], previewData);
         }
         
-        private function _apply(parent:IElement, updatedKey:String):void
+        private function _apply(parent:IElement, updatedKey:String, previewData:*):void
         {
             var interactionList:Vector.<String> = _getInteractionNameList(updatedKey, _interactionList);
             var configure:InteractionConfigure = Application.configure.interaction;
             
             for (var i:int, len:int = interactionList.length; i < len; i++)
-                configure.getInteraction(interactionList[i]).apply(parent);
+                configure.getInteraction(interactionList[i]).apply(parent, previewData);
         }
         
         private function _getInteractionNameList(key:*, list:Object):Vector.<String>

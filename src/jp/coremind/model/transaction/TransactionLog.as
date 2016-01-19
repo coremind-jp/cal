@@ -2,91 +2,22 @@ package jp.coremind.model.transaction
 {
     public class TransactionLog
     {
-        private static const _NONE:String          = "none";
-        private static const _ADD_VALUE:String     = "addValue";
-        private static const _SWAP_VALUE:String    = "swapValue";
-        private static const _UPDATE_VALUE:String  = "updateValue";
-        private static const _MOVE_VALUE:String    = "moveValue";
-        private static const _REMOVE_VALUE:String  = "removeValue";
-        private static const _FILTER_VALUE:String  = "filterValue";
-        private static const _RESTORE_VALUE:String = "restoreValue";
-        
         private var
-            _action:String,
-            _id:*,
-            _value:*;
+            _fromData:*,  //Storageに存在する実データ(操作元)
+            _toData:*;    //Storageに存在する実データ(編集先)※継承先の実装次第では利用しない場合もある
         
-        public function TransactionLog(value:*)
+        public function TransactionLog(fromData:*)
         {
-            _action = _NONE;
-            _id     = null;
-            _value  = value;
+            _fromData = fromData;
         }
+        public function get fromData():* { return _fromData; }
         
-        public function get value():* { return _value; }
-        public function get swapKey():*  { return _id; }
-        public function get key():String { return _id; }
-        public function get index():int  { return _id === null ? -1: int(_id); }
         
-        public function added():Boolean { return _action === _ADD_VALUE; }
-        public function add(id:* = null):TransactionLog
+        public function setToData(toData:*):TransactionLog
         {
-            _action = _ADD_VALUE;
-            _id = id;
+            _toData = toData;
             return this;
         }
-        
-        public function updated():Boolean { return _action === _UPDATE_VALUE; }
-        public function update(id:* = null):TransactionLog
-        {
-            _action = _UPDATE_VALUE;
-            _id = id;
-            return this;
-        }
-        
-        public function removed():Boolean { return _action === _REMOVE_VALUE; }
-        public function remove(id:* = null):TransactionLog
-        {
-            _action = _REMOVE_VALUE;
-            _id = id;
-            return this;
-        }
-        
-        public function swapped():Boolean { return _action === _SWAP_VALUE; }
-        public function swap(id:* = null):TransactionLog
-        {
-            _action = _SWAP_VALUE;
-            _id = id;
-            return this;
-        }
-        
-        public function moved():Boolean { return _action === _MOVE_VALUE; }
-        public function move(id:* = null):TransactionLog
-        {
-            _action = _MOVE_VALUE;
-            _id = id;
-            return this;
-        }
-        
-        public function filtered():Boolean { return _action === _FILTER_VALUE; }
-        public function filtering(id:* = null):TransactionLog
-        {
-            _action = _FILTER_VALUE;
-            _id = id;
-            return this;
-        }
-        
-        public function restored():Boolean { return _action === _RESTORE_VALUE; }
-        public function restore(id:* = null):TransactionLog
-        {
-            _action = _RESTORE_VALUE;
-            _id = id;
-            return this;
-        }
-        
-        public function toString():String
-        {
-            return "[TransactionLog] action:"+_action + " id:"+_id;
-        }
+        public function get toData():* { return _toData; }
     }
 }

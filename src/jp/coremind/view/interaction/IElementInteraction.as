@@ -10,7 +10,7 @@ package jp.coremind.view.interaction
         /**
          * このリソースをparentへ即座に適応する.
          */
-        function apply(parent:IElement):void;
+        function apply(parent:IElement, previewData:*):void;
         
         /**
          * このリソースの適応対象を特定するための名前を返す.

@@ -22,7 +22,7 @@ package jp.coremind.core
          */
         public function SyncProcess()
         {
-            _que = new Vector.<Function>();
+            _que = new <Function>[];
             _numRunning = 0;
             _processList = {};
         }

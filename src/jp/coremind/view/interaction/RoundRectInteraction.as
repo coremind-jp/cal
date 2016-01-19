@@ -4,7 +4,7 @@ package jp.coremind.view.interaction
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IElement;
     
-    public class RoundRectInteraction extends ElementInteraction implements IElementInteraction
+    public class RoundRectInteraction extends ElementInteraction
     {
         private var
             _assetId:String,
@@ -34,16 +34,17 @@ package jp.coremind.view.interaction
             _bottomLeft  = bottomLeft;
             _bottomRight = bottomRight;
             _topRight    = topRight;
+            
+            _injectionCode = function(previewValue:*, child:Grid9ImageAsset):void
+            {
+                Grid9ImageAsset.updateRoundRect(child, _assetId, _color, _radius, _topLeft, _bottomLeft, _bottomRight, _topRight);
+            };
         }
         
-        public function destroy():void
-        {
-        }
-        
-        public function apply(parent:IElement):void
+        override public function apply(parent:IElement, previewData:*):void
         {
             var asset:Grid9ImageAsset = parent.getDisplayByName(_name) as Grid9ImageAsset;
-            if (asset) Grid9ImageAsset.updateRoundRect(asset, _assetId, _color, _radius, _topLeft, _bottomLeft, _bottomRight, _topRight);
+            if (asset) doInteraction(parent, previewData, asset);
             else Log.warning("undefined Parts(RoundRectInteraction). name=", _name);
         }
     }
