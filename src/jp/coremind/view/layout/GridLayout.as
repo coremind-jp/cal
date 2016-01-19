@@ -3,7 +3,7 @@ package jp.coremind.view.layout
     import flash.geom.Point;
     import flash.geom.Rectangle;
     
-    import jp.coremind.model.transaction.Diff;
+    import jp.coremind.storage.transaction.Diff;
     import jp.coremind.storage.IModelStorageListener;
     import jp.coremind.storage.ModelReader;
     import jp.coremind.utility.Log;

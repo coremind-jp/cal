@@ -1,9 +1,8 @@
-package jp.coremind.model.module
+package jp.coremind.model
 {
     import flash.utils.getQualifiedClassName;
     
     import jp.coremind.core.Application;
-    import jp.coremind.model.IModule;
     import jp.coremind.utility.Dispatcher;
     import jp.coremind.utility.Log;
     import jp.coremind.utility.data.HashList;

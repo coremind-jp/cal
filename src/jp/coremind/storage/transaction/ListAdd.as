@@ -1,4 +1,4 @@
-package jp.coremind.model.transaction
+package jp.coremind.storage.transaction
 {
     public class ListAdd extends TransactionLog implements ITransactionLog
     {

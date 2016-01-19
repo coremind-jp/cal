@@ -1,7 +1,7 @@
 package jp.coremind.core
 {
     import jp.coremind.event.ElementInfo;
-    import jp.coremind.model.module.StatusGroup;
+    import jp.coremind.model.StatusGroup;
     import jp.coremind.utility.Log;
     import jp.coremind.utility.data.Status;
 

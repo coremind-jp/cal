@@ -1,6 +1,6 @@
 package jp.coremind.storage
 {
-    import jp.coremind.model.transaction.Diff;
+    import jp.coremind.storage.transaction.Diff;
 
     public interface IModelStorageListener
     {

@@ -3,7 +3,7 @@ package jp.coremind.storage
     import flash.utils.Dictionary;
     
     import jp.coremind.core.StorageAccessor;
-    import jp.coremind.model.transaction.Diff;
+    import jp.coremind.storage.transaction.Diff;
     import jp.coremind.utility.Log;
     
     /**

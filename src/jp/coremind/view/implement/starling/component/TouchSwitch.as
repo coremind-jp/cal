@@ -2,8 +2,8 @@ package jp.coremind.view.implement.starling.component
 {
     import jp.coremind.core.Application;
     import jp.coremind.core.StatusModelType;
-    import jp.coremind.model.module.StatusGroup;
-    import jp.coremind.model.module.StatusModule;
+    import jp.coremind.model.StatusGroup;
+    import jp.coremind.model.StatusModule;
     import jp.coremind.utility.data.Status;
     import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.implement.starling.TouchElement;

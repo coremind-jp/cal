@@ -1,10 +1,10 @@
 package jp.coremind.storage
 {
     import jp.coremind.core.StorageAccessor;
-    import jp.coremind.model.transaction.Diff;
-    import jp.coremind.model.transaction.HashTransaction;
-    import jp.coremind.model.transaction.ListTransaction;
-    import jp.coremind.model.transaction.Transaction;
+    import jp.coremind.storage.transaction.Diff;
+    import jp.coremind.storage.transaction.HashTransaction;
+    import jp.coremind.storage.transaction.ListTransaction;
+    import jp.coremind.storage.transaction.Transaction;
     import jp.coremind.utility.Log;
 
     public class ModelWriter extends StorageAccessor

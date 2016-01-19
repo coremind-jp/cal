@@ -5,9 +5,9 @@ package jp.coremind.view.implement.starling.component
     import jp.coremind.core.Application;
     import jp.coremind.event.ElementEvent;
     import jp.coremind.event.ElementInfo;
-    import jp.coremind.model.module.ScrollModule;
-    import jp.coremind.model.transaction.Diff;
-    import jp.coremind.model.transaction.DiffListInfo;
+    import jp.coremind.model.ScrollModule;
+    import jp.coremind.storage.transaction.Diff;
+    import jp.coremind.storage.transaction.DiffListInfo;
     import jp.coremind.utility.Log;
     import jp.coremind.utility.data.Status;
     import jp.coremind.utility.process.Process;
@@ -26,7 +26,6 @@ package jp.coremind.view.implement.starling.component
         Log.addCustomTag(TAG);
         
         private static const PREVIEW_PROCESS:String = "ListContainer::Preview";
-        private static const REFRESH_PROCESS:String = "ListContainer::Refresh";
         
         private var
             _listLayout:IListLayout,
@@ -226,9 +225,9 @@ package jp.coremind.view.implement.starling.component
          */
         private function _updateChildrenPosition(diff:Diff):void
         {
-            var edited:Array = diff.editedOrigin;
             var i:int, len:int, r:Rectangle, e:IElement;
             var order:Vector.<int> = diff.listInfo.order;
+            var edited:Array = diff.editedOrigin;
             
             if (order)
             {

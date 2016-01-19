@@ -1,10 +1,9 @@
-package jp.coremind.model.module
+package jp.coremind.model
 {
     import flash.geom.Point;
     import flash.geom.Rectangle;
     
     import jp.coremind.core.Application;
-    import jp.coremind.model.IModule;
     import jp.coremind.utility.Dispatcher;
     import jp.coremind.utility.data.NumberTracker;
     import jp.coremind.view.abstract.IContainer;

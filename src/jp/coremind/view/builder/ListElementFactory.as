@@ -4,7 +4,7 @@ package jp.coremind.view.builder
     
     import jp.coremind.configure.IElementBluePrint;
     import jp.coremind.core.Application;
-    import jp.coremind.model.transaction.Diff;
+    import jp.coremind.storage.transaction.Diff;
     import jp.coremind.storage.IModelStorageListener;
     import jp.coremind.storage.ModelReader;
     import jp.coremind.utility.IRecycle;

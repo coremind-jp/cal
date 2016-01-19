@@ -1,4 +1,4 @@
-package jp.coremind.model.transaction
+package jp.coremind.storage.transaction
 {
     import jp.coremind.utility.Log;
 
