@@ -1,6 +1,6 @@
 package jp.coremind.storage
 {
-    import jp.coremind.model.ModuleList;
+    import jp.coremind.module.ModuleList;
     import jp.coremind.utility.Log;
 
     public class ModuleStorage

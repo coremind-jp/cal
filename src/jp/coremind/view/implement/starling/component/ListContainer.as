@@ -5,7 +5,7 @@ package jp.coremind.view.implement.starling.component
     import jp.coremind.core.Application;
     import jp.coremind.event.ElementEvent;
     import jp.coremind.event.ElementInfo;
-    import jp.coremind.model.ScrollModule;
+    import jp.coremind.module.ScrollModule;
     import jp.coremind.storage.transaction.Diff;
     import jp.coremind.storage.transaction.DiffListInfo;
     import jp.coremind.utility.Log;

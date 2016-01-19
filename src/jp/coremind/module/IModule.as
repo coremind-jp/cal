@@ -1,4 +1,4 @@
-package jp.coremind.model
+package jp.coremind.module
 {
     import jp.coremind.utility.IDispatcher;
 

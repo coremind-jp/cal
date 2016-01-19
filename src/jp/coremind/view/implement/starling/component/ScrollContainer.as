@@ -1,7 +1,7 @@
 package jp.coremind.view.implement.starling.component
 {
     import jp.coremind.event.ElementEvent;
-    import jp.coremind.model.ScrollModule;
+    import jp.coremind.module.ScrollModule;
     import jp.coremind.utility.Log;
     import jp.coremind.utility.data.NumberTracker;
     import jp.coremind.view.abstract.component.Slider;

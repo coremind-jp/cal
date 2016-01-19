@@ -2,7 +2,7 @@ package jp.coremind.event
 {
     import jp.coremind.core.ElementPathParser;
     import jp.coremind.core.StorageAccessor;
-    import jp.coremind.model.ModuleList;
+    import jp.coremind.module.ModuleList;
     import jp.coremind.storage.ModelReader;
     import jp.coremind.storage.ModelStorage;
     import jp.coremind.utility.Log;

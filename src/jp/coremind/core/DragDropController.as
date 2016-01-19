@@ -4,7 +4,7 @@ package jp.coremind.core
     import flash.geom.Rectangle;
     
     import jp.coremind.event.ElementInfo;
-    import jp.coremind.model.ModuleList;
+    import jp.coremind.module.ModuleList;
     import jp.coremind.utility.Log;
     import jp.coremind.utility.data.NumberTracker;
     import jp.coremind.view.abstract.ICalSprite;

@@ -1,9 +1,9 @@
 package jp.coremind.configure
 {
     import jp.coremind.core.StatusModelType;
-    import jp.coremind.model.StatusConfigure;
-    import jp.coremind.model.StatusGroup;
-    import jp.coremind.model.UpdateRule;
+    import jp.coremind.module.StatusConfigure;
+    import jp.coremind.module.StatusGroup;
+    import jp.coremind.module.UpdateRule;
     import jp.coremind.utility.Log;
     import jp.coremind.utility.data.Status;
 

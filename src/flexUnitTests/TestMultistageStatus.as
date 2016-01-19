@@ -3,7 +3,7 @@ package flexUnitTests
     import flexunit.framework.Assert;
     
     import jp.coremind.core.StatusModelType;
-    import jp.coremind.model.StatusModule;
+    import jp.coremind.module.StatusModule;
     import jp.coremind.utility.data.Status;
     
     import org.flexunit.assertThat;

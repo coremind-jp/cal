@@ -1,4 +1,4 @@
-package jp.coremind.model
+package jp.coremind.module
 {
     public class ScrollType
     {

@@ -1,6 +1,6 @@
 package jp.coremind.core
 {
-    import jp.coremind.model.ModuleList;
+    import jp.coremind.module.ModuleList;
     import jp.coremind.storage.ModelReader;
     import jp.coremind.storage.ModelStorage;
     import jp.coremind.storage.ModuleStorage;
