@@ -9,6 +9,8 @@ package jp.coremind.storage
     public class ModelStorage
     {
         public static const UNDEFINED_STORAGE_ID:String = "undefinedStorageId";
+        public static const TEMPORARY_AREA:String = "temporary.";
+        
         public static const TAG:String = "[Storage]";
         //Log.addCustomTag(TAG);
         
@@ -169,14 +171,38 @@ package jp.coremind.storage
         
         internal function read(accessor:ModelReader):*
         {
-            Log.custom(TAG, "read("+accessor.type+")", accessor.id);
+            //Log.custom(TAG, "read("+accessor.type+")", accessor.id);
             return _selectStorage(accessor.type).read(accessor.id);
         }
         
         internal function update(accessor:ModelWriter, value:*):void
         {
-            Log.custom(TAG, "update("+accessor.type+")", accessor.id, value);
+            //Log.custom(TAG, "update("+accessor.type+")", accessor.id, value);
             _selectStorage(accessor.type).update(accessor.id, value);
+        }
+        
+        internal function writeTransactionResult(id:String, value:*, storageType:String = StorageType.HASH):void
+        {
+            var temporaryId:String = TEMPORARY_AREA+id;
+            var storage:IModelStorage = _selectStorage(storageType);
+            
+            storage.isDefined(TEMPORARY_AREA+id) ?
+                storage.update(temporaryId, value):
+                storage.create(temporaryId, value);
+        }
+        
+        internal function deleteTransactionResult(id:String, storageType:String = StorageType.HASH):void
+        {
+            var storage:IModelStorage = _selectStorage(storageType);
+            if (storage.isDefined(TEMPORARY_AREA+id)) storage.de1ete(TEMPORARY_AREA+id);
+        }
+        
+        internal function readTransactionResult(accessor:ModelReader):*
+        {
+            var storage:IModelStorage = _selectStorage(accessor.type);
+            
+            return storage.isDefined(TEMPORARY_AREA+accessor.id) ?
+                storage.read(TEMPORARY_AREA+accessor.id): null;
         }
     }
 }

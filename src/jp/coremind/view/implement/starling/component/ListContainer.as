@@ -1,6 +1,7 @@
 package jp.coremind.view.implement.starling.component
 {
     import flash.geom.Rectangle;
+    import flash.utils.Dictionary;
     
     import jp.coremind.core.Application;
     import jp.coremind.event.ElementEvent;
@@ -129,7 +130,7 @@ package jp.coremind.view.implement.starling.component
             
             _simulation.eachInvisible(function(data:*, to:Rectangle, from:Rectangle):void
             {
-                if (_listLayout.hasCache(data))
+                //if (_listLayout.hasCache(data))
                 {
                     removeDisplay(_listLayout.requestElement(0, 0, data));
                     _listLayout.requestRecycle(data);
@@ -153,13 +154,15 @@ package jp.coremind.view.implement.starling.component
             var pId:String = name + PREVIEW_PROCESS;
             var moveThread:Thread = new Thread("move");
             var addThread:Thread  = new Thread("add");
-            var len:int = diff.editedOrigin.length;
-            var r:Rectangle = _listLayout.calcTotalRect(_maxWidth, _maxHeight, len == 0 ? 0: len).clone();
             var origin:Array = _reader.read();
+            var len:int      = _reader.readTransactionResult().length;
+            var r:Rectangle  = _listLayout.calcTotalRect(_maxWidth, _maxHeight, len == 0 ? 0: len).clone();
             
             _simulation.beginChildPositionEdit();
             
-            _applyRemoveAndFiltering(diff, pId);
+            _applyRemove(diff, pId);
+            
+            _applyFilter(diff, pId);
             
             _updateChildrenPosition(diff);
             
@@ -175,37 +178,64 @@ package jp.coremind.view.implement.starling.component
                 .exec(pId, function (p:Process):void { if (p.result == Status.SCCEEDED) updateElementSize(r.width, r.height); });
         }
         
+        override public function commit(diff:Diff):void
+        {
+            for (var data:* in diff.listInfo.removed)
+                _simulation.removeChild(data);
+        }
+        
         /**
-         * 差分(削除, フィルタリング, フィルタリング解除対象分)を画面に適用する.
+         * 削除差分を画面に適用する.
          */
-        private function _applyRemoveAndFiltering(diff:Diff, pId:String):void
+        private function _applyRemove(diff:Diff, pId:String):void
+        {
+            _removeChildren(diff.listInfo.removed, diff.listInfo.removeRestored, pId);
+        }
+        
+        /**
+         * フィルタリング差分を画面に適用する.
+         */
+        private function _applyFilter(diff:Diff, pId:String):void
+        {
+            _removeChildren(diff.listInfo.filtered, diff.listInfo.filterRestored, pId);
+        }
+        
+        /**
+         * removeListに含まれるデータと紐づくElementオブジェクトを破棄し、
+         * restoreListに含まれるデータと紐づくElementオブジェクトを復元する.
+         * この二つのリストは意味あるグループとしてまとめられた集合として扱う。
+         */
+        private function _removeChildren(removeList:Dictionary, restoreList:Dictionary, pId:String):void
         {
             var data:*;
             
-            if (diff.listInfo.filteringRestored)
-            {
-                for (data in diff.listInfo.filteringRestored)
-                {
-                    //Log.custom(TAG, "filteringRestored", data);
+            if (restoreList)
+                for (data in restoreList)
                     _simulation.showChild(data);
-                }
-            }
             
-            if (diff.listInfo.filtered)
+            if (removeList)
             {
-                for (data in diff.listInfo.filtered)
+                for (data in removeList)
                 {
-                    //Log.custom(TAG, "filtered", data);
                     _simulation.hideChild(data);
                     _removeElement(pId, data, null);
                 }
             }
-            
-            for (data in diff.listInfo.removed)
+        }
+        
+        private function _removeElement(pId:String, data:*, to:Rectangle):void
+        {
+            if (_listLayout.hasCache(data))
             {
-                //Log.custom(TAG, "applyRemoveDiff", data);
-                _simulation.removeChild(data);
-                _removeElement(pId, data, null);
+                var e:IElement = _listLayout.requestElement(0, 0, data);
+                var tweenRoutine:Function = _listLayout.getTweenRoutineByRemovedStage(data);
+                var params:Array = to ? [e, to.x, to.y]: [e];
+                //Log.info("[EO] remove", e.elementInfo, to, data);
+                
+                Application.sync.pushThread(pId, new Thread("applyDiff[remove] "+e.name)
+                    .pushRoutine(_listLayout.getTweenRoutineByRemovedStage(data), params)
+                    .pushRoutine(_createRecycleRoutine(data)),
+                    false, true);
             }
         }
         
@@ -217,7 +247,7 @@ package jp.coremind.view.implement.starling.component
         {
             var i:int, len:int, r:Rectangle, e:IElement;
             var order:Vector.<int> = diff.listInfo.order;
-            var edited:Array = diff.editedOrigin;
+            var edited:Array = _reader.readTransactionResult();
             
             if (order)
             {
@@ -256,62 +286,53 @@ package jp.coremind.view.implement.starling.component
             }
         }
         
-        private function _removeElement(pId:String, data:*, to:Rectangle):void
-        {
-            if (_listLayout.hasCache(data))
-            {
-                var e:IElement = _listLayout.requestElement(0, 0, data);
-                var tweenRoutine:Function = _listLayout.getTweenRoutineByRemovedStage(data);
-                var params:Array = to ? [e, to.x, to.y]: [e];
-                //Log.info("[EO] remove", e.elementInfo, to, data);
-                
-                Application.sync.pushThread(pId, new Thread("applyDiff[remove] "+e.name)
-                    .pushRoutine(_listLayout.getTweenRoutineByRemovedStage(data), params)
-                    .pushRoutine(_createRecycleRoutine(data)),
-                    false, true);
-            }
-        }
-        
         /**
          * 差分(並び替え)を画面に適用する.
          */
         private function _refreshElementOrder(diff:Diff, moveThread:Thread, addThread:Thread, pId:String):void
         {
-            var createClosure:Function = function(data:*, to:Rectangle, from:Rectangle):void
+            var readers:Array = [];
+            var createClosure:Function = function(data:*, index:int, to:Rectangle, from:Rectangle):void
             {
-                var e:IElement = _listLayout.requestElement(to.width, to.height, data);
+                var e:IElement = _listLayout.requestElement(to.width, to.height, data, index);
                 var tweenRoutine:Function = _listLayout.getTweenRoutineByAddedStage(data);
                 var info:DiffListInfo = diff.listInfo;
                 
-                //Log.info("[EO] add", e.elementInfo, from, "=>", to, data);
-                //このエレメントはフィルタリング解除されて追加されたか？
-                info.filteringRestored && data in info.filteringRestored ?
+                Log.info("[EO] add",
+                    "filterRestore", info.filterRestored && data in info.filterRestored,
+                    "removeRestore", info.removeRestored && data in info.removeRestored,
+                    from, "=>", to, e.elementInfo, data);
+                
+                //このエレメントはロールバックによる削除のやり直しやフィルタリング解除で追加されたか？
+                info.filterRestored && data in info.filterRestored ||
+                info.removeRestored && data in info.removeRestored ?
                     addThread.pushRoutine(tweenRoutine, [addDisplay(e), to.x, to.y])://そうであれば、移動なしに表示させる
                     addThread.pushRoutine(tweenRoutine, [addDisplay(e), from.x, from.y, to.x, to.y]);//そうでなければ、並び替え前の位置から移動してきたように見せる
             };
             
-            var visibleClosure:Function = function(data:*, to:Rectangle, from:Rectangle):void
+            var visibleClosure:Function = function(data:*, index:int, to:Rectangle, from:Rectangle):void
             {
                 var e:IElement = _listLayout.requestElement(to.width, to.height, data);
                 var tweenRoutine:Function = _listLayout.getTweenRoutineByMoved(data);
                 
-                //Log.info("[EO] move", e.elementInfo, from, "=>", to, data);
+                //Log.info("[EO] move", from, "=>", to, e.elementInfo, data);
                 moveThread.pushRoutine(tweenRoutine, [e, to.x, to.y]);
             };
             
-            var invisibleClosure:Function = function(data:*, to:Rectangle, from:Rectangle):void
+            var invisibleClosure:Function = function(data:*, index:int, to:Rectangle, from:Rectangle):void
             {
                 _removeElement(pId, data, to);
             };
             
             var i:int, len:int;
             var order:Vector.<int> = diff.listInfo.order;
+            var edited:Array = _reader.readTransactionResult();
             if (order)
                 for (i = 0, len = order.length; i < len; i++) 
-                    _simulation.switchClosure(diff.editedOrigin[ order[i] ], createClosure, visibleClosure, invisibleClosure);
+                    _simulation.switchClosure(edited[ order[i] ], order[i], createClosure, visibleClosure, invisibleClosure);
             else
-                for (i = 0, len = diff.editedOrigin.length; i < len; i++) 
-                    _simulation.switchClosure(diff.editedOrigin[i], createClosure, visibleClosure, invisibleClosure);
+                for (i = 0, len = edited.length; i < len; i++) 
+                    _simulation.switchClosure(edited[i], i, createClosure, visibleClosure, invisibleClosure);
         }
         
         /**

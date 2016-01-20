@@ -41,6 +41,7 @@ package jp.coremind.view.layout
         public function PartsLayout(element:IElement)
         {
             _element = element;
+            _layoutList = new Dictionary(false);
         }
         
         public function destroy():void
@@ -60,69 +61,67 @@ package jp.coremind.view.layout
             var actual:String  = getQualifiedClassName(_element);
             var bluePrintKey:* = _PLAIN_ELEMENT_CLASS.indexOf(actual) == -1 ? $.getClassByInstance(_element): _element.name;
             
-            Log.custom(TAG, "buildParts", _element.name, bluePrintKey);
-            
-            _buildBuildinParts(bluePrintKey);
+            _buildParts(bluePrintKey);
             
             if (_element is IContainer)
                 _buildElementParts(bluePrintKey);
         }
         
-        private function _buildBuildinParts(bluePrintKey:*):void
+        private function _buildParts(bluePrintKey:*):void
         {
-            Log.custom(TAG, " >[buildin]");
+            Log.custom(TAG, " ---build Parts---", _element.name, bluePrintKey);
             
-            var builder:IDisplayObjectBuilder;
-            var child:IBox;
             var bluePrint:IPartsBluePrint = Application.configure.partsBluePrint;
             var partsList:Array = bluePrintKey is String ?
                 bluePrint.createPartsListByName(bluePrintKey):
                 bluePrint.createPartsListByClass(bluePrintKey);
             
-            for (var i:int, len:int = partsList.length; i < len; i++) 
-            {
-                builder = bluePrint.createBuilder(partsList[i]);
-                child   = builder.build(partsList[i], _element.elementWidth, _element.elementHeight);
-                _element.addDisplay(child is Grid9 ? (child as Grid9).asset: child as IDisplayObject);
-                
-                _bindLayout(child, builder.layout);
-            }
+            _buildChildren(partsList, bluePrint);
             
-            Log.custom(TAG, " <[buildin]");
+            Log.custom(TAG, "---");
         }
         
         private function _buildElementParts(bluePrintKey:*):void
         {
-            Log.custom(TAG, " >[Element]");
+            Log.custom(TAG, " ---build Element---", _element.name, bluePrintKey);
             
-            var builder:IDisplayObjectBuilder;
-            var child:IBox;
             var bluePrint:IElementBluePrint = Application.configure.elementBluePrint;
             var partsList:Array = bluePrintKey is String ?
                 bluePrint.createPartsListByName(bluePrintKey):
                 bluePrint.createPartsListByClass(bluePrintKey);
             
+            _buildChildren(partsList, bluePrint);
+            
+            Log.custom(TAG, "---");
+        }
+        
+        private function _buildChildren(partsList:Array, bluePrint:IPartsBluePrint):void
+        {
+            var builder:IDisplayObjectBuilder;
+            var abstractChild:IBox;
+            var child:IDisplayObject;
+            
             for (var i:int, len:int = partsList.length; i < len; i++) 
             {
-                builder = bluePrint.createBuilder(partsList[i]);
-                child   = builder.build(partsList[i], _element.elementWidth, _element.elementHeight);
-                _element.addDisplay(child as IDisplayObject);
+                builder       = bluePrint.createBuilder(partsList[i]);
+                abstractChild = builder.build(partsList[i], _element.elementWidth, _element.elementHeight);
+                child         = abstractChild is Grid9 ? (abstractChild as Grid9).asset: abstractChild as IDisplayObject;
                 
-                _bindLayout(child, builder.layout);
+                _element.addDisplay(child);
+                
+                builder.enabledPointerDevice ?
+                    child.enablePointerDeviceControl():
+                    child.disablePointerDeviceControl()
+                
+                _layoutList[child] = builder.layout;
             }
-            
-            Log.custom(TAG, " <[Element]");
         }
         
-        public function isBuildedParts():Boolean
+        public function isBuilded():Boolean
         {
-            return Boolean(_layoutList);
-        }
-        
-        private function _bindLayout(child:IBox, layout:Layout):void
-        {
-            if (!_layoutList) _layoutList = new Dictionary(false);
-            _layoutList[child] = layout;
+            for (var p:* in _layoutList)
+                return true;
+            return false;
         }
         
         public function reset():void

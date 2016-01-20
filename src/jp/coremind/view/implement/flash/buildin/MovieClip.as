@@ -39,5 +39,15 @@ package jp.coremind.view.implement.flash.buildin
             }
             else return p;
         }
+        
+        public function enablePointerDeviceControl():void
+        {
+            mouseChildren = mouseEnabled = true;
+        }
+        
+        public function disablePointerDeviceControl():void
+        {
+            mouseChildren = mouseEnabled = false;
+        }
     }
 }

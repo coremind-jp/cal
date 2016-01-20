@@ -23,16 +23,6 @@ package jp.coremind.view.implement.starling
             if (parent) removeFromParent(withReference);
         }
         
-        public function enablePointerDeviceControl():void
-        {
-            touchable = true;
-        }
-        
-        public function disablePointerDeviceControl():void
-        {
-            touchable = false;
-        }
-        
         public function createChildrenNameList():Array
         {
             var result:Array = [];

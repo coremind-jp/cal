@@ -11,12 +11,12 @@ package jp.coremind.view.interaction
             super(applyTargetName);
         }
         
-        override public function apply(parent:IElement, previewData:*):void
+        override public function apply(parent:IElement):void
         {
             var tf:TextField = parent.getDisplayByName(_name) as TextField;
             
             tf ?
-                tf.text = doInteraction(parent, previewData, tf):
+                tf.text = doInteraction(parent, tf):
                 Log.warning("undefined Parts(TextField). name=", _name);
         }
     }

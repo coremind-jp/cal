@@ -22,16 +22,6 @@ package jp.coremind.view.implement.flash
             if (parent) parent.removeChild(this);
         }
         
-        public function enablePointerDeviceControl():void
-        {
-            mouseChildren = mouseEnabled = true;
-        }
-        
-        public function disablePointerDeviceControl():void
-        {
-            mouseChildren = mouseEnabled = false;
-        }
-        
         public function createChildrenNameList():Array
         {
             var result:Array = [];

@@ -127,7 +127,7 @@ package jp.coremind.view.layout
             {
                 _preventPosition[key] = child.clone();
                 child.setTo(rect.x, rect.y, rect.width, rect.height);
-                Log.custom(TAG, "update", key, rect);
+                //Log.custom(TAG, "update", key, rect);
             }
         }
         
@@ -173,11 +173,11 @@ package jp.coremind.view.layout
         /**
          * 直前のrefreshの呼び出し結果と比較して新たに描画対象となるデータをキーとしたRectangleリストを返す.
          */
-        public function switchClosure(key:*, createClosure:Function, visibleClosure:Function, invisibleClosure:Function):void
+        public function switchClosure(key:*, index:int, createClosure:Function, visibleClosure:Function, invisibleClosure:Function):void
         {
-                 if (key in _create)                              createClosure(key, _master[key], _preventPosition[key]);
-            else if (key in _visible && key in _preventPosition) visibleClosure(key, _master[key], _preventPosition[key]);
-            else if (key in _invisible)                        invisibleClosure(key, _master[key], _preventPosition[key]);
+                 if (key in _create)                              createClosure(key, index, _master[key], _preventPosition[key]);
+            else if (key in _visible && key in _preventPosition) visibleClosure(key, index, _master[key], _preventPosition[key]);
+            else if (key in _invisible)                        invisibleClosure(key, index, _master[key], _preventPosition[key]);
         }
         
         /**

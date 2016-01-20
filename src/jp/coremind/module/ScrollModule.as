@@ -87,6 +87,11 @@ package jp.coremind.module
         
         public function update(...params):void {}
         
+        public function ignorePointerDevice(boolean:Boolean):void
+        {
+            _dragControl.ignorePointerDevice(boolean);
+        }
+        
         public function refreshContentSize():void
         {
             var resultX:Number = _container.x;

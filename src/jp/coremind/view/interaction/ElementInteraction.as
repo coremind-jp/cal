@@ -32,13 +32,15 @@ package jp.coremind.view.interaction
             return this;
         }
         
-        public function doInteraction(parent:IElement, previewData:*, child:* = null):*
+        /**
+         * 定義したインタラクション処理を実行する.
+         */
+        public function doInteraction(parent:IElement, child:* = null):*
         {
             if (_bindKey)
             {
-                var value:* = previewData ?
-                    previewData[_bindKey]:
-                    parent.elementInfo.reader.read()[_bindKey];
+                var transactionResult:* = parent.elementInfo.reader.readTransactionResult();
+                var value:* = transactionResult ? transactionResult[_bindKey]: parent.elementInfo.reader.read()[_bindKey];
                 
                 return _injectionCode is Function ? _injectionCode(value, child): value;
             }
@@ -46,7 +48,7 @@ package jp.coremind.view.interaction
                 return _injectionCode is Function ? _injectionCode(null, child): null;
         }
         
-        public function apply(parent:IElement, previewData:*):void {}
+        public function apply(parent:IElement):void {}
         
         public function getRuntimeValue(parent:*, params:Array):*
         {

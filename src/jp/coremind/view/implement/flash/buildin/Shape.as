@@ -39,5 +39,13 @@ package jp.coremind.view.implement.flash.buildin
             }
             else return p;
         }
+        
+        public function enablePointerDeviceControl():void
+        {
+        }
+        
+        public function disablePointerDeviceControl():void
+        {
+        }
     }
 }

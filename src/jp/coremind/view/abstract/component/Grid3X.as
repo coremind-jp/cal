@@ -1,7 +1,6 @@
 package jp.coremind.view.abstract.component
 {
     import jp.coremind.asset.GridAsset;
-    import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IStretchBar;
     import jp.coremind.view.layout.Direction;
     

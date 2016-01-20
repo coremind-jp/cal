@@ -26,6 +26,8 @@ package jp.coremind.view.builder
             _storageId    = ModelStorage.UNDEFINED_STORAGE_ID;
             _elementClass = Element;
             _runInteractionOnCreated = false;
+            
+            touchable();
         }
         
         public function getElementClass():Class
@@ -58,7 +60,7 @@ package jp.coremind.view.builder
             return this;
         }
         
-        public function build(name:String, actualParentWidth:int, actualParentHeight:int):IBox
+        override public function build(name:String, actualParentWidth:int, actualParentHeight:int):IBox
         {
             Log.custom(TAG, "build", name);
             

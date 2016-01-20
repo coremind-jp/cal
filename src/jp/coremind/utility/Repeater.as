@@ -7,7 +7,7 @@ package jp.coremind.utility
 
     public class Repeater
     {
-        private static const UNDEFINED_TIMER_ID:uint = 0xFFFFFFFF;
+        private static const UNDEFINED_TIMER_ID:uint = uint.MAX_VALUE;
         
         private var
             _isRunning:Boolean,
@@ -40,7 +40,7 @@ package jp.coremind.utility
             
             if (_timeoutId != UNDEFINED_TIMER_ID)
             {
-                clearTimeout(  _timeoutId);
+                clearTimeout(_timeoutId);
                 _timeoutId = UNDEFINED_TIMER_ID;
             }
             

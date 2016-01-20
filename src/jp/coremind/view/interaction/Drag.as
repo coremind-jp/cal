@@ -4,6 +4,7 @@ package jp.coremind.view.interaction
     import flash.geom.Rectangle;
     
     import jp.coremind.core.Application;
+    import jp.coremind.utility.Log;
     import jp.coremind.utility.data.NumberTracker;
     
     import starling.core.Starling;
@@ -15,6 +16,7 @@ package jp.coremind.view.interaction
     public class Drag
     {
         protected var
+            _ignorePointerDevice:Boolean,
             _draging:Boolean,
             _adsorbThreshold:Number,
             _dragListener:Function,
@@ -27,8 +29,15 @@ package jp.coremind.view.interaction
          */
         public function Drag(adsorbThreshold:Number = 10)
         {
+            _ignorePointerDevice = false;
             _draging = false;
             _adsorbThreshold = Math.abs(adsorbThreshold * Starling.contentScaleFactor);
+        }
+        
+        public function ignorePointerDevice(boolean:Boolean):void
+        {
+            _ignorePointerDevice = ignorePointerDevice;
+            if (_ignorePointerDevice && _draging) _onUp();
         }
         
         public function destory():void
@@ -65,6 +74,8 @@ package jp.coremind.view.interaction
         
         public function beginPointerDeviceListening():void
         {
+            if (_ignorePointerDevice) return;
+            
             $.loop.juggler.setInterval(_onUpdate);
             Application.stage.addEventListener(MouseEvent.MOUSE_UP, _onUp);
         }

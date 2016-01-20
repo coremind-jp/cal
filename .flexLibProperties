@@ -206,7 +206,7 @@
     <classEntry path="jp.coremind.module.ScrollType"/>
     <classEntry path="jp.coremind.utility.process.JugglerLoop"/>
     <classEntry path="jp.coremind.module.DragModule"/>
-    <classEntry path="jp.coremind.core.DragDropController"/>
+    <classEntry path="jp.coremind.core.DragAndDropController"/>
     <classEntry path="jp.coremind.core.ElementPathParser"/>
     <classEntry path="jp.coremind.core.IDragDropControl"/>
     <classEntry path="jp.coremind.utility.Id"/>
@@ -223,6 +223,8 @@
     <classEntry path="jp.coremind.storage.transaction.HashUpdate"/>
     <classEntry path="jp.coremind.storage.transaction.DiffListInfo"/>
     <classEntry path="jp.coremind.storage.transaction.DiffHashInfo"/>
+    <classEntry path="jp.coremind.utility.Delay"/>
+    <classEntry path="jp.coremind.core.DragAndDropConfigure"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

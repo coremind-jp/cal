@@ -34,7 +34,7 @@ package jp.coremind.view.builder
             _br = bottomRight;
         }
         
-        public function build(name:String, actualParentWidth:int, actualParentHeight:int):IBox
+        override public function build(name:String, actualParentWidth:int, actualParentHeight:int):IBox
         {
             var asset:Grid9ImageAsset = new Grid9ImageAsset().initializeForTexture(
                 _tl, _t, _tr,

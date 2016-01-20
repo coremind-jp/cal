@@ -14,7 +14,7 @@ package jp.coremind.storage.transaction
         
         public function apply(diff:Diff):void
         {
-            var list:Array = diff.editedOrigin as Array;
+            var list:Array = diff.transactionResult as Array;
             var toIndex:int = list.indexOf(toData);
             
             list.splice(toIndex == -1 ? list.length: toIndex, 0, fromData);

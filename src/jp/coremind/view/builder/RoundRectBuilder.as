@@ -38,7 +38,7 @@ package jp.coremind.view.builder
             _topRight    = topRight;
         }
         
-        public function build(name:String, actualParentWidth:int, actualParentHeight:int):IBox
+        override public function build(name:String, actualParentWidth:int, actualParentHeight:int):IBox
         {
             var asset:Grid9ImageAsset = Grid9ImageAsset
                 .createRoundRect(_assetId, _color, _radius, _topLeft, _bottomLeft, _bottomRight, _topRight);

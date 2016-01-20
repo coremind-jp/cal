@@ -52,7 +52,7 @@ package jp.coremind.view.implement.starling
                 "elementSize:", _elementWidth, _elementHeight,
                 "position:", x, y);
             
-            if (!_partsLayout.isBuildedParts())
+            if (!_partsLayout.isBuilded())
                  _partsLayout.buildParts();
             
             _refreshLayout(_maxWidth, _maxHeight);

@@ -35,7 +35,7 @@ package jp.coremind.view.builder
         
         override public function preview(diff:Diff):void
         {
-            var dataList:Array = diff.editedOrigin;
+            var dataList:Array = _reader.readTransactionResult();
             var order:Vector.<int> = diff.listInfo.order;
             
             _densityList.length = 0;

@@ -5,6 +5,8 @@ package jp.coremind.core
     
     import jp.coremind.event.ElementInfo;
     import jp.coremind.module.ModuleList;
+    import jp.coremind.module.ScrollModule;
+    import jp.coremind.utility.Delay;
     import jp.coremind.utility.Log;
     import jp.coremind.utility.data.NumberTracker;
     import jp.coremind.view.abstract.ICalSprite;
@@ -16,31 +18,46 @@ package jp.coremind.core
     
     import starling.core.Starling;
     
-    public class DragDropController extends Controller
+    public class DragAndDropController extends Controller
     {
-        private static var _CONFIGURE_LIST:Array = [];
-        public static function addConfigure(controllerClass:Class, absorb:Boolean, dropArea:Array):int
+        private static var _CONFIGURE_LIST:Vector.<DragAndDropConfigure> = new <DragAndDropConfigure>[];
+        public static function addConfigure(configure:DragAndDropConfigure):int
         {
-            return _CONFIGURE_LIST.push(new Configure(controllerClass, absorb, dropArea)) - 1;
+            return _CONFIGURE_LIST.push(configure) - 1;
         }
         
         private var
             _initialHitArea:Rectangle,
             _latestHitArea:Rectangle,
-            _currentConfigure:Configure;
+            _currentConfigureId:int;
+        
+        private function get configure():DragAndDropConfigure
+        {
+            return _CONFIGURE_LIST[_currentConfigureId];
+        }
         
         public function beginDrag(info:ElementInfo, confId:int):void
         {
             var dragElement:IElement = info.path.fetchElement(starlingRoot);
-            if (dragElement)
+            if (dragElement && 0 <= confId && confId < _CONFIGURE_LIST.length)
             {
-                _currentConfigure = _CONFIGURE_LIST[confId];
+                _currentConfigureId = confId;
                 
                 if (dragElement is ContainerWrapper)
                     Log.warning("ContainerWrapper(SuperClass) not Supported Drag.");
                 else
-                if (Controller.exec(_currentConfigure.controllerClass, "dragFiltering", [info]))
-                    _beginDrag(dragElement);
+                if (Controller.exec(configure.controllerClass, "dragFiltering", [info]))
+                {
+                    var before:Point = Application.pointer.clone();
+                    new Delay().start(configure.dragDelay, function():void
+                    {
+                        var executeRange:Number = 2 * Starling.contentScaleFactor;
+                        var size:Point = Application.pointer.subtract(before);
+                        
+                        if (Math.abs(size.x) < executeRange || Math.abs(size.y) < executeRange)
+                            _beginDrag(dragElement);
+                    });
+                }
             }
         }
         
@@ -57,43 +74,63 @@ package jp.coremind.core
             {
                 clonedElement.x = globalInitialPosition.x + x.totalDelta;
                 clonedElement.y = globalInitialPosition.y + y.totalDelta;
-                Controller.exec(cls, "onDrag", [x, y]);
+                Controller.exec(klass, "onDrag", [x, y]);
                 
-                //同期処理中の場合は処理しない
+                //同期処理中の場合は以降の処理をしない
                 if (Application.sync.isRunning())
                     return;
                 
-                //最後にヒットテストに成功したオブジェクトとの当たり判定がある内は処理しない
+                if (_latestHitArea.isEmpty())
+                {
+                    //ロールオーバーチェック(ヒットテストに成功すると_latestHitAreaの内容が書き換わる(emptyではなくなる))
+                    var  hitTestResult:ElementInfo = _eachHitTest();
+                    if (!hitTestResult) return;
+                    
+                    //ロールオーバー処理
+                    rolloverDelay.start(configure.rolloverDelay, function():void
+                    {
+                        if (_latestHitArea.containsPoint(Application.pointer))
+                        {
+                            if (configure.invisibleWhenRollover)
+                                clonedElement.visible = false;
+                            
+                            params[1] = hitTestResult;
+                            params[3] = _initialHitArea.containsPoint(Application.pointer);
+                            Controller.exec(klass, "onRollover", params);
+                        }
+                    });
+                    return;
+                }
+                
+                //ロールアウトチェック(最後にヒットテストに成功したオブジェクトとの当たり判定がある場合)
                 if (_latestHitArea.containsPoint(Application.pointer))
                 {
-                    if (_currentConfigure.absorb)
+                    if (configure.absorbWhenRollover)
                     {
                         clonedElement.x = _latestHitArea.x;
                         clonedElement.y = _latestHitArea.y;
                     }
                     return;
                 }
+                //ここを抜けたらロールアウト処理
                 
-                //最後にヒットテストに成功したオブジェクトとの当たり判定がない場合はそれが初回かを調べる
+                //ロールオーバーの遅延実行待ちならキャンセル
+                if (rolloverDelay.running)
+                    rolloverDelay.stop();
+                
+                //初回ロールアウト処理
                 if (params[1] !== null)
                 {
                     params[3] = false;
-                    Controller.exec(cls, "onRollout", params);
+                    Controller.exec(klass, "onRollout", params);
                     params[1] = null;
                     
-                    _latestHitArea.setEmpty();
-                    return;
+                    if (configure.invisibleWhenRollover)
+                        clonedElement.visible = true;
                 }
                 
-                //どのオブジェクトともヒットテストに成功しない場合, ドラッグ毎にヒットテストを繰り返す
-                //ヒットテストに成功すると_latestHitAreaの内容が書き換わるのでこれ以降の処理は連続して呼ばれることはない
-                var hitTestResult:ElementInfo = _eachHitTest();
-                if (hitTestResult)
-                {
-                    params[1] = hitTestResult;
-                    params[3] = _initialHitArea.containsPoint(Application.pointer);
-                    Controller.exec(cls, "onRollover", params);
-                }
+                //ヒットテスト初期化
+                _latestHitArea.setEmpty();
             };
             
             var onDrop:Function = function(x:NumberTracker, y:NumberTracker):void
@@ -102,10 +139,23 @@ package jp.coremind.core
                     Application.sync.pushQue(function():void { onDrop(x, y); });
                 else
                 {
-                    Controller.exec(cls, "onDrop", params);
+                    Controller.exec(klass, "onDrop", params);
                     clonedElement.destroy(true);
+                    
+                    if (mod) mod.ignorePointerDevice(false);
                 }
             };
+            
+            //ドラッグ対象の親がScrollModuleを保持している場合停止させる.
+            var parent:IElement  = from.parentDisplay as IElement;
+            if (parent)
+            {
+                var mod:ScrollModule = parent.elementInfo.modules.isUndefined(ScrollModule) ?
+                    null:
+                    parent.elementInfo.modules.getModule(ScrollModule) as ScrollModule;
+                
+                if (mod) mod.ignorePointerDevice(true);
+            }
             
             var clonedElement:IElement = from.clone();
             var globalInitialPosition:Point = from.toGlobalPoint(new Point());
@@ -114,14 +164,14 @@ package jp.coremind.core
             
             
             //closure variable
-            var cls:Class    = _currentConfigure.controllerClass;
-            var params:Array = [from.elementInfo, from.elementInfo, clonedElement.elementInfo, false];
+            var klass:Class         = configure.controllerClass;
+            var params:Array        = [from.elementInfo, from.elementInfo, clonedElement.elementInfo, false];
+            var rolloverDelay:Delay = new Delay();
             
             
             var layerRoot:ICalSprite   = Starling.current.stage.getChildAt(0) as ICalSprite;
             var systemLayer:ICalSprite = layerRoot.getDisplayByName(Layer.SYSTEM) as ICalSprite;
             systemLayer.addDisplay(clonedElement);
-            //clonedElement.elementInfo.modules.getModule(StatusModel).update(StatusGroup.PRESS, Status.DOWN);
             
             from.toLocalPoint(Application.pointer, _TMP_POINT);
             _TMP_RECT.setTo(_TMP_POINT.x, _TMP_POINT.y, from.elementWidth, from.elementHeight);
@@ -130,12 +180,12 @@ package jp.coremind.core
             dragger.initialize(_TMP_RECT, new Rectangle(0, 55, 320, 568 - 55), onDrag, onDrop);
             dragger.beginPointerDeviceListening();
             
-            Controller.exec(cls, "onDragBegin", params);
+            Controller.exec(klass, "onDragBegin", params);
         }
         
         private function _eachHitTest():ElementInfo
         {
-            var list:Array = _currentConfigure.dropAreaList;
+            var list:Array = configure.dropAreaList;
             
             for (var i:int = 0; i < list.length; i++)
             {
@@ -180,7 +230,7 @@ package jp.coremind.core
         private function _hitTestByElement(e:IElement, ignoreFiltering:Boolean = false):Boolean
         {
             //外部で実装されたドロップ対象判定を考慮し、その判定に入らない場合ヒットテストを行う前に失敗させる.
-            if (!ignoreFiltering && !Controller.exec(_currentConfigure.controllerClass, "dropFiltering", [e.elementInfo]))
+            if (!ignoreFiltering && !Controller.exec(configure.controllerClass, "dropFiltering", [e.elementInfo]))
                 return false;
             
             var c:IContainer = e as IContainer;
@@ -195,32 +245,5 @@ package jp.coremind.core
             }
             else return false;
         }
-    }
-}
-import jp.coremind.core.ElementPathParser;
-
-class Configure
-{
-    public var
-        controllerClass:Class,
-        absorb:Boolean,
-        dropAreaList:Array;
-    
-    public function Configure(controllerClass:Class, absorb:Boolean, dropAreaList:Array)
-    {
-        this.controllerClass = controllerClass;
-        this.absorb          = absorb;
-        this.dropAreaList    = _convertDropAreaList(dropAreaList);
-    }
-    
-    private function _convertDropAreaList(list:Array):Array
-    {
-        for (var i:int = 0; i < list.length; i++) 
-            list[i] is Array ?
-                list[i] = new ElementPathParser()
-                    .initialize(list[i].shift(), list[i].shift(), list[i].join(".")):
-                list.splice(i--, 1);
-        
-        return list;
     }
 }

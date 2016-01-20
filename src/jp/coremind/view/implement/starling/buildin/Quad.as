@@ -28,5 +28,15 @@ package jp.coremind.view.implement.starling.buildin
         {
             return globalToLocal(globalPoint, resultPoint);
         }
+        
+        public function enablePointerDeviceControl():void
+        {
+            touchable = true;
+        }
+        
+        public function disablePointerDeviceControl():void
+        {
+            touchable = false;
+        }
     }
 }

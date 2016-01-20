@@ -46,10 +46,10 @@ package jp.coremind.view.interaction
             super.destroy();
         }
         
-        override public function apply(parent:IElement, previewData:*):void
+        override public function apply(parent:IElement):void
         {
             var asset:Grid9ImageAsset = parent.getDisplayByName(_name) as Grid9ImageAsset;
-            if (asset) doInteraction(parent, previewData, asset);
+            if (asset) doInteraction(parent, asset);
             else Log.warning("undefined Parts(Grid9ImageTexture). name=", _name);
         }
     }

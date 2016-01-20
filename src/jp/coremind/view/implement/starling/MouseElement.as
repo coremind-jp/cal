@@ -4,6 +4,7 @@ package jp.coremind.view.implement.starling
     import jp.coremind.core.StatusModelType;
     import jp.coremind.module.StatusGroup;
     import jp.coremind.module.StatusModule;
+    import jp.coremind.utility.Log;
     import jp.coremind.utility.data.Status;
     import jp.coremind.view.builder.IBackgroundBuilder;
     import jp.coremind.view.layout.Layout;
@@ -31,8 +32,6 @@ package jp.coremind.view.implement.starling
         
         override protected function _onTouch(e:TouchEvent):void
         {
-            e.stopPropagation();
-            
             _touch = e.getTouch(this);
             
             if (!_touch)
@@ -87,6 +86,8 @@ package jp.coremind.view.implement.starling
         
         override protected function ended():void
         {
+            Log.info(elementInfo);
+            
             var isRollOver:Boolean = _bHitTest && !_hold;
             var isClick:Boolean    = _bHitTest &&  _hold;
             var status:StatusModule = _info.modules.getModule(StatusModule) as StatusModule;

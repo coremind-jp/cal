@@ -16,7 +16,7 @@ package jp.coremind.view.interaction
             _bitmapFont = new BitmapFont(assetId, fontface, fontSize, fontColor, hAlign, vAlign, autoScale, kerning);
         }
         
-        override public function apply(parent:IElement, previewData:*):void
+        override public function apply(parent:IElement):void
         {
             //BitmapFont::createSpriteはStarlingの純粋なSpriteクラスでしか取得できないため、
             //IDisplayObjectContainer::getDisplayByName経由で取得するとnullになる(内部でIDisplayObject型へのキャストをしている為)
@@ -25,7 +25,7 @@ package jp.coremind.view.interaction
             var before:Sprite = starlingParent.getChildByName(_name) as Sprite;
             if (before)
             {
-                var text:String = doInteraction(parent, previewData);
+                var text:String = doInteraction(parent);
                 var newSprite:Sprite = _bitmapFont.create(
                     text,
                     parent.elementWidth,

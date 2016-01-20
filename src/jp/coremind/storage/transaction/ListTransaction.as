@@ -12,7 +12,8 @@ package jp.coremind.storage.transaction
             _filter:Function,
             _sortNames:*,
             _sortOptions:int,
-            _latestFiltered:Dictionary;
+            _filterRestored:Dictionary,
+            _removeRestored:Dictionary;
         
         public function ListTransaction()
         {
@@ -46,7 +47,7 @@ package jp.coremind.storage.transaction
             super.rollback();
             _filter    = null;
             _sortNames = null;
-            _latestFiltered = null;
+            _filterRestored = null;
         }
         
         public function add(valueFrom:*, valueTo:* = null):ListTransaction
@@ -83,15 +84,23 @@ package jp.coremind.storage.transaction
         
         override public function apply(origin:*):Diff
         {
-            var clonedList:Array  = origin.slice();
-            var info:DiffListInfo = new DiffListInfo();
-            var diff:Diff         = new Diff(clonedList, info, null);
+            var clonedList:Array   = origin.slice();
+            var info:DiffListInfo  = new DiffListInfo();
+            var diff:Diff          = new Diff(clonedList, info, null);
+            var removed:Dictionary = new Dictionary(true);
+            
+            info.setRemoved(removed);
             
             for (var i:int = 0; i < _position; i++)
-            {
-                Log.info(i, _history[i]);
                 _history[i].apply(diff);
-            }
+            
+            if (_removeRestored !== null)
+                for (var removedData:* in removed)
+                    if (removedData in _removeRestored)
+                        delete _removeRestored[removedData];
+            
+            info.setRemoveRestored(_removeRestored);
+            _removeRestored = removed;
             
             _applyFilter(clonedList, info, _createSortOrder(clonedList, info));
             
@@ -107,10 +116,11 @@ package jp.coremind.storage.transaction
         {
             if (!_sortNames) return null;
             
-            if ((_sortOptions  & Array.RETURNINDEXEDARRAY) == 0)
-                 _sortOptions |= Array.RETURNINDEXEDARRAY;
+            var option:int = (_sortOptions & Array.RETURNINDEXEDARRAY) == 0 ?
+                _sortOptions |= Array.RETURNINDEXEDARRAY:
+                _sortOptions;
             
-            return Vector.<int>(list.sortOn(_sortNames, _sortOptions));
+            return Vector.<int>(list.sortOn(_sortNames, option));
         }
         
         /**
@@ -122,12 +132,13 @@ package jp.coremind.storage.transaction
             var len:int = list.length;
             if (_filter === null || len == 0)
             {
+                _filterRestored = null;
                 info.setOrder(sortOrder);
                 return;
             }
             
-            if (_latestFiltered === null)
-                _latestFiltered = EMPTY;
+            if (_filterRestored === null)
+                _filterRestored = EMPTY;
             
             var filtered:Dictionary = new Dictionary(true);
             
@@ -145,7 +156,7 @@ package jp.coremind.storage.transaction
                     if (_filter(data))
                     {
                         filtered[data] = true;
-                        delete _latestFiltered[data];
+                        delete _filterRestored[data];
                     }
                     else filterOrder[filterOrder.length] = n;
                 }
@@ -160,16 +171,16 @@ package jp.coremind.storage.transaction
                     if (_filter(data))
                     {
                         filtered[data] = true;
-                        delete _latestFiltered[data];
+                        delete _filterRestored[data];
                     }
                     else filterOrder[filterOrder.length] = i;
                 }
             }
             
             info.setOrder(filterOrder);
-            info.setFilteringRestored(_latestFiltered);
+            info.setFilterRestored(_filterRestored);
             info.setFiltered(filtered);
-            _latestFiltered = info.filtered;//直前のフィルタリングリストはフィルタ解除リストに役割を変える
+            _filterRestored = info.filtered;//直前のフィルタリングリストはフィルタ解除リストに役割を変える
         }
     }
 }

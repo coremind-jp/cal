@@ -121,15 +121,15 @@ package jp.coremind.view.implement.starling
         public function preview(diff:Diff):void
         {
             if (diff.hashInfo)
-                _applyStorageInteraction(diff.hashInfo.edited, diff.editedOrigin);
+                _applyStorageInteraction(diff.hashInfo.edited);
         }
         
-        private function _applyStorageInteraction(updatedKeyList:Vector.<String>, previewData:Object = null):void
+        private function _applyStorageInteraction(updatedKeyList:Vector.<String>):void
         {
             if (_storageInteractionId)
             {
                 var si:StorageInteraction = Application.configure.interaction.getStorageInteraction(_storageInteractionId);
-                if (si) si.apply(this, updatedKeyList, previewData);
+                if (si) si.apply(this, updatedKeyList);
             }
         }
         
@@ -148,7 +148,7 @@ package jp.coremind.view.implement.starling
                 _onLoadElementInfo();
                 
                 if (runInteractionOnCreated)
-                    _applyStorageInteraction(_reader.createModelKeyList());
+                    _applyStorageInteraction(_reader.createKeyList());
                 
                 ready();
             }
@@ -169,7 +169,7 @@ package jp.coremind.view.implement.starling
                 "elementSize:", _elementWidth, _elementHeight,
                 "position:", x, y);
             */
-            if (!_partsLayout.isBuildedParts())
+            if (!_partsLayout.isBuilded())
                 _partsLayout.buildParts();
             
             _refreshLayout(_elementWidth, _elementHeight);
@@ -207,7 +207,6 @@ package jp.coremind.view.implement.starling
         {
             _reader = _info.reader;
             _reader.addListener(this, ModelReader.LISTENER_PRIORITY_ELEMENT);
-            //Log.custom(TAG, "onLoadStorageModel", _reader.id, _reader.read());
             
             _initializeModules();
         }

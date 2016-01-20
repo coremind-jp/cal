@@ -12,27 +12,27 @@ package jp.coremind.utility.helper
          * @params  path    取得した値が格納されているパス(階層は「.」で区切り表現する)
          * @returns pathの値
          */
-        public function read(o:Object, path:String):*
+        public function read(o:Object, path:String, warningLog:Boolean = true):*
         {
-            var _hierarchy:Array = path.split(".");
-            var _key:String;
-            var _val:*;
-            
+            return _read(o, path.split("."), warningLog);
+        }
+        
+        private function _read(o:Object, hierarchy:Array, warningLog:Boolean):*
+        {
             if (!$.isHash(o))
             {
-                Log.warning("arguments is not HashObject. (HashHelper::read)", path/*, o*/);
+                if (warningLog) Log.warning("arguments is not HashObject. (HashHelper::read)", hierarchy);
                 return undefined;
             }
             
-            _key = _hierarchy.shift();
+            var _key:String = hierarchy.shift();
             if (!(_key in o))
             {
-                Log.warning("undefined property ["+_key+"]. (HashHelper::read)", path/*, o*/);
+                if (warningLog) Log.warning("undefined property ["+_key+"]. (HashHelper::read)", hierarchy);
                 return undefined;
             }
             
-            _val = o[_key];
-            return _hierarchy.length > 0 ? read(_val, _hierarchy.join(".")): _val;
+            return hierarchy.length > 0 ? _read(o[_key], hierarchy, warningLog): o[_key];
         }
         
         public function keyClone(o:Object):Object
@@ -72,29 +72,26 @@ package jp.coremind.utility.helper
         
         public function write(o:Object, path:String, value:*):void
         {
-            var _hierarchy:Array = path.split(".");
+            _write(o, path.split("."), value);
+        }
+        
+        private function _write(o:Object, hierarchy:Array, value:*):void
+        {
             var _key:String;
             var _val:*;
             
             if (!$.isHash(o))
             {
-                Log.warning("o is not HashObject. (HashHelper::write)", path, o);
+                Log.warning("o is not HashObject. (HashHelper::write)", hierarchy, o);
                 return;
             }
             
-            _key = _hierarchy.shift();
+            _key = hierarchy.shift();
             if (_key in o)
-            {
-                _hierarchy.length > 0 ?
-                    write(o[_key], _hierarchy.join("."), value):
-                    Log.error("already defined property ["+_key+"]. (HashHelper::write)", path/*, o*/);
-            }
+                hierarchy.length > 0 ? _write(o[_key], hierarchy, value):
+                    Log.error("already defined property ["+_key+"]. (HashHelper::write)", hierarchy);
             else
-            {
-                _hierarchy.length > 0 ?
-                    write(o[_key] = {}, _hierarchy.join("."), value):
-                    o[_key] = value;
-            }
+                hierarchy.length > 0 ? _write(o[_key] = {}, hierarchy, value): o[_key] = value;
         }
         
         public function isDefined(o:Object, path:String):Boolean

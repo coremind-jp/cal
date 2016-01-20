@@ -15,7 +15,7 @@ package jp.coremind.storage.transaction
         
         public function apply(diff:Diff):void
         {
-            var hash:Object = diff.editedOrigin as Object;
+            var hash:Object = diff.transactionResult as Object;
             
             if (toData in hash)
             {

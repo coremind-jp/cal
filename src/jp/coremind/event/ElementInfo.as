@@ -58,13 +58,10 @@ package jp.coremind.event
             _pathParser.initialize(layerId, viewId, elementId);
             _modules = StorageAccessor.requestModule(_storageId, _pathParser.elementId);
             Log.custom(TAG, "initialized",　this);
+            
             /*
             Log.custom(TAG, "hasBeforeModuleList", Boolean(b), "equalReference", _modules === b);
-            if (b && _modules !== b)
-            {
-                b.dump();
-                _modules.dump();
-            }
+            if (b && _modules !== b) { b.dump(); _modules.dump(); }
             */
         }
         

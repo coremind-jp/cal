@@ -17,7 +17,7 @@ package jp.coremind.core
             _LISTENER_LIST = {};
         }
         
-        public function listen(controllerClass:Class, method:String, path:Array, statusGroup:String, statusValue:String, staticParams:Array = null):void
+        public function listenStatus(controllerClass:Class, method:String, path:Array, statusGroup:String, statusValue:String, staticParams:Array = null):void
         {
             Controller.bindView(path[1], controllerClass);
             
@@ -31,20 +31,19 @@ package jp.coremind.core
             }
         }
         
-        public function listenDrag(controllerClass:Class, dragTargetList:Array, dropAreaList:Array, absorb:Boolean):void
+        public function listenDrag(dragTargetList:Array, configure:DragAndDropConfigure):void
         {
-            if ($.isImplements(controllerClass, IDragDropControl))
+            if (configure.controllerClass)
             {
-                var confId:int = DragDropController.addConfigure(controllerClass, absorb, dropAreaList);
+                var confId:int = DragAndDropController.addConfigure(configure);
                 var params:Array = [confId];
                 
                 for (var i:int = 0; i < dragTargetList.length; i++) 
                 {
-                    Controller.bindView(dragTargetList[i][1], controllerClass);
-                    listen(DragDropController, "beginDrag", dragTargetList[i], StatusGroup.PRESS, Status.DOWN, params);
+                    Controller.bindView(dragTargetList[i][1], configure.controllerClass);
+                    listenStatus(DragAndDropController, "beginDrag", dragTargetList[i], StatusGroup.PRESS, Status.DOWN, params);
                 }
             }
-            else Log.warning("failed listenDrag. ", controllerClass, " require implements IDragDropControl interface.");
         }
         
         public function notify(info:ElementInfo, statusGroup:String, statusValue:String):void

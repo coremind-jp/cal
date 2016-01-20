@@ -24,20 +24,15 @@ package jp.coremind.storage
         
         public function destroy():void
         {
+            _deleteTransactionResult();
             _reader = null;
-            
-            if (_transaction)
-            {
-                _transaction.rollback();
-                _transaction = null;
-            }
-            
-            _latestDiff = null;
         }
         
-        public function get id():String   { return _reader.id; }
-        public function get type():String { return _reader.type; }
-        public function read():*          { return _reader.read(); }
+        //ModelReader alias
+        public function get id():String           { return _reader.id; }
+        public function get type():String         { return _reader.type; }
+        public function read():*                  { return _reader.read(); }
+        //ModelReader alias
         
         public function requestTransactionByList():ListTransaction
         {
@@ -67,29 +62,45 @@ package jp.coremind.storage
             {
                 Log.custom(TAG, "preview");
                 
-                _latestDiff = _transaction.apply(_reader.read());
+                _updateTransactionResult();
+                
                 _reader.dispatchByPreview(_latestDiff);
             }
         }
         
-        public function commit(useLatestDiff:Boolean = true):void
+        public function commit(regenerateDiff:Boolean = false):void
         {
             if (_transaction) 
             {
                 Log.custom(TAG, "commit");
                 
-                var diff:Diff = useLatestDiff && _latestDiff !== null ?
-                    _latestDiff:
-                    _transaction.apply(_reader.read());
+                if (_latestDiff === null || regenerateDiff)
+                    _updateTransactionResult();
                 
-                _transaction.rollback();
-                _transaction = null;
-                _latestDiff  = null;
+                storage.update(this, _reader.readTransactionResult());
                 
-                storage.update(this, diff.editedOrigin);
+                var diff:Diff = _latestDiff;
+                
+                _deleteTransactionResult();
                 
                 _reader.dispatchByCommit(diff);
             }
+        }
+        
+        private function _updateTransactionResult():void
+        {
+            _latestDiff = _transaction.apply(_reader.read());
+            storage.writeTransactionResult(_reader.id, _latestDiff.deleteTransactionResult());
+        }
+        
+        private function _deleteTransactionResult():void
+        {
+            if (_transaction)
+                _transaction.rollback();
+            
+            _transaction = null;
+            _latestDiff  = null;
+            storage.deleteTransactionResult(_reader.id);
         }
     }
 }

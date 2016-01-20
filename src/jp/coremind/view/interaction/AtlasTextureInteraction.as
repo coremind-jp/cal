@@ -24,11 +24,11 @@ package jp.coremind.view.interaction
             };
         }
         
-        override public function apply(parent:IElement, previewData:*):void
+        override public function apply(parent:IElement):void
         {
             var child:Image = parent.getDisplayByName(_name) as Image;
             
-            if (child) doInteraction(parent, previewData, child);
+            if (child) doInteraction(parent, child);
             else Log.warning("undefined Parts(AtlasTextureInteraction). name=", _name);
         }
     }
