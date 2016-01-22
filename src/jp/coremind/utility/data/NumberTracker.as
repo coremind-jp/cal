@@ -16,6 +16,18 @@ package jp.coremind.utility.data
             _start = _preventDelta = _prevent = _totalDelta = 0;
         }
         
+        public function clone():NumberTracker
+        {
+            var result:NumberTracker = new NumberTracker();
+            
+            result._start        = _start;
+            result._prevent      = _prevent;
+            result._preventDelta = _preventDelta;
+            result._totalDelta   = _totalDelta;
+            
+            return result;
+        }
+        
         /**
          * 初期値を設定する.
          * @param   start   初期値

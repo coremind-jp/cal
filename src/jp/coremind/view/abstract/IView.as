@@ -5,6 +5,8 @@ package jp.coremind.view.abstract
 
     public interface IView extends ICalSprite 
     {
+        function allocateElementCache():void
+        function freeElementCache():void
         function getElement(path:String, ignoreError:Boolean = false):IElement;
         
         function isFocus():Boolean;

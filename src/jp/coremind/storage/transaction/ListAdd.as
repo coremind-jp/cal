@@ -1,23 +1,27 @@
 package jp.coremind.storage.transaction
 {
-    public class ListAdd extends TransactionLog implements ITransactionLog
+    public class ListAdd implements ITransactionLog
     {
+        private var
+            _value:*,
+            _indexValue:*;
+        
         /**
-         *　toData(setToDataメソッドの呼び出し)必須.
-         * 配列を走査しtoDataと同一参照だったインデックスにfromDataを追加する。
-         * 同一参照が見つからない場合、配列末尾に追加する。
+         * indexValueパラメータと同一参照のデータのインデックス位置にvalueパラメータを追加する.
+         * 同一参照が存在しない場合、配列末尾に追加する。
          */
-        public function ListAdd(fromData:*)
+        public function ListAdd(value:*, indexValue:*)
         {
-            super(fromData);
+            _value = value;
+            _indexValue = indexValue;
         }
         
         public function apply(diff:Diff):void
         {
             var list:Array = diff.transactionResult as Array;
-            var toIndex:int = list.indexOf(toData);
+            var toIndex:int = list.indexOf(_indexValue);
             
-            list.splice(toIndex == -1 ? list.length: toIndex, 0, fromData);
+            list.splice(toIndex == -1 ? list.length: toIndex, 0, _value);
         }
     }
 }

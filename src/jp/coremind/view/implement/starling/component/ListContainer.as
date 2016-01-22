@@ -116,26 +116,25 @@ package jp.coremind.view.implement.starling.component
         
         override public function updatePosition(x:Number, y:Number):void
         {
-            super.updatePosition(x, y);
-            
-            _updateSimulation(x, y);
-            
-            _simulation.eachVisible(function(data:*, to:Rectangle, from:Rectangle):void
+            var visibleClosure:Function = function(data:*, to:Rectangle, from:Rectangle):void
             {
                 var e:IElement = _listLayout.requestElement(to.width, to.height, data);
                 e.x = to.x;
                 e.y = to.y;
                 addDisplay(e);
-            });
+            };
             
-            _simulation.eachInvisible(function(data:*, to:Rectangle, from:Rectangle):void
+            var invisibleClosure:Function = function(data:*, to:Rectangle, from:Rectangle):void
             {
-                //if (_listLayout.hasCache(data))
-                {
-                    removeDisplay(_listLayout.requestElement(0, 0, data));
-                    _listLayout.requestRecycle(data);
-                }
-            });
+                removeDisplay(_listLayout.requestElement(0, 0, data));
+                _listLayout.requestRecycle(data);
+            };
+            
+            super.updatePosition(x, y);
+            
+            _updateSimulation(x, y);
+            _simulation.eachVisible(visibleClosure);
+            _simulation.eachInvisible(invisibleClosure);
         }
         
         public function cloneListElement(info:ElementInfo):IElement
@@ -200,11 +199,6 @@ package jp.coremind.view.implement.starling.component
             _removeChildren(diff.listInfo.filtered, diff.listInfo.filterRestored, pId);
         }
         
-        /**
-         * removeListに含まれるデータと紐づくElementオブジェクトを破棄し、
-         * restoreListに含まれるデータと紐づくElementオブジェクトを復元する.
-         * この二つのリストは意味あるグループとしてまとめられた集合として扱う。
-         */
         private function _removeChildren(removeList:Dictionary, restoreList:Dictionary, pId:String):void
         {
             var data:*;
@@ -297,12 +291,12 @@ package jp.coremind.view.implement.starling.component
                 var e:IElement = _listLayout.requestElement(to.width, to.height, data, index);
                 var tweenRoutine:Function = _listLayout.getTweenRoutineByAddedStage(data);
                 var info:DiffListInfo = diff.listInfo;
-                
+                /*
                 Log.info("[EO] add",
                     "filterRestore", info.filterRestored && data in info.filterRestored,
                     "removeRestore", info.removeRestored && data in info.removeRestored,
                     from, "=>", to, e.elementInfo, data);
-                
+                */
                 //このエレメントはロールバックによる削除のやり直しやフィルタリング解除で追加されたか？
                 info.filterRestored && data in info.filterRestored ||
                 info.removeRestored && data in info.removeRestored ?

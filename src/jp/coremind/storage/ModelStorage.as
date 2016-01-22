@@ -8,11 +8,11 @@ package jp.coremind.storage
 
     public class ModelStorage
     {
-        public static const UNDEFINED_STORAGE_ID:String = "undefinedStorageId";
-        public static const TEMPORARY_AREA:String = "temporary.";
-        
         public static const TAG:String = "[Storage]";
         //Log.addCustomTag(TAG);
+        
+        public static const UNDEFINED_STORAGE_ID:String = "undefinedStorageId";
+        public static const TEMPORARY_AREA:String = "temporary.";
         
         public var destroyListener:Function;
         

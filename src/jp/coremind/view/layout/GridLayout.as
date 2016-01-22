@@ -56,18 +56,28 @@ package jp.coremind.view.layout
             _rect  = temporaryRect;
         }
         
+    //configure side
         public function horizontalLayout(letterbox:Size, grid:Size, gap:Size):GridLayout
         {
             _horizontal = new Calculator(letterbox, grid, gap);
             return this;
         }
-        
         public function verticalLayout(letterbox:Size, grid:Size, gap:Size):GridLayout
         {
             _vertical = new Calculator(letterbox, grid, gap);
             return this;
         }
+    //configure side
         
+    //Alias Element Factory
+        public function hasCache(modelData:*):Boolean { return _elementfactory.hasElement(modelData); }
+        public function requestRecycle(modelData:*):void { _elementfactory.recycle(modelData); }
+        public function refreshCacheKey():void { _elementfactory.refreshKey(); }
+        public function requestElement(actualParentWidth:int, actualParentHeight:int, modelData:*, index:int = -1, length:int = -1):IElement { return _elementfactory.request(actualParentWidth, actualParentHeight, modelData, index, length); }
+        public function createElement(actualParentWidth:int, actualParentHeight:int, modelData:*, index:int):IElement { return _elementfactory.create(actualParentWidth, actualParentHeight, modelData, index); }
+    //Alias Element Factory
+        
+    //runtime side
         public function getScrollSizeX(actualParentWidth:Number):Number
         {
             return _horizontal.calcScrollSize(actualParentWidth);
@@ -76,21 +86,6 @@ package jp.coremind.view.layout
         public function getScrollSizeY(actualParentHeight:Number):Number
         {
             return _vertical.calcScrollSize(actualParentHeight);
-        }
-        
-        public function hasCache(modelData:*):Boolean
-        {
-            return _elementfactory.hasElement(modelData);
-        }
-        
-        public function requestRecycle(modelData:*):void
-        {
-            _elementfactory.recycle(modelData);
-        }
-        
-        public function refreshCacheKey():void
-        {
-            _elementfactory.refreshKey();
         }
         
         public function calcElementRect(actualParentWidth:int, actualParentHeight:int, index:int, length:int = 0):Rectangle
@@ -139,16 +134,6 @@ package jp.coremind.view.layout
             _elementfactory.initialize(reader);
             
             _update();
-        }
-        
-        public function requestElement(actualParentWidth:int, actualParentHeight:int, modelData:*, index:int = -1, length:int = -1):IElement
-        {
-            return _elementfactory.request(actualParentWidth, actualParentHeight, modelData, index, length);
-        }
-        
-        public function createElement(actualParentWidth:int, actualParentHeight:int, modelData:*, index:int):IElement
-        {
-            return _elementfactory.create(actualParentWidth, actualParentHeight, modelData, index);
         }
         
         public function destroy(withReference:Boolean = false):void

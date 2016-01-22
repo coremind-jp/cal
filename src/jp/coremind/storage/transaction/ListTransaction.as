@@ -50,35 +50,27 @@ package jp.coremind.storage.transaction
             _filterRestored = null;
         }
         
-        public function add(valueFrom:*, valueTo:* = null):ListTransaction
+        public function add(value:*, indexValue:* = null):ListTransaction
         {
-            _history.push(new ListAdd(valueFrom).setToData(valueTo));
-            _position++;
-            
+            pushLog(new ListAdd(value, indexValue));
             return this;
         }
         
-        public function remove(valueFrom:*):ListTransaction
+        public function remove(removeValue:*):ListTransaction
         {
-            _history.push(new ListRemove(valueFrom));
-            _position++;
-            
+            pushLog(new ListRemove(removeValue));
             return this;
         }
         
-        public function swap(valueFrom:*, valueTo:*):ListTransaction
+        public function swap(fromIndexValue:*, toIndexValue:*):ListTransaction
         {
-            _history.push(new ListSwap(valueFrom).setToData(valueTo));
-            _position++;
-            
+            pushLog(new ListSwap(fromIndexValue, toIndexValue));
             return this;
         }
         
-        public function move(valueFrom:*, valueTo:*):ListTransaction
+        public function move(fromIndexValue:*, toIndexValue:*):ListTransaction
         {
-            _history.push(new ListMove(valueFrom).setToData(valueTo));
-            _position++;
-            
+            pushLog(new ListMove(fromIndexValue, toIndexValue));
             return this;
         }
         
@@ -142,7 +134,7 @@ package jp.coremind.storage.transaction
             
             var filtered:Dictionary = new Dictionary(true);
             
-            //sort & filter order
+            //filter(include sort) order
             var filterOrder:Vector.<int> = new <int>[];
             
             var i:int, data:*;

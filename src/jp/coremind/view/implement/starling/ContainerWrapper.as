@@ -8,7 +8,7 @@ package jp.coremind.view.implement.starling
     
     public class ContainerWrapper extends Container
     {
-        public static const NAME_SUFFIX:String = "Wrapper";
+        public static const NAME_SUFFIX:String = "W";
         protected var _wrappedContainer:IContainer;
         
         public function ContainerWrapper(layoutCalculator:Layout, backgroundBuilder:IBackgroundBuilder=null)

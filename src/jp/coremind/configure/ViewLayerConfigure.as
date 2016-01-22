@@ -1,5 +1,6 @@
 package jp.coremind.configure
 {
+    import jp.coremind.core.Application;
     import jp.coremind.core.Layer;
     import jp.coremind.utility.Log;
 

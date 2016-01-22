@@ -33,14 +33,14 @@ package jp.coremind.utility
         {
             CAL::DEBUG
             {
-                _OUTPUT("INFO    :"+INDENT+_join(rest));
+                _OUTPUT("　INFO    :"+INDENT+_join(rest));
             }
         }
         public static function debug(...rest):void
         {
             CAL::DEBUG
             {
-                _OUTPUT("DEBUG   :"+INDENT+_join(rest));
+                _OUTPUT("　DEBUG   :"+INDENT+_join(rest));
             }
         }
         
@@ -48,7 +48,7 @@ package jp.coremind.utility
         {
             CAL::DEBUG
             {
-                _OUTPUT("WARNING :"+INDENT+_join(rest));
+                _OUTPUT("□WARNING :"+INDENT+_join(rest));
             }
         }
         
@@ -61,7 +61,7 @@ package jp.coremind.utility
                 .join(LINE_BREAK)
                 .replace("Error", "StackTrace");
             
-            _OUTPUT("ERROR   :"+INDENT+_join(rest)+LINE_BREAK+_stackTrace);
+            _OUTPUT("■ERROR   :"+INDENT+_join(rest)+LINE_BREAK+_stackTrace);
         }
         
         /**

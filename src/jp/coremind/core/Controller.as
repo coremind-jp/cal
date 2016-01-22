@@ -113,44 +113,30 @@ package jp.coremind.core
         
         /**
          * fの引数は次の通り
-         * f(storageValue:*, moduls:ModulList):void
+         * f(e:IElement):void
          */
         protected function each(func:Function, layerId:String, viewId:String, path:String):void
         {
-            var info:ElementInfo;
-            var view:IView = starlingRoot.getLayerProcessor(layerId).getView(viewId);
+            var  view:IView = starlingRoot.getLayerProcessor(layerId).getView(viewId);
+            if (!view) return;
             
-            var element:IElement = view.getElement(path, true);
+            var  element:IElement = view.getElement(path, true);
             if (!element) return;
             
-            var eachTarget:* = element.elementInfo.reader.read();
-            if ($.isArray(eachTarget))
+            var list:Array = element.elementInfo.reader.read() as Array;
+            if (list)
             {
-                var list:Array = eachTarget;
+                view.allocateElementCache();
+                
                 for (var i:int = 0, len:int = list.length; i < len; i++) 
                 {
                     var listElement:IElement = view.getElement(path+"."+i, true);
-                    if (listElement && func(
-                        listElement.elementInfo.reader.read(),
-                        listElement.elementInfo.modules,
-                        listElement.elementInfo)
-                    ) break;
+                    if (listElement && func(listElement)) break;
                 }
+                
+                view.freeElementCache();
             }
-            else
-            if ($.isHash(eachTarget))
-            {
-                var hash:Object = eachTarget;
-                for (var p:String in hash) 
-                {
-                    var hashElement:IElement = view.getElement(path+"."+p, true);
-                    if (hashElement && func(
-                        hashElement.elementInfo.reader.read(),
-                        hashElement.elementInfo.modules,
-                        hashElement.elementInfo)
-                    ) break;
-                }
-            }
+            else func(element);
         }
     }
 }

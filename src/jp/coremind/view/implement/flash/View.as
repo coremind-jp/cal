@@ -4,8 +4,12 @@ package jp.coremind.view.implement.flash
     import jp.coremind.utility.Log;
     import jp.coremind.utility.process.Routine;
     import jp.coremind.utility.process.Thread;
+    import jp.coremind.view.abstract.IDisplayObject;
+    import jp.coremind.view.abstract.IDisplayObjectContainer;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.abstract.IView;
+    
+    import org.hamcrest.object.nullValue;
     
     public class View extends CalSprite implements IView
     {
@@ -55,21 +59,69 @@ package jp.coremind.view.implement.flash
             }
         }
         
+        private var _temporary:Object;
+        public function allocateElementCache():void
+        {
+            _temporary = {};
+        }
+        public function freeElementCache():void
+        {
+            _temporary = $.hash.free(_temporary);
+        }
+        
         public function getElement(path:String, ignoreError:Boolean = false):IElement
         {
             var pathList:Array = path.split(".");
-            var child:IElement;
             
-            for (var i:int, len:int = pathList.length; i < len; i++)
+            return _temporary ?
+                _getElementForCache(pathList, ignoreError):
+                _getElement(pathList, ignoreError);
+        }
+        
+        private function _getElement(pathList:Array, ignoreError:Boolean = false):IElement
+        {
+            var result:IElement = findChild(this, pathList[0]) as IElement;
+            
+            for (var i:int = 1, len:int = pathList.length; i < len && result; i++)
+                result = findChild(result, pathList[i]) as IElement;
+            
+            if (!result)
+                ignoreError ?
+                    1://Log.custom(TAG, "element not found. path:", path, " suspendPosition:", pathList[i-1], " view:", name):
+                    Log.error("element not found. path:", pathList.join("."), " suspendPosition:", pathList[i-1], " view:", name);
+            
+            return result;
+        }
+        
+        private function _getElementForCache(pathList:Array, ignoreError:Boolean = false):IElement
+        {
+            var latestParentPathList:Array = pathList.slice();
+            latestParentPathList.pop();
+            
+            var result:IElement;
+            var latestParentPath:String = latestParentPathList.join(".");
+            if (latestParentPath in _temporary)
             {
-                child = getDisplayByName(pathList[i]) as IElement;
-                if (!child)
-                    ignoreError ?
-                        Log.warning("element not found. path:", path, " suspendPosition:", pathList[i-1], " view:", name):
-                        Log.error("element not found. path:", path, " suspendPosition:", pathList[i-1], " view:", name);
+                Log.info("use Cache", latestParentPath);
+                result = _temporary[latestParentPath];
+            }
+            else
+            {
+                //親が見つかったならキャッシュしておく
+                result = _getElement(latestParentPathList, ignoreError);
+                if (result) _temporary[latestParentPath] = result;
             }
             
-            return child;
+            //最後に子を取得して返す
+            if (result && pathList.length > 1)
+                result = findChild(result, pathList[pathList.length - 1]) as IElement;
+            
+            return result;
+        }
+        
+        private function findChild(parent:IDisplayObjectContainer, name:String):IDisplayObject
+        {
+            return null;
         }
         
         public function focusInPreProcess(r:Routine, t:Thread):void

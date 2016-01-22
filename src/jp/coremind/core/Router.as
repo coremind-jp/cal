@@ -27,7 +27,7 @@ package jp.coremind.core
             else
             {
                 _LISTENER_LIST[key] = new Executor(controllerClass, method, staticParams);
-                Log.custom(TAG, "success defined Executor.", key, "=>", controllerClass, "::", method);
+                Log.custom(TAG, "success defined Routing.", key, "=>", controllerClass, "::", method);
             }
         }
         

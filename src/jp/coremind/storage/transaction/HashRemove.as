@@ -1,23 +1,25 @@
 package jp.coremind.storage.transaction
 {
-    public class HashRemove extends TransactionLog implements ITransactionLog
+    public class HashRemove implements ITransactionLog
     {
+        private var _removeValue:*;
+        
         /**
-         * fromData(String型のみ)をキーとするデータを取り除く。
+         * removeValueパラメータと同一参照のデータを取り除く。
          */
-        public function HashRemove(fromData:*)
+        public function HashRemove(removeValue:*)
         {
-            super(fromData);
+            _removeValue = removeValue;
         }
         
         public function apply(diff:Diff):void
         {
             var hash:Object = diff.transactionResult as Object;
             
-            if (fromData in hash)
+            if (_removeValue in hash)
             {
-                delete hash[fromData];
-                diff.hashInfo.edited.push(fromData);
+                delete hash[_removeValue];
+                diff.hashInfo.edited.push(_removeValue);
             }
         }
     }

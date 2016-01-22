@@ -6,9 +6,12 @@ package jp.coremind.core
     import jp.coremind.event.ElementInfo;
     import jp.coremind.module.ModuleList;
     import jp.coremind.module.ScrollModule;
+    import jp.coremind.module.StatusGroup;
+    import jp.coremind.module.StatusModule;
     import jp.coremind.utility.Delay;
     import jp.coremind.utility.Log;
     import jp.coremind.utility.data.NumberTracker;
+    import jp.coremind.utility.data.Status;
     import jp.coremind.view.abstract.ICalSprite;
     import jp.coremind.view.abstract.IContainer;
     import jp.coremind.view.abstract.IElement;
@@ -27,10 +30,19 @@ package jp.coremind.core
         }
         
         private var
+            _running:Boolean,
+            _dragDelay:Delay,
             _initialHitArea:Rectangle,
             _latestHitArea:Rectangle,
+            _latestPointer:Point,
             _currentConfigureId:int;
         
+        public function DragAndDropController()
+        {
+            _latestPointer = new Point();
+            _dragDelay = new Delay();
+        }
+            
         private function get configure():DragAndDropConfigure
         {
             return _CONFIGURE_LIST[_currentConfigureId];
@@ -38,26 +50,44 @@ package jp.coremind.core
         
         public function beginDrag(info:ElementInfo, confId:int):void
         {
-            var dragElement:IElement = info.path.fetchElement(starlingRoot);
-            if (dragElement && 0 <= confId && confId < _CONFIGURE_LIST.length)
+            //ドラッグ結果によってリアルタイムに表示オブジェクトを消したり戻したりた際に
+            //ドラッグ中のオブジェクトが再びこのメソッドを呼ぶ場合があるので稼動中の場合はキャンセルさせる.
+            if (_running) return;
+            
+            var  dragElement:IElement = info.path.fetchElement(starlingRoot);
+            if (!dragElement || confId < 0 && _CONFIGURE_LIST.length <= confId)
+                return;
+            
+            if (dragElement is ContainerWrapper)
             {
-                _currentConfigureId = confId;
+                Log.warning("ContainerWrapper(SuperClass) not Supported Drag.");
+                return;
+            }
+            
+            _currentConfigureId = confId;
+            if (Controller.exec(configure.controllerClass, "dragFiltering", [info]))
+            {
+                //呼び出された時点でのポインター位置を記憶
+                var before:Point = Application.pointer.clone();
                 
-                if (dragElement is ContainerWrapper)
-                    Log.warning("ContainerWrapper(SuperClass) not Supported Drag.");
-                else
-                if (Controller.exec(configure.controllerClass, "dragFiltering", [info]))
+                _dragDelay.exec(function():void
                 {
-                    var before:Point = Application.pointer.clone();
-                    new Delay().start(configure.dragDelay, function():void
-                    {
-                        var executeRange:Number = 2 * Starling.contentScaleFactor;
-                        var size:Point = Application.pointer.subtract(before);
-                        
-                        if (Math.abs(size.x) < executeRange || Math.abs(size.y) < executeRange)
-                            _beginDrag(dragElement);
-                    });
-                }
+                    //遅延実行時、ポインターデバイスの状態が変わっていないか
+                    var  status:StatusModule = info.modules.getModule(StatusModule) as StatusModule;
+                    if (!status.equalGroup(StatusGroup.PRESS) || !status.equal(Status.DOWN))
+                        return;
+                    
+                    _latestPointer.setTo(Application.pointerX, Application.pointerY);
+                    //遅延実行時、ポインターデバイスの移動量が閾値内か
+                    var executeRange:Number = Starling.contentScaleFactor;
+                    var size:Point = _latestPointer.subtract(before);
+                    if (Math.abs(size.x) < executeRange && Math.abs(size.y) < executeRange)
+                        _beginDrag(dragElement);
+                    
+                //ドラッグオブジェクトの親がScrollModuleをもっている場合、この処理開始時にそのモジュールを停止させるが
+                //delayが0で完全同期的に実行されるとをロックした後にスクロール開始判定が入ってしまい、
+                //初回のドラッグ時にスクロールも発生してしまう。これを回避するため例え0でも1ms加算させてドラッグ開始を遅らせる.
+                }, configure.dragDelay + 1);
             }
         }
         
@@ -65,115 +95,132 @@ package jp.coremind.core
         private static const _TMP_RECT:Rectangle = new Rectangle();
         private function _beginDrag(from:IElement):void
         {
-            //ドラッグしたオブジェクトの座標, サイズ情報を_latestHitAreaオブジェクトに与える為に一度ヒットテストを行っておく.
-            _hitTestByElement(from, true);
-            _initialHitArea = _latestHitArea.clone();
-            
-            //closure
-            var onDrag:Function = function(x:NumberTracker, y:NumberTracker):void
-            {
-                clonedElement.x = globalInitialPosition.x + x.totalDelta;
-                clonedElement.y = globalInitialPosition.y + y.totalDelta;
-                Controller.exec(klass, "onDrag", [x, y]);
-                
-                //同期処理中の場合は以降の処理をしない
-                if (Application.sync.isRunning())
-                    return;
-                
-                if (_latestHitArea.isEmpty())
-                {
-                    //ロールオーバーチェック(ヒットテストに成功すると_latestHitAreaの内容が書き換わる(emptyではなくなる))
-                    var  hitTestResult:ElementInfo = _eachHitTest();
-                    if (!hitTestResult) return;
-                    
-                    //ロールオーバー処理
-                    rolloverDelay.start(configure.rolloverDelay, function():void
-                    {
-                        if (_latestHitArea.containsPoint(Application.pointer))
-                        {
-                            if (configure.invisibleWhenRollover)
-                                clonedElement.visible = false;
-                            
-                            params[1] = hitTestResult;
-                            params[3] = _initialHitArea.containsPoint(Application.pointer);
-                            Controller.exec(klass, "onRollover", params);
-                        }
-                    });
-                    return;
-                }
-                
-                //ロールアウトチェック(最後にヒットテストに成功したオブジェクトとの当たり判定がある場合)
-                if (_latestHitArea.containsPoint(Application.pointer))
-                {
-                    if (configure.absorbWhenRollover)
-                    {
-                        clonedElement.x = _latestHitArea.x;
-                        clonedElement.y = _latestHitArea.y;
-                    }
-                    return;
-                }
-                //ここを抜けたらロールアウト処理
-                
-                //ロールオーバーの遅延実行待ちならキャンセル
-                if (rolloverDelay.running)
-                    rolloverDelay.stop();
-                
-                //初回ロールアウト処理
-                if (params[1] !== null)
-                {
-                    params[3] = false;
-                    Controller.exec(klass, "onRollout", params);
-                    params[1] = null;
-                    
-                    if (configure.invisibleWhenRollover)
-                        clonedElement.visible = true;
-                }
-                
-                //ヒットテスト初期化
-                _latestHitArea.setEmpty();
-            };
-            
-            var onDrop:Function = function(x:NumberTracker, y:NumberTracker):void
-            {
-                if (Application.sync.isRunning())
-                    Application.sync.pushQue(function():void { onDrop(x, y); });
-                else
-                {
-                    Controller.exec(klass, "onDrop", params);
-                    clonedElement.destroy(true);
-                    
-                    if (mod) mod.ignorePointerDevice(false);
-                }
-            };
+            _running = true;
             
             //ドラッグ対象の親がScrollModuleを保持している場合停止させる.
             var parent:IElement  = from.parentDisplay as IElement;
+            var mod:ScrollModule;
             if (parent)
             {
-                var mod:ScrollModule = parent.elementInfo.modules.isUndefined(ScrollModule) ?
+                parent.elementInfo.path.fetchView(starlingRoot).allocateElementCache();
+                
+                mod = parent.elementInfo.modules.isUndefined(ScrollModule) ?
                     null:
                     parent.elementInfo.modules.getModule(ScrollModule) as ScrollModule;
                 
                 if (mod) mod.ignorePointerDevice(true);
             }
             
+            //duplicate drag object
             var clonedElement:IElement = from.clone();
             var globalInitialPosition:Point = from.toGlobalPoint(new Point());
             clonedElement.x = globalInitialPosition.x;
             clonedElement.y = globalInitialPosition.y;
-            
-            
-            //closure variable
-            var klass:Class         = configure.controllerClass;
-            var params:Array        = [from.elementInfo, from.elementInfo, clonedElement.elementInfo, false];
-            var rolloverDelay:Delay = new Delay();
-            
+            clonedElement.alpha = .5;
             
             var layerRoot:ICalSprite   = Starling.current.stage.getChildAt(0) as ICalSprite;
             var systemLayer:ICalSprite = layerRoot.getDisplayByName(Layer.SYSTEM) as ICalSprite;
             systemLayer.addDisplay(clonedElement);
             
-            from.toLocalPoint(Application.pointer, _TMP_POINT);
+            
+            //closure variable
+            var klass:Class          = configure.controllerClass;
+            var params:Array         = [from.elementInfo, from.elementInfo, clonedElement.elementInfo, true];
+            var rolloverDelay:Delay  = new Delay();
+            
+            //closure
+            var onDrag:Function = function(x:NumberTracker, y:NumberTracker):void
+            {
+                _latestPointer.setTo(Application.pointerX, Application.pointerY);
+                var contains:Boolean = _latestHitArea.containsPoint(_latestPointer);
+                
+                updateDragElementPosition(x, y, contains);
+                
+                Controller.exec(klass, "onDrag", [x, y]);
+                
+                if (_latestHitArea.isEmpty())
+                {
+                    if (!rolloverDelay.running)
+                         rolloverDelay.exec(tryRollover, configure.rolloverDelay, x, y);
+                }
+                else
+                if (!contains)
+                {
+                    if (rolloverDelay.running)
+                        rolloverDelay.cancel();
+                    
+                    rollout(x, y);
+                    
+                    _latestHitArea.setEmpty();
+                }
+            };
+            
+            var updateDragElementPosition:Function = function(x:NumberTracker, y:NumberTracker, contains:Boolean):void
+            {
+                if (contains && configure.absorbWhenRollover)
+                {
+                    clonedElement.x = _latestHitArea.x;
+                    clonedElement.y = _latestHitArea.y;
+                }
+                else
+                {
+                    clonedElement.x = globalInitialPosition.x + x.totalDelta;
+                    clonedElement.y = globalInitialPosition.y + y.totalDelta;
+                }
+            };
+            
+            var tryRollover:Function = function(x:NumberTracker, y:NumberTracker):void
+            {
+                //(ヒットテストに成功すると_latestHitAreaの内容が書き換わる(emptyではなくなる))
+                var  hitTestResult:ElementInfo = _eachHitTest();
+                if (!hitTestResult)
+                    return;
+                
+                if (configure.invisibleWhenRollover)
+                    clonedElement.visible = false;
+                
+                params[1] = hitTestResult;
+                params[3] = _latestHitArea.equals(_initialHitArea);
+                Controller.exec(klass, "onRollover", params);
+            };
+            
+            var rollout:Function = function(x:NumberTracker, y:NumberTracker):Boolean
+            {
+                if (configure.invisibleWhenRollover)
+                    clonedElement.visible = true;
+                
+                params[3] = false;
+                Controller.exec(klass, "onRollout", params);
+                params[1] = null;
+            };
+            
+            var onDrop:Function = function(x:NumberTracker, y:NumberTracker):void
+            {
+                _latestPointer.setTo(Application.pointerX, Application.pointerY);
+                var containsLatestPoint:Boolean = _latestHitArea.containsPoint(_latestPointer);
+                
+                //ドロップ時は遅延実行待ちにならば即座に結果を割り出す
+                if (rolloverDelay.running)
+                {
+                    rolloverDelay.cancel();
+                    tryRollover(x, y);
+                }
+                
+                Controller.exec(klass, "onDrop", params);
+                
+                //後片付け
+                clonedElement.destroy(true);
+                parent.elementInfo.path.fetchView(starlingRoot).freeElementCache();
+                if (mod) mod.ignorePointerDevice(false);
+                _running = false;
+            };
+            
+            //ドラッグしたオブジェクトの座標, サイズ情報を_latestHitAreaオブジェクトに与える為に一度ヒットテストを行っておく.
+            _hitTestByElement(from, true);
+            _initialHitArea = _latestHitArea.clone();
+            
+            //drag initialize
+            from.toLocalPoint(_latestPointer, _TMP_POINT);
             _TMP_RECT.setTo(_TMP_POINT.x, _TMP_POINT.y, from.elementWidth, from.elementHeight);
             
             var dragger:Drag = new Drag(0);
@@ -213,13 +260,9 @@ package jp.coremind.core
         {
             var result:ElementInfo = null;
             
-            each(function(value:*, model:ModuleList, info:ElementInfo):Boolean
+            each(function(e:IElement):Boolean
             {
-                var e:IElement = info.path.fetchElement(starlingRoot);
-                
-                if (e && _hitTestByElement(e))
-                    result = info;
-                
+                if (e && _hitTestByElement(e)) result = e.elementInfo;
                 return Boolean(result);
             }, dropArea.layerId, dropArea.viewId, dropArea.elementId);
             
@@ -238,7 +281,7 @@ package jp.coremind.core
             e.toGlobalPoint(_ZERO, _TMP_POINT);
             c ? _TMP_RECT.setTo(_TMP_POINT.x, _TMP_POINT.y, c.maxWidth, c.maxHeight):
                 _TMP_RECT.setTo(_TMP_POINT.x, _TMP_POINT.y, e.elementWidth, e.elementHeight);
-            if (_TMP_RECT.containsPoint(Application.pointer))
+            if (_TMP_RECT.containsPoint(_latestPointer))
             {
                 _latestHitArea = _TMP_RECT.clone();
                 return true;

@@ -2,28 +2,29 @@ package jp.coremind.storage.transaction
 {
     import jp.coremind.utility.Log;
 
-    public class ListRemove extends TransactionLog implements ITransactionLog
+    public class ListRemove implements ITransactionLog
     {
+        private var _removeValue:*;
+        
         /**
-         * 配列を走査しfromDataと同一参照だったインデックスを配列から取り除く.
-         * 配列に同一参照が見つからない場合、何もしない。
+         * removeValueパラメータと同一参照のデータのインデックス位置のデータを取り除く。同一参照が存在しない場合、何もしない.
          */
-        public function ListRemove(fromData:*)
+        public function ListRemove(removeValue:*)
         {
-            super(fromData);
+            _removeValue = removeValue;
         }
         
         public function apply(diff:Diff):void
         {
             var list:Array = diff.transactionResult as Array;
-            var fromIndex:int = list.indexOf(fromData);
+            var removeIndex:int = list.indexOf(_removeValue);
             
-            if (fromIndex > -1)
+            if (removeIndex > -1)
             {
-                list.splice(fromIndex, 1);
-                diff.listInfo.removed[fromData] = fromIndex;
+                list.splice(removeIndex, 1);
+                diff.listInfo.removed[_removeValue] = removeIndex;
             }
-            else Log.warning("[Transaction::ListRemove] undefined value", fromData);
+            else Log.warning("[Transaction::ListRemove] undefined value", _removeValue);
         }
     }
 }

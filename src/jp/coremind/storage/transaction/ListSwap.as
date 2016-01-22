@@ -2,23 +2,28 @@ package jp.coremind.storage.transaction
 {
     import jp.coremind.utility.Log;
 
-    public class ListSwap extends TransactionLog implements ITransactionLog
+    public class ListSwap implements ITransactionLog
     {
+        private var
+            _fromIndexValue:*,
+            _toIndexValue:*;
+        
         /**
-         *　toData(setToDataメソッドの呼び出し)必須.
-         * 配列のfromData, toDataのインデックスを入れ替える.
-         * fromData, toDataどちらかの参照が見つからない場合、何もしない。
+         * toIndexValueパラメータと同一参照のデータのインデックス位置と
+         * fromIndexValueパラメータと同一参照のデータのインデックス位置を入れ替える.
+         * どちらかの参照が存在しない場合、何もしない。
          */
-        public function ListSwap(fromData:*)
+        public function ListSwap(fromIndexValue:*, toIndexValue:*)
         {
-            super(fromData);
+            _fromIndexValue = fromIndexValue;
+            _toIndexValue = toIndexValue;
         }
         
         public function apply(diff:Diff):void
         {
             var list:Array = diff.transactionResult as Array;
-            var fromIndex:int = list.indexOf(fromData);
-            var   toIndex:int = list.indexOf(toData);
+            var fromIndex:int = list.indexOf(_fromIndexValue);
+            var   toIndex:int = list.indexOf(_toIndexValue);
             
             if (fromIndex > -1 && toIndex > -1)
             {
@@ -28,8 +33,8 @@ package jp.coremind.storage.transaction
             }
             else
             {
-                if (fromIndex == -1) Log.warning("[Transaction::ListSwap] undefined value(from)", fromData);
-                if (  toIndex == -1) Log.warning("[Transaction::ListSwap] undefined value(to)", toData);
+                if (fromIndex == -1) Log.warning("[Transaction::ListSwap] undefined value(from)", _fromIndexValue);
+                if (  toIndex == -1) Log.warning("[Transaction::ListSwap] undefined value(to)", _toIndexValue);
             }
         }
     }

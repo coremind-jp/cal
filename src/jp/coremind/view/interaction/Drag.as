@@ -4,7 +4,6 @@ package jp.coremind.view.interaction
     import flash.geom.Rectangle;
     
     import jp.coremind.core.Application;
-    import jp.coremind.utility.Log;
     import jp.coremind.utility.data.NumberTracker;
     
     import starling.core.Starling;
@@ -17,7 +16,7 @@ package jp.coremind.view.interaction
     {
         protected var
             _ignorePointerDevice:Boolean,
-            _draging:Boolean,
+            _running:Boolean,
             _adsorbThreshold:Number,
             _dragListener:Function,
             _dropListener:Function,
@@ -30,21 +29,26 @@ package jp.coremind.view.interaction
         public function Drag(adsorbThreshold:Number = 10)
         {
             _ignorePointerDevice = false;
-            _draging = false;
+            _running = false;
             _adsorbThreshold = Math.abs(adsorbThreshold * Starling.contentScaleFactor);
+        }
+        
+        public function get running():Boolean
+        {
+            return _running;
         }
         
         public function ignorePointerDevice(boolean:Boolean):void
         {
             _ignorePointerDevice = ignorePointerDevice;
-            if (_ignorePointerDevice && _draging) _onUp();
+            if (_ignorePointerDevice && _running) _onUp();
         }
         
         public function destory():void
         {
             Application.stage.removeEventListener(MouseEvent.MOUSE_UP, _onUp);
             
-            _draging = false;
+            _running = false;
             _dragListener = _dropListener = null;
             _trackX = _trackY = null;
         }
@@ -63,9 +67,9 @@ package jp.coremind.view.interaction
          */
         public function initialize(offset:Rectangle, dragArea:Rectangle, dragListener:Function, dropListener:Function = null):void
         {
-            if (_draging) return;
+            if (_running) return;
             
-            _draging = true;
+            _running = true;
             _dragListener = dragListener;
             _dropListener = dropListener;
             
@@ -133,7 +137,7 @@ package jp.coremind.view.interaction
          */
         private function _update(x:Number, y:Number):Boolean
         {
-            if (!_draging) return true;
+            if (!_running) return true;
             
             var w:int = Application.configure.appViewPort.width;
             var h:int = Application.configure.appViewPort.height;

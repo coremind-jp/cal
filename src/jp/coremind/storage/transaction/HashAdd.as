@@ -2,27 +2,31 @@ package jp.coremind.storage.transaction
 {
     import jp.coremind.utility.Log;
 
-    public class HashAdd extends TransactionLog implements ITransactionLog
+    public class HashAdd implements ITransactionLog
     {
+        private var
+            _value:*,
+            _key:*;
+        
         /**
-         * toData(String型のみ)をキーとしてfromDataを追加する。
-         * 既にtoDataがキーとして存在する場合、何もしない。
+         * keyパラメータをキーにvalueパラメータを追加する。既にキーが存在する場合、何もしない.
          */
-        public function HashAdd(fromData:*)
+        public function HashAdd(value:*, key:String)
         {
-            super(fromData);
+            _value = value;
+            _key = key;
         }
         
         public function apply(diff:Diff):void
         {
             var hash:Object = diff.transactionResult as Object;
             
-            if (toData in hash)
-                Log.warning("[Transaction::HashAdd] already defined key", toData);
+            if (_key in hash)
+                Log.warning("[Transaction::HashAdd] already defined key", _key);
             else
             {
-                hash[toData] = fromData;
-                diff.hashInfo.edited.push(toData);
+                hash[_key] = _value;
+                diff.hashInfo.edited.push(_value);
             }
         }
     }

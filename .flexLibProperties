@@ -51,7 +51,6 @@
     <classEntry path="jp.coremind.module.StatusModule"/>
     <classEntry path="jp.coremind.module.UpdateRule"/>
     <classEntry path="jp.coremind.storage.transaction.Diff"/>
-    <classEntry path="jp.coremind.storage.transaction.TransactionLog"/>
     <classEntry path="jp.coremind.network.RequestConfigure"/>
     <classEntry path="jp.coremind.network.ResponseContainer"/>
     <classEntry path="jp.coremind.resource.ContentParser"/>
@@ -225,6 +224,7 @@
     <classEntry path="jp.coremind.storage.transaction.DiffHashInfo"/>
     <classEntry path="jp.coremind.utility.Delay"/>
     <classEntry path="jp.coremind.core.DragAndDropConfigure"/>
+    <classEntry path="jp.coremind.core.IdGenerator"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

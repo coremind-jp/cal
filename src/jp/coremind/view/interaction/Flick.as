@@ -36,7 +36,7 @@ package jp.coremind.view.interaction
         
         override public function initialize(offset:Rectangle, dragArea:Rectangle, dragListener:Function, dropListener:Function = null):void
         {
-            if (_draging)
+            if (_running)
                 return;
             
             _flickX.terminate();
@@ -58,7 +58,7 @@ package jp.coremind.view.interaction
             Application.stage.removeEventListener(MouseEvent.MOUSE_UP, _onUp);
             
             //terminate drag loop.
-            _draging = false;
+            _running = false;
             
             if (_dropListener is Function)
                 _dropListener(_trackX, _trackY);

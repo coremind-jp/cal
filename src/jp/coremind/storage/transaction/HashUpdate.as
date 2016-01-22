@@ -2,27 +2,31 @@ package jp.coremind.storage.transaction
 {
     import jp.coremind.utility.Log;
 
-    public class HashUpdate extends TransactionLog implements ITransactionLog
+    public class HashUpdate implements ITransactionLog
     {
+        private var
+            _value:*,
+            _key:*;
+        
         /**
-         * toData(String型のみ)をキーとする値をfromDataへ書き換える。
-         * toDataがキーとして存在しない場合、何もしない。
+         * keyパラメータキーに紐づいているデータをvalueパラメータに更新する。キーが存在しない場合、何もしない.
          */
-        public function HashUpdate(fromData:*)
+        public function HashUpdate(value:*, key:*)
         {
-            super(fromData);
+            _value = value;
+            _key = key;
         }
         
         public function apply(diff:Diff):void
         {
             var hash:Object = diff.transactionResult as Object;
             
-            if (toData in hash)
+            if (_key in hash)
             {
-                hash[toData] = fromData;
-                diff.hashInfo.edited.push(toData);
+                hash[_key] = _value;
+                diff.hashInfo.edited.push(_key);
             }
-            else Log.warning("[Transaction::HashUpdate] undefined key", toData);
+            else Log.warning("[Transaction::HashUpdate] undefined key", _key);
         }
     }
 }

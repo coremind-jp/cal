@@ -43,6 +43,7 @@ package jp.coremind.core
         
         public static const sync:SyncProcess   = new SyncProcess();
         public static const async:AsyncProcess = new AsyncProcess();
+        public static const idGen:IdGenerator  = new IdGenerator();
         
         public static function initialize(deployTarget:DisplayObjectContainer, configure:IApplicationConfigure, callback:Function = null):void
         {

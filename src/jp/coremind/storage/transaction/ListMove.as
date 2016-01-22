@@ -2,34 +2,38 @@ package jp.coremind.storage.transaction
 {
     import jp.coremind.utility.Log;
 
-    public class ListMove extends TransactionLog implements ITransactionLog
+    public class ListMove implements ITransactionLog
     {
+        private var
+            _fromIndexValue:*,
+            _toIndexValue:*;
+        
         /**
-         *　toData(setToDataメソッドの呼び出し)必須.
-         * 配列のfromDataをtoDataのインデックスへ移動する.
-         * fromData, toDataどちらかの参照が見つからない場合、何もしない。
+         * toIndexValueパラメータと同一参照のデータのインデックス位置にfromIndexValueパラメータを移動する.
+         * どちらかの参照が存在しない場合、何もしない。
          */
-        public function ListMove(fromData:*)
+        public function ListMove(fromIndexValue:*, toIndexValue:*)
         {
-            super(fromData);
+            _fromIndexValue = fromIndexValue;
+            _toIndexValue = toIndexValue;
         }
         
         public function apply(diff:Diff):void
         {
             var list:Array = diff.transactionResult as Array;
-            var fromIndex:int = list.indexOf(fromData);
-            var   toIndex:int = list.indexOf(toData);
+            var fromIndex:int = list.indexOf(_fromIndexValue);
+            var   toIndex:int = list.indexOf(_toIndexValue);
             
             if (fromIndex > -1 && toIndex > -1)
             {
-                Log.info("[Transaction::ListMove]", fromData, "(", fromIndex, ") =>", toData, "(", toIndex, ")");
+                Log.info("[Transaction::ListMove]", _fromIndexValue, "(", fromIndex, ") =>", _toIndexValue, "(", toIndex, ")");
                 list.splice(fromIndex, 1);
-                list.splice(toIndex, 0, fromData);
+                list.splice(toIndex, 0, _fromIndexValue);
             }
             else
             {
-                if (fromIndex == -1) Log.warning("[Transaction::ListMove] undefined value(from)", fromData);
-                if (  toIndex == -1) Log.warning("[Transaction::ListMove] undefined value(to)", toData);
+                if (fromIndex == -1) Log.warning("[Transaction::ListMove] undefined value(from)", _fromIndexValue);
+                if (  toIndex == -1) Log.warning("[Transaction::ListMove] undefined value(to)", _toIndexValue);
             }
         }
     }

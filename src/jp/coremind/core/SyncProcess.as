@@ -59,14 +59,12 @@ package jp.coremind.core
                     if (callback is Function)
                         callback(res);
                     
-                    Log.custom(TAG, "finished\n [Id] '"+processId+"'", "\n [now runnuns]", _numRunning);
+                    Log.custom(TAG, "finished\n [Id] '"+processId+"'", "\n [now runnuns]", _numRunning-1);
                     
                     if (--_numRunning == 0)
                     {
                         if (starlingRoot) starlingRoot.enablePointerDevice();
                         if (flashRoot)    flashRoot.enablePointerDevice();
-                        
-                        $.loop.juggler.setTimeout(1, _doQueCallback);
                     }
                 });
             }
@@ -82,17 +80,6 @@ package jp.coremind.core
         public function isRunning():Boolean
         {
             return _numRunning > 0;
-        }
-        
-        public function pushQue(f:Function):void
-        {
-            isRunning() ? _que.push(f): f();
-        }
-        
-        private function _doQueCallback():void
-        {
-            try { while (_que.length > 0) _que.shift()(); }
-            catch (e:Error) { Log.error("SyncProcess Que Callback Error message:", e.message); }
         }
     }
 }

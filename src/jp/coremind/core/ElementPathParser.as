@@ -1,6 +1,7 @@
 package jp.coremind.core
 {
     import jp.coremind.view.abstract.IElement;
+    import jp.coremind.view.abstract.IView;
 
     public class ElementPathParser
     {
@@ -43,6 +44,13 @@ package jp.coremind.core
                 .getElement(_elementId, true);
         }
         
+        public function fetchView(accessor:IStageAccessor):IView
+        {
+            return accessor
+                .getLayerProcessor(_layerId)
+                .getView(_viewId);
+        }
+        
         public function createRouterKey(statusGroup:String, statusValue:String):String
         {
             return [_layerId, _viewId, _elementId, statusGroup, statusValue].join("/");
@@ -65,7 +73,7 @@ package jp.coremind.core
         
         public function toString():String
         {
-            return [_layerId, _viewId, _elementId].join("/");
+            return _layerId+"/"+_viewId+"/"+_elementId;
         }
     }
 }

@@ -9,33 +9,26 @@ package jp.coremind.storage.transaction
         
         public function add(value:*, key:String):HashTransaction
         {
-            _history.push(new HashAdd(value).setToData(key));
-            _position++;
-            
+            pushLog(new HashAdd(value, key));
             return this;
         }
         
         public function remove(key:String):HashTransaction
         {
-            _history.push(new HashRemove(key));
-            _position++;
-            
+            pushLog(new HashRemove(key));
             return this;
         }
         
         public function update(value:*, key:*):HashTransaction
         {
-            _history.push(new HashUpdate(value).setToData(key));
-            _position++;
-            
+            pushLog(new HashUpdate(value, key));
             return this;
         }
         
         override public function apply(origin:*):Diff
         {
             var clonedHash:Object = $.clone(origin);
-            var info:DiffHashInfo = new DiffHashInfo();
-            var diff:Diff = new Diff(clonedHash, null, info);
+            var diff:Diff = new Diff(clonedHash, null, new DiffHashInfo());
             
             for (var i:int = 0; i < _position; i++)
                 _history[i].apply(diff);

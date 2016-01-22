@@ -5,6 +5,8 @@ package jp.coremind.utility.helper
 
     public class HashHelper
     {
+        public static const TAG:String = "[HashHelper]";
+        
         /**
          * 引数pathを元に引数oのハッシュ配列から安全に値を取得する.
          * ハッシュ配列oをルートとしてpが示すパスを辿る過程でパスが存在しない場合undefinedを返す.
@@ -14,25 +16,43 @@ package jp.coremind.utility.helper
          */
         public function read(o:Object, path:String, warningLog:Boolean = true):*
         {
-            return _read(o, path.split("."), warningLog);
-        }
-        
-        private function _read(o:Object, hierarchy:Array, warningLog:Boolean):*
-        {
-            if (!$.isHash(o))
+            var i:int, len:int, key:String;
+            var hierarchy:Array = path.split(".");
+            
+            if (warningLog)
             {
-                if (warningLog) Log.warning("arguments is not HashObject. (HashHelper::read)", hierarchy);
-                return undefined;
+                for (i = 0, len = hierarchy.length; i < len; i++) 
+                {
+                    if (!$.isHash(o))
+                    {
+                        Log.warning(TAG, "read failed. arguments is not HashObject.", hierarchy);
+                        return undefined;
+                    }
+                    
+                    key = hierarchy[i];
+                    
+                    if (!(key in o))
+                    {
+                        Log.warning(TAG, "read failed. undefined property ["+key+"].", hierarchy);
+                        return undefined;
+                    }
+                    
+                    o = o[key];
+                }
+            }
+            else
+            {
+                for (i = 0, len = hierarchy.length; i < len; i++) 
+                {
+                    key = hierarchy[i];
+                    
+                    if (!$.isHash(o) || !(key in o)) return undefined;
+                    
+                    o = o[key];
+                }
             }
             
-            var _key:String = hierarchy.shift();
-            if (!(_key in o))
-            {
-                if (warningLog) Log.warning("undefined property ["+_key+"]. (HashHelper::read)", hierarchy);
-                return undefined;
-            }
-            
-            return hierarchy.length > 0 ? _read(o[_key], hierarchy, warningLog): o[_key];
+            return o;
         }
         
         public function keyClone(o:Object):Object
@@ -47,67 +67,54 @@ package jp.coremind.utility.helper
         
         public function del(o:Object, path:String):void
         {
-            var _hierarchy:Array = path.split(".");
-            var _key:String;
-            
-            if (!$.isHash(o))
-                return;
-            
-            while (_hierarchy.length > 0)
+            var hierarchy:Array = path.split(".");
+            for (var i:int = 0, len:int = hierarchy.length - 1; i < len; i++) 
             {
-                _key = _hierarchy.shift();
-                if (_key in o)
+                if (!$.isHash(o))
                 {
-                    if ($.isHash(o[_key]) && _hierarchy.length > 0)
-                        o = o[_key];
-                    else
-                    {
-                        o[_key] = null;
-                        delete o[_key];
-                    }
+                    Log.warning(TAG, "delete failed. arguments is not HashObject.", hierarchy);
+                    return;
                 }
-                else return;
+                
+                var key:String = hierarchy[i];
+                if (key in o) o = o[key]; else return;
             }
+            
+            if (o) delete o[hierarchy[i]];
         }
         
         public function write(o:Object, path:String, value:*):void
         {
-            _write(o, path.split("."), value);
-        }
-        
-        private function _write(o:Object, hierarchy:Array, value:*):void
-        {
-            var _key:String;
-            var _val:*;
-            
-            if (!$.isHash(o))
+            var hierarchy:Array = path.split(".");
+            for (var i:int = 0, len:int = hierarchy.length - 1; i < len; i++) 
             {
-                Log.warning("o is not HashObject. (HashHelper::write)", hierarchy, o);
-                return;
+                if (!$.isHash(o))
+                {
+                    Log.warning(TAG, "write failed. arguments is not HashObject.", hierarchy);
+                    return;
+                }
+                
+                var key:String = hierarchy[i];
+                o = key in o ? o[key]: o[key] = {};
             }
             
-            _key = hierarchy.shift();
-            if (_key in o)
-                hierarchy.length > 0 ? _write(o[_key], hierarchy, value):
-                    Log.error("already defined property ["+_key+"]. (HashHelper::write)", hierarchy);
-            else
-                hierarchy.length > 0 ? _write(o[_key] = {}, hierarchy, value): o[_key] = value;
+            hierarchy[i] in o ?
+                Log.error(TAG, "write failed. already defined property. ["+hierarchy[i]+"].", hierarchy):
+                o[hierarchy[i]] = value;
         }
         
         public function isDefined(o:Object, path:String):Boolean
         {
-            var _hierarchy:Array = path.split(".");
-            var _key:String;
-            
-            while (_hierarchy.length > 0)
+            var hierarchy:Array = path.split(".");
+            for (var i:int = 0, len:int = hierarchy.length - 1; i < len; i++) 
             {
-                _key = _hierarchy.shift();
+                if (!$.isHash(o)) return false;
                 
-                if (_key in o) o = o[_key];
-                else return false;
+                var key:String = hierarchy[i];
+                if (key in o) o = o[key] else return false;
             }
             
-            return true;
+            return hierarchy[i] in o;
         }
         
         public function update(paste:Object, copy:Object):void
