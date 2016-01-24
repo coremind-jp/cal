@@ -5,7 +5,7 @@ package jp.coremind.view.implement.starling
     import jp.coremind.module.StatusGroup;
     import jp.coremind.module.StatusModule;
     import jp.coremind.utility.data.Status;
-    import jp.coremind.view.builder.IBackgroundBuilder;
+    import jp.coremind.view.builder.parts.IBackgroundBuilder;
     import jp.coremind.view.layout.Layout;
     
     import starling.events.Touch;
@@ -38,36 +38,14 @@ package jp.coremind.view.implement.starling
             return StatusModelType.INTERACTIVE_ELEMENT;
         }
         
-        override public function initialize(actualParentWidth:int, actualParentHeight:int, storageId:String = null, storageInteractionId:String = null, runInteractionOnCreated:Boolean = false):void
-        {
-            super.initialize(actualParentWidth, actualParentHeight, storageId, storageInteractionId);
-            
-            enablePointerDeviceControl();
-        }
-        
-        override protected function _initializeStatus():void
-        {
-            super._initializeStatus();
-            
-            _info.modules.getModule(StatusModule).update(StatusGroup.LOCK, null);
-        }
-        
-        public function get button():Boolean
-        {
-            return _button;
-        }
-        
+        public function get button():Boolean { return _button; }
         public function set button(v:Boolean):void
         {
             _button = v;
             if (v && touchable) useHandCursor = true;
         }
         
-        public function get touchHandling():Boolean
-        {
-            return _touchHandling;
-        }
-        
+        public function get touchHandling():Boolean { return _touchHandling; }
         public function set touchHandling(v:Boolean):void
         {
             _touchHandling = v;
@@ -87,8 +65,21 @@ package jp.coremind.view.implement.starling
             removeEventListener(TouchEvent.TOUCH, _onTouch);
         }
         
+        override protected function _initializeStatus():void
+        {
+            super._initializeStatus();
+            
+            _info.modules.getModule(StatusModule).update(StatusGroup.LOCK, null);
+        }
+        
+        override public function ready():void
+        {
+            super.ready();
+            enablePointerDeviceControl();
+        }
+        
         /**
-         * フレームワークから発生するタッチイベントのハンドリングを行う.
+         * starlingから発生するタッチイベントのハンドリングを行う.
          */
         protected function _onTouch(e:TouchEvent):void
         {

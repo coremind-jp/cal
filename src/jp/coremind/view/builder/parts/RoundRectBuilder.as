@@ -1,10 +1,12 @@
-package jp.coremind.view.builder
+package jp.coremind.view.builder.parts
 {
     import jp.coremind.asset.Grid9ImageAsset;
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IBox;
     import jp.coremind.view.abstract.component.Grid9;
     import jp.coremind.view.layout.Layout;
+    import jp.coremind.view.builder.DisplayObjectBuilder;
+    import jp.coremind.view.builder.IDisplayObjectBuilder;
     
     public class RoundRectBuilder extends DisplayObjectBuilder implements IDisplayObjectBuilder
     {

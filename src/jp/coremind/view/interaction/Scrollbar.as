@@ -1,17 +1,18 @@
-package jp.coremind.view.abstract.component
+package jp.coremind.view.interaction
 {
     import jp.coremind.utility.data.Progress;
+    import jp.coremind.view.abstract.component.Grid3;
     
     import starling.animation.Transitions;
     import starling.animation.Tween;
     import starling.core.Starling;
     
-    public class Slider
+    public class Scrollbar
     {
         private var
-            _grid:Grid3,
             _fadeIn:Tween,
             _fadeOut:Tween,
+            _grid:Grid3,
             _percentage:Number,
             _size:Number,
             _position:Number,
@@ -24,7 +25,7 @@ package jp.coremind.view.abstract.component
          * @param   size        スライダーの稼動範囲
          * @param   position    スライド方向の初期座標
          */
-        public function Slider(grid3:Grid3, size:Number, position:Number)
+        public function Scrollbar(grid3:Grid3, size:Number, position:Number)
         {
             _grid     = grid3;
             _size     = size;

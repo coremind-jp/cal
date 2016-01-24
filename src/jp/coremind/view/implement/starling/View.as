@@ -130,10 +130,7 @@ package jp.coremind.view.implement.starling
         private function findChild(parent:IDisplayObjectContainer, name:String):IDisplayObject
         {
             var result:IDisplayObject = parent.getDisplayByName(name);
-            if (result) return result;
-            
-            var wrapper:IDisplayObject = parent.getDisplayByName(name+ContainerWrapper.NAME_SUFFIX);
-            return wrapper ? (wrapper as IDisplayObjectContainer).getDisplayByName(name): null;
+            return result ? result: null;
         }
         
         public function focusInPreProcess(r:Routine, t:Thread):void

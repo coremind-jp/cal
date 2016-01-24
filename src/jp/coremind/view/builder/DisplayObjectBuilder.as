@@ -20,7 +20,6 @@ package jp.coremind.view.builder
             return null;
         }
         
-        //i want like a chain method call.
         public function touchable(boolean:Boolean = true):IDisplayObjectBuilder
         {
             _enabledPointerDevice = boolean;

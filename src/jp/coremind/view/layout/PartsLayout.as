@@ -61,10 +61,10 @@ package jp.coremind.view.layout
             var actual:String  = getQualifiedClassName(_element);
             var bluePrintKey:* = _PLAIN_ELEMENT_CLASS.indexOf(actual) == -1 ? $.getClassByInstance(_element): _element.name;
             
-            _buildParts(bluePrintKey);
-            
             if (_element is IContainer)
                 _buildElementParts(bluePrintKey);
+            
+            _buildParts(bluePrintKey);
         }
         
         private function _buildParts(bluePrintKey:*):void

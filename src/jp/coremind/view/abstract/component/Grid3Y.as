@@ -9,6 +9,13 @@ package jp.coremind.view.abstract.component
      */
     public class Grid3Y extends Grid3 implements IStretchBar
     {
+        private static const TEMP:Grid3Y = new Grid3Y();
+        public static function updateSize(grid3:GridAsset, size:Number):void
+        {
+            TEMP.setAsset(grid3).size = size;
+            TEMP.destroy();
+        }
+        
         public function Grid3Y(line:int = GridAsset.GRID3_LINE)
         {
             if (line === GridAsset.GRID3_LINE)

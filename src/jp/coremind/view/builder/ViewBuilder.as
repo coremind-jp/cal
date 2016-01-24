@@ -5,6 +5,7 @@ package jp.coremind.view.builder
     import jp.coremind.view.abstract.IDisplayObject;
     import jp.coremind.view.abstract.IStretchBox;
     import jp.coremind.view.abstract.IView;
+    import jp.coremind.view.builder.parts.BackgroundBuilder;
 
     public class ViewBuilder
     {

@@ -1,9 +1,11 @@
-package jp.coremind.view.builder
+package jp.coremind.view.builder.parts
 {
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IBox;
     import jp.coremind.view.implement.starling.buildin.TextField;
     import jp.coremind.view.layout.Layout;
+    import jp.coremind.view.builder.DisplayObjectBuilder;
+    import jp.coremind.view.builder.IDisplayObjectBuilder;
     
     public class TextFieldBuilder extends DisplayObjectBuilder implements IDisplayObjectBuilder
     {

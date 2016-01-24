@@ -1,16 +1,17 @@
-package jp.coremind.view.builder
+package jp.coremind.view.builder.list
 {
     import flash.utils.Dictionary;
     
     import jp.coremind.configure.IElementBluePrint;
     import jp.coremind.core.Application;
-    import jp.coremind.storage.transaction.Diff;
     import jp.coremind.storage.IModelStorageListener;
     import jp.coremind.storage.ModelReader;
+    import jp.coremind.storage.transaction.Diff;
     import jp.coremind.utility.IRecycle;
     import jp.coremind.utility.InstancePool;
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IElement;
+    import jp.coremind.view.builder.element.ElementBuilder;
     
     /**
      * ListConatinerクラスインスタンスの子インスタンスを生成を制御するクラス.

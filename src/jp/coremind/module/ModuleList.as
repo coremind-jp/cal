@@ -58,9 +58,9 @@ package jp.coremind.module
             for (var p:Class in _list) Log.info(p, _list[p]);
         }
         
-        public function addModule(instance:IModule):void
+        public function addModule(instance:IModule):IModule
         {
-            _list[$.getClassByInstance(instance)] = instance;
+            return _list[$.getClassByInstance(instance)] = instance;
         }
         
         public function removeModule(module:Class):void

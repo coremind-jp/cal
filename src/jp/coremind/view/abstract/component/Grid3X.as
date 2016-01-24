@@ -1,5 +1,6 @@
 package jp.coremind.view.abstract.component
 {
+    import jp.coremind.asset.Grid3ImageAsset;
     import jp.coremind.asset.GridAsset;
     import jp.coremind.view.abstract.IStretchBar;
     import jp.coremind.view.layout.Direction;
@@ -9,6 +10,13 @@ package jp.coremind.view.abstract.component
      */
     public class Grid3X extends Grid3 implements IStretchBar
     {
+        private static const TEMP:Grid3X = new Grid3X();
+        public static function updateSize(grid3:GridAsset, size:Number):void
+        {
+            TEMP.setAsset(grid3).size = size;
+            TEMP.destroy();
+        }
+        
         public function Grid3X(line:int = GridAsset.GRID3_LINE)
         {
             if (line === GridAsset.GRID3_LINE)
@@ -48,7 +56,7 @@ package jp.coremind.view.abstract.component
             _body.width = bodySize;
             
             _tail.x = _headSize + bodySize;
-            _size         = _tail.x + _tailSize;
+            _size   = _tail.x + _tailSize;
         }
         
         override public function get position():Number

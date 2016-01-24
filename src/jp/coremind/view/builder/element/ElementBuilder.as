@@ -1,4 +1,4 @@
-package jp.coremind.view.builder
+package jp.coremind.view.builder.element
 {
     import jp.coremind.storage.ModelStorage;
     import jp.coremind.utility.Log;
@@ -6,6 +6,9 @@ package jp.coremind.view.builder
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.implement.starling.Element;
     import jp.coremind.view.layout.Layout;
+    import jp.coremind.view.builder.DisplayObjectBuilder;
+    import jp.coremind.view.builder.parts.IBackgroundBuilder;
+    import jp.coremind.view.builder.IDisplayObjectBuilder;
 
     public class ElementBuilder extends DisplayObjectBuilder implements IDisplayObjectBuilder
     {

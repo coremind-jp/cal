@@ -2,7 +2,7 @@ package jp.coremind.view.interaction
 {
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IElement;
-    import jp.coremind.view.builder.BitmapFont;
+    import jp.coremind.view.builder.parts.BitmapFont;
     
     import starling.display.Sprite;
 

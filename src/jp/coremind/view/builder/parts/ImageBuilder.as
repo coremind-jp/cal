@@ -1,4 +1,4 @@
-package jp.coremind.view.builder
+package jp.coremind.view.builder.parts
 {
     import jp.coremind.asset.Asset;
     import jp.coremind.asset.painter.ColorPainter;
@@ -8,6 +8,8 @@ package jp.coremind.view.builder
     import jp.coremind.view.layout.Layout;
     
     import starling.textures.Texture;
+    import jp.coremind.view.builder.DisplayObjectBuilder;
+    import jp.coremind.view.builder.IDisplayObjectBuilder;
     
     public class ImageBuilder extends DisplayObjectBuilder implements IDisplayObjectBuilder
     {

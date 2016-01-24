@@ -5,7 +5,7 @@ package jp.coremind.view.implement.starling.component
     import jp.coremind.module.StatusGroup;
     import jp.coremind.module.StatusModule;
     import jp.coremind.utility.data.Status;
-    import jp.coremind.view.builder.IBackgroundBuilder;
+    import jp.coremind.view.builder.parts.IBackgroundBuilder;
     import jp.coremind.view.implement.starling.MouseElement;
     import jp.coremind.view.layout.Layout;
     

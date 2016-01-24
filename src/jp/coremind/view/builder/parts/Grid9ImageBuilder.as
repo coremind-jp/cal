@@ -1,4 +1,4 @@
-package jp.coremind.view.builder
+package jp.coremind.view.builder.parts
 {
     import jp.coremind.asset.Grid9ImageAsset;
     import jp.coremind.utility.Log;
@@ -7,8 +7,9 @@ package jp.coremind.view.builder
     import jp.coremind.view.layout.Layout;
     
     import starling.textures.Texture;
+    import jp.coremind.view.builder.DisplayObjectBuilder;
     
-    public class Grid9ImageBuilder extends DisplayObjectBuilder implements IDisplayObjectBuilder
+    public class Grid9ImageBuilder extends DisplayObjectBuilder
     {
         private var
             _tl:Texture, _t :Texture, _tr:Texture,

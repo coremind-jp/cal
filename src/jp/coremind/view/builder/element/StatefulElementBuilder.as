@@ -1,4 +1,4 @@
-package jp.coremind.view.builder
+package jp.coremind.view.builder.element
 {
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IBox;

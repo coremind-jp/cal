@@ -4,9 +4,9 @@ package jp.coremind.view.implement.starling.component
     import flash.utils.Dictionary;
     
     import jp.coremind.core.Application;
-    import jp.coremind.event.ElementEvent;
     import jp.coremind.event.ElementInfo;
     import jp.coremind.module.ScrollModule;
+    import jp.coremind.module.ScrollbarModule;
     import jp.coremind.storage.transaction.Diff;
     import jp.coremind.storage.transaction.DiffListInfo;
     import jp.coremind.utility.Log;
@@ -15,11 +15,13 @@ package jp.coremind.view.implement.starling.component
     import jp.coremind.utility.process.Routine;
     import jp.coremind.utility.process.Thread;
     import jp.coremind.view.abstract.IElement;
-    import jp.coremind.view.builder.IBackgroundBuilder;
+    import jp.coremind.view.builder.parts.IBackgroundBuilder;
     import jp.coremind.view.implement.starling.Container;
     import jp.coremind.view.layout.IListLayout;
     import jp.coremind.view.layout.Layout;
     import jp.coremind.view.layout.LayoutSimulation;
+    
+    import starling.events.TouchEvent;
     
     public class ListContainer extends Container
     {
@@ -29,6 +31,7 @@ package jp.coremind.view.implement.starling.component
         private static const PREVIEW_PROCESS:String = "ListContainer::Preview";
         
         private var
+            _scrollbar:ScrollbarModule,
             _listLayout:IListLayout,
             _simulation:LayoutSimulation;
         
@@ -57,34 +60,32 @@ package jp.coremind.view.implement.starling.component
             super.destroy(withReference);
         }
         
-        override protected function _initializeElementSize(actualParentWidth:Number, actualParentHeight:Number):void
+        override protected function _refreshLayout():void
         {
-            Log.custom(TAG, "initializeElementSize", actualParentWidth, actualParentHeight);
-            
-            _maxWidth  = _layout.width.calc(actualParentWidth);
-            _maxHeight = _layout.height.calc(actualParentHeight);
-            
-            x = _layout.horizontalAlign.calc(actualParentWidth, _maxWidth);
-            y = _layout.verticalAlign.calc(actualParentHeight, _maxHeight);
+            super._refreshLayout();
             
             _simulation.setDrawableArea(_maxWidth, _maxHeight);
-            
-            _refreshLayout(_maxWidth, _maxHeight);
         }
         
-        override public function updateElementSize(elementWidth:Number, elementHeight:Number):void
+        override protected function _updateElementSize():void
         {
-            if (_elementWidth != elementWidth || _elementHeight != elementHeight)
+            (_info.modules.getModule(ScrollModule) as ScrollModule).refreshContentSize();
+            
+            if (_scrollbar)
             {
-                _elementWidth  = elementWidth;
-                _elementHeight = elementHeight;
-                
-                _refreshLayout(_elementWidth, _elementHeight);
-                
-                (_info.modules.getModule(ScrollModule) as ScrollModule).refreshContentSize();
-                
-                dispatchEventWith(ElementEvent.UPDATE_SIZE);
+                _scrollbar.updateWidth(_elementWidth, _maxWidth);
+                _scrollbar.updateHeight(_elementHeight, _maxHeight);
             }
+        }
+        
+        override public function ready():void
+        {
+            super.ready();
+            
+            var r:Rectangle = _listLayout.calcTotalRect(_maxWidth, _maxHeight, _reader.read().length);
+            updateElementSize(r.width, r.height);
+            updatePosition(x, y);
+            enablePointerDeviceControl();
         }
         
         override protected function _onLoadElementInfo():void
@@ -96,26 +97,32 @@ package jp.coremind.view.implement.starling.component
             var list:Array = _reader.read();
             for (var i:int = 0, len:int = list.length; i < len; i++) 
                 _simulation.addChild(list[i], _listLayout.calcElementRect(_maxWidth, _maxHeight, i).clone());
-            
-            var r:Rectangle = _listLayout.calcTotalRect(_maxWidth, _maxHeight, len);
-            updateElementSize(r.width, r.height);
-            updatePosition(x, y);
         }
         
         override protected function _initializeModules():void
         {
             super._initializeModules();
             
-            if (_info.modules.isUndefined(ScrollModule))
-                _info.modules.addModule(new ScrollModule(this));
+            var scroll:ScrollModule = _info.modules.isUndefined(ScrollModule) ?
+                _info.modules.addModule(new ScrollModule(this)) as ScrollModule:
+                _info.modules.getModule(ScrollModule) as ScrollModule;
             
-            (_info.modules.getModule(ScrollModule) as ScrollModule).setScrollVolume(
+            scroll.setScrollVolume(
                 _listLayout.getScrollSizeX(_maxWidth),
                 _listLayout.getScrollSizeY(_maxHeight));
+            
+            var p:IElement = parent as IElement;
+            if (p && !p.elementInfo.modules.isUndefined(ScrollbarModule))
+            {
+                _scrollbar = p.elementInfo.modules.getModule(ScrollbarModule) as ScrollbarModule;
+                scroll.addListener(_scrollbar.update);
+            }
         }
         
         override public function updatePosition(x:Number, y:Number):void
         {
+            super.updatePosition(x, y);
+            
             var visibleClosure:Function = function(data:*, to:Rectangle, from:Rectangle):void
             {
                 var e:IElement = _listLayout.requestElement(to.width, to.height, data);
@@ -130,9 +137,7 @@ package jp.coremind.view.implement.starling.component
                 _listLayout.requestRecycle(data);
             };
             
-            super.updatePosition(x, y);
-            
-            _updateSimulation(x, y);
+            _simulation.updateContainerPosition(x, y);
             _simulation.eachVisible(visibleClosure);
             _simulation.eachInvisible(invisibleClosure);
         }
@@ -165,7 +170,7 @@ package jp.coremind.view.implement.starling.component
             
             _updateChildrenPosition(diff);
             
-            _updateSimulation(x, y);
+            _simulation.updateContainerPosition(x, y);
             
             _refreshElementOrder(diff, moveThread, addThread, pId);
             
@@ -297,11 +302,10 @@ package jp.coremind.view.implement.starling.component
                     "removeRestore", info.removeRestored && data in info.removeRestored,
                     from, "=>", to, e.elementInfo, data);
                 */
-                //このエレメントはロールバックによる削除のやり直しやフィルタリング解除で追加されたか？
                 info.filterRestored && data in info.filterRestored ||
                 info.removeRestored && data in info.removeRestored ?
-                    addThread.pushRoutine(tweenRoutine, [addDisplay(e), to.x, to.y])://そうであれば、移動なしに表示させる
-                    addThread.pushRoutine(tweenRoutine, [addDisplay(e), from.x, from.y, to.x, to.y]);//そうでなければ、並び替え前の位置から移動してきたように見せる
+                    addThread.pushRoutine(tweenRoutine, [addDisplay(e), to.x, to.y]):
+                    addThread.pushRoutine(tweenRoutine, [addDisplay(e), from.x, from.y, to.x, to.y]);
             };
             
             var visibleClosure:Function = function(data:*, index:int, to:Rectangle, from:Rectangle):void
@@ -340,11 +344,20 @@ package jp.coremind.view.implement.starling.component
             };
         }
         
-        private function _updateSimulation(x:Number, y:Number):Boolean
+        //このクラスインスタンスのTouchハンドラは開始だけ取得できれば良いので既存の実装を継承させない.
+        override public function enablePointerDeviceControl():void
         {
-            return parent is ScrollContainer ?
-                _simulation.updateContainerPosition(x, y):
-                _simulation.updateContainerPosition(0, 0);
+            touchable = true;
+            addEventListener(TouchEvent.TOUCH, _onTouch);
+        }
+        override public function disablePointerDeviceControl():void
+        {
+            touchable = false;
+            removeEventListener(TouchEvent.TOUCH, _onTouch);
+        }
+        override protected function began():void
+        {
+            (_info.modules.getModule(ScrollModule) as ScrollModule).beginPointerDeviceListening();
         }
     }
 }

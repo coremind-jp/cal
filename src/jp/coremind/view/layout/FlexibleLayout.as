@@ -9,7 +9,7 @@ package jp.coremind.view.layout
     import jp.coremind.utility.process.Routine;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.builder.IDisplayObjectBuilder;
-    import jp.coremind.view.builder.ListElementFactory;
+    import jp.coremind.view.builder.list.ListElementFactory;
 
     public class FlexibleLayout implements IListLayout
     {

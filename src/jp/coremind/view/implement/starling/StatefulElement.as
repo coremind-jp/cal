@@ -3,7 +3,7 @@ package jp.coremind.view.implement.starling
     import jp.coremind.core.Application;
     import jp.coremind.core.StatusModelType;
     import jp.coremind.module.StatusModule;
-    import jp.coremind.view.builder.IBackgroundBuilder;
+    import jp.coremind.view.builder.parts.IBackgroundBuilder;
     import jp.coremind.view.interaction.StatefulElementInteraction;
     import jp.coremind.view.layout.Layout;
     

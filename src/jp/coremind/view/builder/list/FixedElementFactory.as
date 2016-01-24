@@ -1,7 +1,8 @@
-package jp.coremind.view.builder
+package jp.coremind.view.builder.list
 {
     import jp.coremind.configure.IElementBluePrint;
     import jp.coremind.core.Application;
+    import jp.coremind.view.builder.element.ElementBuilder;
     
     /**
      * ListContainerで生成する子表示オブジェクトがリスト内で単一の場合に利用するクラス.

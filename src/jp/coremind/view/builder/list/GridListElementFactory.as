@@ -1,4 +1,4 @@
-package jp.coremind.view.builder
+package jp.coremind.view.builder.list
 {
     import jp.coremind.storage.transaction.Diff;
     import jp.coremind.storage.ModelReader;

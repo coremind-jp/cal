@@ -1,4 +1,4 @@
-package jp.coremind.view.builder
+package jp.coremind.view.builder.parts
 {
     import jp.coremind.asset.Asset;
     import jp.coremind.utility.Log;

@@ -9,7 +9,7 @@ package jp.coremind.view.layout
     import jp.coremind.utility.Log;
     import jp.coremind.utility.process.Routine;
     import jp.coremind.view.abstract.IElement;
-    import jp.coremind.view.builder.GridListElementFactory;
+    import jp.coremind.view.builder.list.GridListElementFactory;
     
     public class GridLayout implements IListLayout, IModelStorageListener
     {

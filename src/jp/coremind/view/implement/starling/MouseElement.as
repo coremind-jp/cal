@@ -6,7 +6,7 @@ package jp.coremind.view.implement.starling
     import jp.coremind.module.StatusModule;
     import jp.coremind.utility.Log;
     import jp.coremind.utility.data.Status;
-    import jp.coremind.view.builder.IBackgroundBuilder;
+    import jp.coremind.view.builder.parts.IBackgroundBuilder;
     import jp.coremind.view.layout.Layout;
     
     import starling.events.TouchEvent;

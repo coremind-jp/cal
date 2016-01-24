@@ -129,24 +129,22 @@
     <classEntry path="jp.coremind.view.abstract.component.Grid3Y"/>
     <classEntry path="jp.coremind.view.abstract.component.Grid9"/>
     <classEntry path="jp.coremind.view.abstract.component.RoundRectBackground"/>
-    <classEntry path="jp.coremind.view.abstract.component.Slider"/>
-    <classEntry path="jp.coremind.view.builder.BackgroundBuilder"/>
-    <classEntry path="jp.coremind.view.builder.BitmapFont"/>
-    <classEntry path="jp.coremind.view.builder.BitmapTextFieldBuilder"/>
-    <classEntry path="jp.coremind.view.builder.ContainerBuilder"/>
+    <classEntry path="jp.coremind.view.interaction.Scrollbar"/>
+    <classEntry path="jp.coremind.view.builder.parts.BackgroundBuilder"/>
+    <classEntry path="jp.coremind.view.builder.parts.BitmapFont"/>
+    <classEntry path="jp.coremind.view.builder.parts.BitmapTextFieldBuilder"/>
     <classEntry path="jp.coremind.view.builder.DisplayObjectBuilder"/>
-    <classEntry path="jp.coremind.view.builder.ElementBuilder"/>
-    <classEntry path="jp.coremind.view.builder.FixedElementFactory"/>
-    <classEntry path="jp.coremind.view.builder.Grid9ImageBuilder"/>
-    <classEntry path="jp.coremind.view.builder.GridListElementFactory"/>
-    <classEntry path="jp.coremind.view.builder.IBackgroundBuilder"/>
+    <classEntry path="jp.coremind.view.builder.element.ElementBuilder"/>
+    <classEntry path="jp.coremind.view.builder.list.FixedElementFactory"/>
+    <classEntry path="jp.coremind.view.builder.parts.Grid9ImageBuilder"/>
+    <classEntry path="jp.coremind.view.builder.list.GridListElementFactory"/>
+    <classEntry path="jp.coremind.view.builder.parts.IBackgroundBuilder"/>
     <classEntry path="jp.coremind.view.builder.IDisplayObjectBuilder"/>
-    <classEntry path="jp.coremind.view.builder.ImageBuilder"/>
-    <classEntry path="jp.coremind.view.builder.ListElementFactory"/>
-    <classEntry path="jp.coremind.view.builder.RoundRectBuilder"/>
-    <classEntry path="jp.coremind.view.builder.ScrollOption"/>
-    <classEntry path="jp.coremind.view.builder.StatefulElementBuilder"/>
-    <classEntry path="jp.coremind.view.builder.TextFieldBuilder"/>
+    <classEntry path="jp.coremind.view.builder.parts.ImageBuilder"/>
+    <classEntry path="jp.coremind.view.builder.list.ListElementFactory"/>
+    <classEntry path="jp.coremind.view.builder.parts.RoundRectBuilder"/>
+    <classEntry path="jp.coremind.view.builder.element.StatefulElementBuilder"/>
+    <classEntry path="jp.coremind.view.builder.parts.TextFieldBuilder"/>
     <classEntry path="jp.coremind.view.builder.ViewBuilder"/>
     <classEntry path="jp.coremind.view.implement.flash.CalSprite"/>
     <classEntry path="jp.coremind.view.implement.flash.View"/>
@@ -200,7 +198,6 @@
     <classEntry path="jp.coremind.event.ElementInfo"/>
     <classEntry path="jp.coremind.view.interaction.StorageInteraction"/>
     <classEntry path="jp.coremind.module.ScrollModule"/>
-    <classEntry path="jp.coremind.view.implement.starling.ContainerWrapper"/>
     <classEntry path="jp.coremind.utility.Repeater"/>
     <classEntry path="jp.coremind.module.ScrollType"/>
     <classEntry path="jp.coremind.utility.process.JugglerLoop"/>
@@ -225,6 +222,11 @@
     <classEntry path="jp.coremind.utility.Delay"/>
     <classEntry path="jp.coremind.core.DragAndDropConfigure"/>
     <classEntry path="jp.coremind.core.IdGenerator"/>
+    <classEntry path="jp.coremind.view.implement.starling.ProgressElement"/>
+    <classEntry path="jp.coremind.module.ScrollbarModule"/>
+    <classEntry path="jp.coremind.view.builder.parts.Grid3ColorPainterBuilder"/>
+    <classEntry path="jp.coremind.view.builder.parts.Grid3TextureBuilder"/>
+    <classEntry path="jp.coremind.view.builder.element.ListContainerBuilder"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

@@ -24,12 +24,12 @@ package jp.coremind.core
          * @param   clonedInfo  ドラッグ対象の複製(ドラッグに使われる)ElementのElementInfo
          * @param   isInitialDropArea   ドラッグ開始時にドラッグ対象が配置されていた領域かを示す値を返す.
          */
-        function onDragBegin(dragInfo:ElementInfo, overlapInfo:ElementInfo, clonedInfo:ElementInfo, isInitialDropArea:Boolean):void;
+        function onDrag(dragInfo:ElementInfo, overlapInfo:ElementInfo, clonedInfo:ElementInfo, isInitialDropArea:Boolean):void;
         
         /**
          * ドロップ時に都度呼び出される.
          */
-        function onDrag(x:NumberTracker, y:NumberTracker):void;
+        function onMove(x:NumberTracker, y:NumberTracker):void;
         
         /**
          * ドラッグ中にドロップ可能領域に接触した際に呼ばれる.

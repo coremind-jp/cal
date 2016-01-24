@@ -4,7 +4,7 @@ package jp.coremind.view.abstract.component
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.ICalSprite;
     import jp.coremind.view.abstract.IStretchBox;
-    import jp.coremind.view.builder.IBackgroundBuilder;
+    import jp.coremind.view.builder.parts.IBackgroundBuilder;
 
     public class RoundRectBackground implements IBackgroundBuilder
     {

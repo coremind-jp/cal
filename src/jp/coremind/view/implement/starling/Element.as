@@ -3,9 +3,9 @@ package jp.coremind.view.implement.starling
     import jp.coremind.core.Application;
     import jp.coremind.event.ElementEvent;
     import jp.coremind.event.ElementInfo;
-    import jp.coremind.storage.transaction.Diff;
     import jp.coremind.storage.IModelStorageListener;
     import jp.coremind.storage.ModelReader;
+    import jp.coremind.storage.transaction.Diff;
     import jp.coremind.utility.IRecycle;
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.ICalSprite;
@@ -13,7 +13,7 @@ package jp.coremind.view.implement.starling
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.abstract.IStretchBox;
     import jp.coremind.view.abstract.IView;
-    import jp.coremind.view.builder.IBackgroundBuilder;
+    import jp.coremind.view.builder.parts.IBackgroundBuilder;
     import jp.coremind.view.builder.IDisplayObjectBuilder;
     import jp.coremind.view.implement.starling.component.ListContainer;
     import jp.coremind.view.interaction.StorageInteraction;
@@ -84,6 +84,7 @@ package jp.coremind.view.implement.starling
         
         public function reset():void
         {
+            Log.custom(TAG, "reset", name);
             if (_reader)
             {
                 _partsLayout.reset();
@@ -124,7 +125,7 @@ package jp.coremind.view.implement.starling
                 _applyStorageInteraction(diff.hashInfo.edited);
         }
         
-        private function _applyStorageInteraction(updatedKeyList:Vector.<String>):void
+        protected function _applyStorageInteraction(updatedKeyList:Vector.<String>):void
         {
             if (_storageInteractionId)
             {
@@ -137,15 +138,25 @@ package jp.coremind.view.implement.starling
         {
             _info = new ElementInfo(storageId);
             _storageInteractionId = storageInteractionId;
-            _initializeElementSize(actualParentWidth, actualParentHeight);
             
+            _initializeElementSize(actualParentWidth, actualParentHeight);
+            _refreshBackground();
+            
+            _initializeChildren();
+            
+            var self:IModelStorageListener = this;
             var onAddedToStage:Function = function(e:Event):void
             {
                 if (e) removeListener(Event.ADDED_TO_STAGE, arguments.callee);
                 
                 changeIdSuffix(name);
                 
+                _reader = _info.reader;
+                _reader.addListener(self, ModelReader.LISTENER_PRIORITY_ELEMENT);
+                
                 _onLoadElementInfo();
+                
+                _initializeModules();
                 
                 if (runInteractionOnCreated)
                     _applyStorageInteraction(_reader.createKeyList());
@@ -163,16 +174,19 @@ package jp.coremind.view.implement.starling
             
             x = _layout.horizontalAlign.calc(actualParentWidth, _elementWidth);
             y = _layout.verticalAlign.calc(actualParentHeight, _elementHeight);
-            /*
-            Log.custom(TAG,
-                "actualSize:", actualParentWidth, actualParentHeight,
-                "elementSize:", _elementWidth, _elementHeight,
-                "position:", x, y);
-            */
-            if (!_partsLayout.isBuilded())
-                _partsLayout.buildParts();
+        }
+        
+        protected function _refreshBackground():void
+        {
+            if (!_background) return;
             
-            _refreshLayout(_elementWidth, _elementHeight);
+            _background.width  = _elementWidth;
+            _background.height = _elementHeight;
+        }
+        
+        protected function _initializeChildren():void
+        {
+            _partsLayout.isBuilded() ? _partsLayout.refresh(): _partsLayout.buildParts();
         }
         
         public function changeIdSuffix(idSuffix:String):void
@@ -194,8 +208,7 @@ package jp.coremind.view.implement.starling
                 }
                 else
                 {
-                    //ContainerWrapperは暗黙レイヤーなのでパスとして含まない
-                    if (!(p is ContainerWrapper)) elementId = p.name + "." + elementId;
+                    elementId = p.name + "." + elementId;
                     p = p.parentDisplay as ICalSprite;
                 }
             }
@@ -205,15 +218,15 @@ package jp.coremind.view.implement.starling
         
         protected function _onLoadElementInfo():void
         {
-            _reader = _info.reader;
-            _reader.addListener(this, ModelReader.LISTENER_PRIORITY_ELEMENT);
-            
-            _initializeModules();
         }
         
         protected function _initializeModules():void
         {
-            _info.modules;
+        }
+        
+        public function ready():void
+        {
+            dispatchEventWith(ElementEvent.READY);
         }
         
         public function updateElementSize(elementWidth:Number, elementHeight:Number):void
@@ -223,27 +236,17 @@ package jp.coremind.view.implement.starling
                 _elementWidth  = elementWidth;
                 _elementHeight = elementHeight;
                 
-                _refreshLayout(_elementWidth, _elementHeight);
+                _refreshLayout();
                 
                 dispatchEventWith(ElementEvent.UPDATE_SIZE);
             }
         }
         
-        protected function _refreshLayout(containerWidth:Number, containerHeight:Number):void
+        protected function _refreshLayout():void
         {
-            _partsLayout.refresh();
+            _refreshBackground();
             
-            if (_background)
-            {
-                _background.width  = containerWidth;
-                _background.height = containerHeight;
-            }
-        }
-        
-        public function ready():void
-        {
-            dispatchEventWith(ElementEvent.READY);
-            //Log.custom(TAG, "ready", "\nname:", name, "\nelementId:", elementId, "\nstorageId:", _reader.id, "\ncontroller:", controller);
+            _partsLayout.refresh();
         }
     }
 }

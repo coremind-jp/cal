@@ -4,18 +4,15 @@ package jp.coremind.core
     import flash.geom.Rectangle;
     
     import jp.coremind.event.ElementInfo;
-    import jp.coremind.module.ModuleList;
     import jp.coremind.module.ScrollModule;
     import jp.coremind.module.StatusGroup;
     import jp.coremind.module.StatusModule;
     import jp.coremind.utility.Delay;
-    import jp.coremind.utility.Log;
     import jp.coremind.utility.data.NumberTracker;
     import jp.coremind.utility.data.Status;
     import jp.coremind.view.abstract.ICalSprite;
     import jp.coremind.view.abstract.IContainer;
     import jp.coremind.view.abstract.IElement;
-    import jp.coremind.view.implement.starling.ContainerWrapper;
     import jp.coremind.view.implement.starling.component.ListContainer;
     import jp.coremind.view.interaction.Drag;
     
@@ -57,12 +54,6 @@ package jp.coremind.core
             var  dragElement:IElement = info.path.fetchElement(starlingRoot);
             if (!dragElement || confId < 0 && _CONFIGURE_LIST.length <= confId)
                 return;
-            
-            if (dragElement is ContainerWrapper)
-            {
-                Log.warning("ContainerWrapper(SuperClass) not Supported Drag.");
-                return;
-            }
             
             _currentConfigureId = confId;
             if (Controller.exec(configure.controllerClass, "dragFiltering", [info]))
@@ -136,7 +127,7 @@ package jp.coremind.core
                 
                 updateDragElementPosition(x, y, contains);
                 
-                Controller.exec(klass, "onDrag", [x, y]);
+                Controller.exec(klass, "onMove", [x, y]);
                 
                 if (_latestHitArea.isEmpty())
                 {
@@ -227,7 +218,7 @@ package jp.coremind.core
             dragger.initialize(_TMP_RECT, new Rectangle(0, 55, 320, 568 - 55), onDrag, onDrop);
             dragger.beginPointerDeviceListening();
             
-            Controller.exec(klass, "onDragBegin", params);
+            Controller.exec(klass, "onDrag", params);
         }
         
         private function _eachHitTest():ElementInfo
