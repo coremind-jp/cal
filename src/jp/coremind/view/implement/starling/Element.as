@@ -4,17 +4,14 @@ package jp.coremind.view.implement.starling
     import jp.coremind.event.ElementEvent;
     import jp.coremind.event.ElementInfo;
     import jp.coremind.storage.IModelStorageListener;
-    import jp.coremind.storage.ModelReader;
     import jp.coremind.storage.transaction.Diff;
     import jp.coremind.utility.IRecycle;
     import jp.coremind.utility.Log;
-    import jp.coremind.view.abstract.ICalSprite;
     import jp.coremind.view.abstract.IContainer;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.abstract.IStretchBox;
-    import jp.coremind.view.abstract.IView;
-    import jp.coremind.view.builder.parts.IBackgroundBuilder;
     import jp.coremind.view.builder.IDisplayObjectBuilder;
+    import jp.coremind.view.builder.parts.IBackgroundBuilder;
     import jp.coremind.view.implement.starling.component.ListContainer;
     import jp.coremind.view.interaction.StorageInteraction;
     import jp.coremind.view.layout.Layout;
@@ -30,7 +27,6 @@ package jp.coremind.view.implement.starling
         private static const READY_EVENT:ElementEvent = new ElementEvent(ElementEvent.READY);
         
         protected var
-            _reader:ModelReader,
             _layout:Layout,
             _info:ElementInfo,
             _elementWidth:Number,
@@ -40,20 +36,14 @@ package jp.coremind.view.implement.starling
             _background:IStretchBox;
         
         /**
-         * フレームワーク内で利用される基本表示オブジェクト.
-         * ElementはUIからControllerへの橋渡しをしたり、Controllerのデータにアクセスして表示内容を切り替えるため
-         * 表示オブジェクトであるので他の表示オブジェクトとは切り分けて考えられている。
-         * 
-         * 上記の理由から原則的にElementの中にElementを含めるのではなく
-         * ビルドイン表示オブジェクト(TextField, Image, Quad, MovieClip等)のみとして想定してある。
-         * 
-         * ※要求仕様上Elementの中にElementを含める必要がある場合はContainerクラスやListContainerクラスを利用する。
          */
         public function Element(
             layoutCalculator:Layout,
             backgroundBuilder:IBackgroundBuilder = null)
         {
             _layout = layoutCalculator || Layout.EQUAL_PARENT_TL;
+            
+            _info = new ElementInfo();
             
             _elementWidth = _elementHeight = NaN;
             
@@ -71,13 +61,8 @@ package jp.coremind.view.implement.starling
             
             _layout = null;
             
-            if (_reader)
-            {
-                _reader.removeListener(this);
-                _reader = null;
-            }
-            
-            _info = null;
+            if (_info.reader)
+                _info.reset(this);
             
             super.destroy(withReference);
         }
@@ -85,23 +70,32 @@ package jp.coremind.view.implement.starling
         public function reset():void
         {
             Log.custom(TAG, "reset", name);
-            if (_reader)
+            if (_info.reader)
             {
+                _info.reset(this);
                 _partsLayout.reset();
-                _reader.removeListener(this);
             }
             
             if (parent) removeFromParent();
         }
         
-        public function get elementInfo():ElementInfo   { return _info; }
-        public function get elementWidth():Number       { return isNaN(_elementWidth)  ? width:  _elementWidth; }
-        public function get elementHeight():Number      { return isNaN(_elementHeight) ? height: _elementHeight; }
-        
         //IListener interface
         public function addListener(type:String, listener:Function):void    { addEventListener(type, listener); }
         public function removeListener(type:String, listener:Function):void { removeEventListener(type, listener); }
         public function hasListener(type:String):void { hasEventListener(type); }
+        
+        //IStorageListener interface
+        public function commit(diff:Diff):void {}
+        public function preview(diff:Diff):void
+        {
+            if (diff.hashInfo)
+                _applyStorageInteraction(diff.hashInfo.edited);
+        }
+        
+        //IElement interface
+        public function get elementInfo():ElementInfo   { return _info; }
+        public function get elementWidth():Number       { return isNaN(_elementWidth)  ? width:  _elementWidth; }
+        public function get elementHeight():Number      { return isNaN(_elementHeight) ? height: _elementHeight; }
         public function clone():IElement
         {
             var listContainer:ListContainer = parent as ListContainer;
@@ -117,54 +111,29 @@ package jp.coremind.view.implement.starling
                 builder.build(name, parent.width, parent.height) as IElement;
         }
         
-        //IStorageListener interface
-        public function commit(diff:Diff):void {}
-        public function preview(diff:Diff):void
-        {
-            if (diff.hashInfo)
-                _applyStorageInteraction(diff.hashInfo.edited);
-        }
-        
-        protected function _applyStorageInteraction(updatedKeyList:Vector.<String>):void
-        {
-            if (_storageInteractionId)
-            {
-                var si:StorageInteraction = Application.configure.interaction.getStorageInteraction(_storageInteractionId);
-                if (si) si.apply(this, updatedKeyList);
-            }
-        }
-        
         public function initialize(actualParentWidth:int, actualParentHeight:int, storageId:String = null, storageInteractionId:String = null, runInteractionOnCreated:Boolean = false):void
         {
-            _info = new ElementInfo(storageId);
-            _storageInteractionId = storageInteractionId;
-            
             _initializeElementSize(actualParentWidth, actualParentHeight);
-            _refreshBackground();
-            
             _initializeChildren();
             
-            var self:IModelStorageListener = this;
-            var onAddedToStage:Function = function(e:Event):void
+            _refreshBackground();
+            
+            _info.setReader(storageId, this);
+            
+            _storageInteractionId = storageInteractionId;
+            
+            var addedOnStage:Function = function(e:Event = null):void
             {
                 if (e) removeListener(Event.ADDED_TO_STAGE, arguments.callee);
                 
-                changeIdSuffix(name);
-                
-                _reader = _info.reader;
-                _reader.addListener(self, ModelReader.LISTENER_PRIORITY_ELEMENT);
-                
-                _onLoadElementInfo();
-                
                 _initializeModules();
                 
-                if (runInteractionOnCreated)
-                    _applyStorageInteraction(_reader.createKeyList());
+                if (runInteractionOnCreated) _applyStorageInteraction(_info.reader.createKeyList());
                 
                 ready();
             }
             
-            stage ? onAddedToStage(): addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+            stage ? addedOnStage(): addEventListener(Event.ADDED_TO_STAGE, addedOnStage);
         }
         
         protected function _initializeElementSize(actualParentWidth:Number, actualParentHeight:Number):void
@@ -176,6 +145,11 @@ package jp.coremind.view.implement.starling
             y = _layout.verticalAlign.calc(actualParentHeight, _elementHeight);
         }
         
+        protected function _initializeChildren():void
+        {
+            _partsLayout.isBuilded() ? _partsLayout.refresh(): _partsLayout.buildParts();
+        }
+        
         protected function _refreshBackground():void
         {
             if (!_background) return;
@@ -184,49 +158,29 @@ package jp.coremind.view.implement.starling
             _background.height = _elementHeight;
         }
         
-        protected function _initializeChildren():void
-        {
-            _partsLayout.isBuilded() ? _partsLayout.refresh(): _partsLayout.buildParts();
-        }
-        
-        public function changeIdSuffix(idSuffix:String):void
-        {
-            name = idSuffix;
-            
-            var elementId:String = idSuffix;
-            var ownerLayerId:String = "unknown";
-            var ownerViewId:String  = "unknown";
-            var p:ICalSprite = parent as ICalSprite;
-            
-            while (p)
-            {
-                if (p is IView)
-                {
-                    ownerViewId  = p.name;
-                    ownerLayerId = p.parentDisplay ? p.parentDisplay.name: null;
-                    break;
-                }
-                else
-                {
-                    elementId = p.name + "." + elementId;
-                    p = p.parentDisplay as ICalSprite;
-                }
-            }
-            
-            _info.initialize(ownerLayerId, ownerViewId, elementId, idSuffix);
-        }
-        
-        protected function _onLoadElementInfo():void
-        {
-        }
-        
         protected function _initializeModules():void
         {
+            _info.path.parse(this);
+            _info.loadModules();
+        }
+        
+        protected function _applyStorageInteraction(updatedKeyList:Vector.<String>):void
+        {
+            if (_storageInteractionId)
+            {
+                var si:StorageInteraction = Application.configure.interaction.getStorageInteraction(_storageInteractionId);
+                if (si) si.apply(this, updatedKeyList);
+            }
         }
         
         public function ready():void
         {
             dispatchEventWith(ElementEvent.READY);
+        }
+        
+        public function changeIdSuffix(idSuffix:String):void
+        {
+            _info.changeIdSuffix(name = idSuffix, this);
         }
         
         public function updateElementSize(elementWidth:Number, elementHeight:Number):void
@@ -245,7 +199,6 @@ package jp.coremind.view.implement.starling
         protected function _refreshLayout():void
         {
             _refreshBackground();
-            
             _partsLayout.refresh();
         }
     }

@@ -73,8 +73,8 @@ package jp.coremind.view.implement.starling.component
             
             if (_scrollbar)
             {
-                _scrollbar.updateWidth(_elementWidth, _maxWidth);
-                _scrollbar.updateHeight(_elementHeight, _maxHeight);
+                _scrollbar.updateContentWidth(_elementWidth, _maxWidth);
+                _scrollbar.updateContentHeight(_elementHeight, _maxHeight);
             }
         }
         
@@ -82,19 +82,19 @@ package jp.coremind.view.implement.starling.component
         {
             super.ready();
             
-            var r:Rectangle = _listLayout.calcTotalRect(_maxWidth, _maxHeight, _reader.read().length);
+            var r:Rectangle = _listLayout.calcTotalRect(_maxWidth, _maxHeight, _info.reader.read().length);
             updateElementSize(r.width, r.height);
             updatePosition(x, y);
             enablePointerDeviceControl();
         }
         
-        override protected function _onLoadElementInfo():void
+        override public function initialize(actualParentWidth:int, actualParentHeight:int, storageId:String = null, storageInteractionId:String = null, runInteractionOnCreated:Boolean = false):void
         {
-            super._onLoadElementInfo();
+            super.initialize(actualParentWidth, actualParentHeight, storageId, storageInteractionId, runInteractionOnCreated);
             
-            _listLayout.initialize(_reader);
+            _listLayout.initialize(_info.reader);
             
-            var list:Array = _reader.read();
+            var list:Array = _info.reader.read();
             for (var i:int = 0, len:int = list.length; i < len; i++) 
                 _simulation.addChild(list[i], _listLayout.calcElementRect(_maxWidth, _maxHeight, i).clone());
         }
@@ -158,8 +158,8 @@ package jp.coremind.view.implement.starling.component
             var pId:String = name + PREVIEW_PROCESS;
             var moveThread:Thread = new Thread("move");
             var addThread:Thread  = new Thread("add");
-            var origin:Array = _reader.read();
-            var len:int      = _reader.readTransactionResult().length;
+            var origin:Array = _info.reader.read();
+            var len:int      = _info.reader.readTransactionResult().length;
             var r:Rectangle  = _listLayout.calcTotalRect(_maxWidth, _maxHeight, len == 0 ? 0: len).clone();
             
             _simulation.beginChildPositionEdit();
@@ -229,7 +229,7 @@ package jp.coremind.view.implement.starling.component
                 var e:IElement = _listLayout.requestElement(0, 0, data);
                 var tweenRoutine:Function = _listLayout.getTweenRoutineByRemovedStage(data);
                 var params:Array = to ? [e, to.x, to.y]: [e];
-                //Log.info("[EO] remove", e.elementInfo, to, data);
+                Log.info("[EO] remove", e.elementInfo, to, data);
                 
                 Application.sync.pushThread(pId, new Thread("applyDiff[remove] "+e.name)
                     .pushRoutine(_listLayout.getTweenRoutineByRemovedStage(data), params)
@@ -246,7 +246,7 @@ package jp.coremind.view.implement.starling.component
         {
             var i:int, len:int, r:Rectangle, e:IElement;
             var order:Vector.<int> = diff.listInfo.order;
-            var edited:Array = _reader.readTransactionResult();
+            var edited:Array = _info.reader.readTransactionResult();
             
             if (order)
             {
@@ -296,12 +296,12 @@ package jp.coremind.view.implement.starling.component
                 var e:IElement = _listLayout.requestElement(to.width, to.height, data, index);
                 var tweenRoutine:Function = _listLayout.getTweenRoutineByAddedStage(data);
                 var info:DiffListInfo = diff.listInfo;
-                /*
-                Log.info("[EO] add",
+                
+                Log.info("[EO] add", index,
                     "filterRestore", info.filterRestored && data in info.filterRestored,
                     "removeRestore", info.removeRestored && data in info.removeRestored,
                     from, "=>", to, e.elementInfo, data);
-                */
+                
                 info.filterRestored && data in info.filterRestored ||
                 info.removeRestored && data in info.removeRestored ?
                     addThread.pushRoutine(tweenRoutine, [addDisplay(e), to.x, to.y]):
@@ -313,7 +313,7 @@ package jp.coremind.view.implement.starling.component
                 var e:IElement = _listLayout.requestElement(to.width, to.height, data);
                 var tweenRoutine:Function = _listLayout.getTweenRoutineByMoved(data);
                 
-                //Log.info("[EO] move", from, "=>", to, e.elementInfo, data);
+                Log.info("[EO] move", from, "=>", to, e.elementInfo, data);
                 moveThread.pushRoutine(tweenRoutine, [e, to.x, to.y]);
             };
             
@@ -324,7 +324,8 @@ package jp.coremind.view.implement.starling.component
             
             var i:int, len:int;
             var order:Vector.<int> = diff.listInfo.order;
-            var edited:Array = _reader.readTransactionResult();
+            var edited:Array = _info.reader.readTransactionResult();
+            Log.info("TransactionData", edited);
             if (order)
                 for (i = 0, len = order.length; i < len; i++) 
                     _simulation.switchClosure(edited[ order[i] ], order[i], createClosure, visibleClosure, invisibleClosure);

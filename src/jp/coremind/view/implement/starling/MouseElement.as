@@ -32,19 +32,24 @@ package jp.coremind.view.implement.starling
         
         override protected function _onTouch(e:TouchEvent):void
         {
-            _touch = e.getTouch(this);
-            
-            if (!_touch)
+            //押したまま移動させている最中にこのオブジェクトが破棄(破棄時にlistenerをremove)しても
+            //タッチイベントは送出され続けるようなのでstageが取れるかチェックをしてからタッチが発生したと判定させる.
+            if (stage)
             {
-                if (_bHover)
-                    _info.modules.getModule(StatusModule).update(StatusGroup.RELEASE, Status.ROLL_OUT);
-                _bHover = false;
-            }
-            else
-            if (this[_touch.phase] is Function)
-            {
-                this[_touch.phase]();
-                _touch = null;
+                _touch = e.getTouch(this);
+                
+                if (!_touch)
+                {
+                    if (_bHover)
+                        _info.modules.getModule(StatusModule).update(StatusGroup.RELEASE, Status.ROLL_OUT);
+                    _bHover = false;
+                }
+                else
+                if (this[_touch.phase] is Function)
+                {
+                    this[_touch.phase]();
+                    _touch = null;
+                }
             }
         }
         
@@ -99,7 +104,7 @@ package jp.coremind.view.implement.starling
                 
                 //↑のactionメソッドでViewの移動が発生してこの要素が破棄されていた場合_readerがnullになる可能性があるので、
                 //そのチェックをしてからボタンコントローラーへメッセージを送る
-                if (_reader)
+                if (_info.reader)
                     Application.sync.isRunning() ?
                         status.update(StatusGroup.RELEASE, Status.ROLL_OUT):
                         status.update(StatusGroup.RELEASE, Status.ROLL_OVER);

@@ -32,5 +32,10 @@ package jp.coremind.view.implement.starling
             
             return result;
         }
+        
+        public function containsStage():Boolean
+        {
+            return Boolean(stage);
+        }
     }
 }

@@ -1,5 +1,9 @@
-package jp.coremind.core
+package jp.coremind.controller
 {
+    import flash.geom.Rectangle;
+    
+    import jp.coremind.core.ElementPathParser;
+    import jp.coremind.core.IDragDropControl;
     import jp.coremind.utility.Log;
 
     public class DragAndDropConfigure
@@ -7,8 +11,10 @@ package jp.coremind.core
         public var
             /** ドラッグドロップの一連のイベントをポーリングする先となるControllerクラス */
             controllerClass:Class,
-            /** ドロップ可能領域のリスト(elementIdによる指定) */
+            /** ドロップ領域のリスト(elementIdによる指定) */
             dropAreaList:Array,
+            /** ドラッグ領域 */
+            dragArea:Rectangle,
             /** 押下からドラッグ開始までの遅延ms*/
             dragDelay:int,
             /** ドラッグしたオブジェクトがドロップ可能領域に入ってからロールオーバー処理が発生するまでの遅延ms*/
@@ -21,6 +27,7 @@ package jp.coremind.core
         public function DragAndDropConfigure(
             controllerClass:Class,
             dropAreaList:Array,
+            dragArea:Rectangle,
             dragDelay:int = 0,
             rolloverDelay:int = 0,
             invisibleWhenRollover:Boolean = false,
@@ -30,6 +37,7 @@ package jp.coremind.core
             {
                 this.controllerClass       = controllerClass;
                 this.dropAreaList          = _convertDropAreaList(dropAreaList);
+                this.dragArea              = dragArea;
                 this.dragDelay             = dragDelay;
                 this.rolloverDelay         = rolloverDelay;
                 this.absorbWhenRollover    = absorbWhenRollover;
@@ -44,7 +52,7 @@ package jp.coremind.core
             for (var i:int = 0; i < list.length; i++) 
                 list[i] is Array ?
                     list[i] = new ElementPathParser()
-                    .initialize(list[i].shift(), list[i].shift(), list[i].join(".")):
+                        .initialize(list[i].shift(), list[i].shift(), list[i].join(".")):
                     list.splice(i--, 1);
             
             return list;

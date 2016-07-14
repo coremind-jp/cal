@@ -1,4 +1,4 @@
-package jp.coremind.core
+package jp.coremind.controller
 {
     import flash.geom.Point;
     import flash.geom.Rectangle;
@@ -17,6 +17,9 @@ package jp.coremind.core
     import jp.coremind.view.interaction.Drag;
     
     import starling.core.Starling;
+    import jp.coremind.core.Application;
+    import jp.coremind.core.ElementPathParser;
+    import jp.coremind.core.Layer;
     
     public class DragAndDropController extends Controller
     {
@@ -56,30 +59,34 @@ package jp.coremind.core
                 return;
             
             _currentConfigureId = confId;
-            if (Controller.exec(configure.controllerClass, "dragFiltering", [info]))
+            if (!Controller.exec(configure.controllerClass, "dragFiltering", [info]))
+                return;
+            
+            //呼び出された時点でのポインター位置を記憶
+            var before:Point = Application.pointer.clone();
+            
+            _dragDelay.exec(function():void
             {
-                //呼び出された時点でのポインター位置を記憶
-                var before:Point = Application.pointer.clone();
+                //遅延実行時、既にドラッグオブジェクトが破棄されていないか
+                if (!info.modules)
+                    return;
                 
-                _dragDelay.exec(function():void
-                {
-                    //遅延実行時、ポインターデバイスの状態が変わっていないか
-                    var  status:StatusModule = info.modules.getModule(StatusModule) as StatusModule;
-                    if (!status.equalGroup(StatusGroup.PRESS) || !status.equal(Status.DOWN))
-                        return;
-                    
-                    _latestPointer.setTo(Application.pointerX, Application.pointerY);
-                    //遅延実行時、ポインターデバイスの移動量が閾値内か
-                    var executeRange:Number = Starling.contentScaleFactor;
-                    var size:Point = _latestPointer.subtract(before);
-                    if (Math.abs(size.x) < executeRange && Math.abs(size.y) < executeRange)
-                        _beginDrag(dragElement);
-                    
-                //ドラッグオブジェクトの親がScrollModuleをもっている場合、この処理開始時にそのモジュールを停止させるが
-                //delayが0で完全同期的に実行されるとをロックした後にスクロール開始判定が入ってしまい、
-                //初回のドラッグ時にスクロールも発生してしまう。これを回避するため例え0でも1ms加算させてドラッグ開始を遅らせる.
-                }, configure.dragDelay + 1);
-            }
+                //遅延実行時、ポインターデバイスの状態が変わっていないか
+                var  status:StatusModule = info.modules.getModule(StatusModule) as StatusModule;
+                if (!status.equalGroup(StatusGroup.PRESS) || !status.equal(Status.DOWN))
+                    return;
+                
+                _latestPointer.setTo(Application.pointerX, Application.pointerY);
+                //遅延実行時、ポインターデバイスの移動量が閾値内か
+                var executeRange:Number = Starling.contentScaleFactor;
+                var size:Point = _latestPointer.subtract(before);
+                if (Math.abs(size.x) < executeRange && Math.abs(size.y) < executeRange)
+                    _beginDrag(dragElement);
+                
+            //ドラッグオブジェクトの親がScrollModuleをもっている場合、この処理開始時にそのモジュールを停止させるが
+            //delayが0で完全同期的に実行されるとをロックした後にスクロール開始判定が入ってしまい、
+            //初回のドラッグ時にスクロールも発生してしまう。これを回避するため例え0でも1ms加算させてドラッグ開始を遅らせる.
+            }, configure.dragDelay + 1);
         }
         
         private static const _TMP_POINT:Point    = new Point();
@@ -104,6 +111,7 @@ package jp.coremind.core
             
             //duplicate drag object
             var clonedElement:IElement = from.clone();
+            var clonedInfo:ElementInfo = from.elementInfo.clone();
             var globalInitialPosition:Point = from.toGlobalPoint(new Point());
             clonedElement.x = globalInitialPosition.x;
             clonedElement.y = globalInitialPosition.y;
@@ -116,7 +124,7 @@ package jp.coremind.core
             
             //closure variable
             var klass:Class          = configure.controllerClass;
-            var params:Array         = [from.elementInfo, from.elementInfo, clonedElement.elementInfo, true];
+            var params:Array         = [clonedInfo, clonedInfo, clonedElement.elementInfo, true];
             var rolloverDelay:Delay  = new Delay();
             
             //closure
@@ -155,8 +163,8 @@ package jp.coremind.core
                 }
                 else
                 {
-                    clonedElement.x = globalInitialPosition.x + x.totalDelta;
-                    clonedElement.y = globalInitialPosition.y + y.totalDelta;
+                    clonedElement.x = globalInitialPosition.x + x.latestTotalDelta;
+                    clonedElement.y = globalInitialPosition.y + y.latestTotalDelta;
                 }
             };
             
@@ -201,7 +209,7 @@ package jp.coremind.core
                 
                 //後片付け
                 clonedElement.destroy(true);
-                parent.elementInfo.path.fetchView(starlingRoot).freeElementCache();
+                if (parent) parent.elementInfo.path.fetchView(starlingRoot).freeElementCache();
                 if (mod) mod.ignorePointerDevice(false);
                 _running = false;
             };
@@ -215,7 +223,7 @@ package jp.coremind.core
             _TMP_RECT.setTo(_TMP_POINT.x, _TMP_POINT.y, from.elementWidth, from.elementHeight);
             
             var dragger:Drag = new Drag(0);
-            dragger.initialize(_TMP_RECT, new Rectangle(0, 55, 320, 568 - 55), onDrag, onDrop);
+            dragger.initialize(_TMP_RECT, configure.dragArea, onDrag, onDrop);
             dragger.beginPointerDeviceListening();
             
             Controller.exec(klass, "onDrag", params);

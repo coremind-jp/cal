@@ -1,5 +1,6 @@
 package jp.coremind.core
 {
+    import jp.coremind.view.abstract.ICalSprite;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.abstract.IView;
 
@@ -19,6 +20,15 @@ package jp.coremind.core
             _viewId:String,
             _elementId:String;
         
+        public function get layerId():String   { return _layerId; }
+        public function get viewId():String    { return _viewId; }
+        public function get elementId():String { return _elementId; }
+        
+        public function isUndefinedPath():Boolean
+        {
+            return _layerId === null && _viewId === null && _elementId === null;
+        }
+        
         public function initialize(layerId:String, viewId:String, elementId:String):ElementPathParser
         {
             _layerId   = layerId;
@@ -27,13 +37,27 @@ package jp.coremind.core
             return this;
         }
         
-        public function get layerId():String   { return _layerId; }
-        public function get viewId():String    { return _viewId; }
-        public function get elementId():String { return _elementId; }
-        
-        public function isUndefinedPath():Boolean
+        public function parse(e:IElement):void
         {
-            return _layerId === null && _viewId === null && _elementId === null;
+            _elementId = e.name;
+            _layerId   = "unknown";
+            _viewId    = "unknown";
+            
+            var p:ICalSprite = e.parentDisplay as ICalSprite;
+            while (p)
+            {
+                if (p is IView)
+                {
+                    _viewId  = p.name;
+                    _layerId = p.parentDisplay ? p.parentDisplay.name: null;
+                    break;
+                }
+                else
+                {
+                    _elementId = p.name + "." + _elementId;
+                    p = p.parentDisplay as ICalSprite;
+                }
+            }
         }
         
         public function fetchElement(accessor:IStageAccessor):IElement

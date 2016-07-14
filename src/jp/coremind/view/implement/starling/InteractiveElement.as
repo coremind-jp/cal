@@ -83,12 +83,17 @@ package jp.coremind.view.implement.starling
          */
         protected function _onTouch(e:TouchEvent):void
         {
-            _touch = e.getTouch(this);
-            
-            if (_touch)
+            //押したまま移動させている最中にこのオブジェクトが破棄(破棄時にlistenerをremove)しても
+            //押すのをやめるまでタッチイベントは送出され続けるようなのでstageが取れるかチェックをしてからタッチ処理を実行させる.
+            if (stage)
             {
-                this[_touch.phase]();
-                _touch = null;
+                _touch = e.getTouch(this);
+                
+                if (_touch)
+                {
+                    this[_touch.phase]();
+                    _touch = null;
+                }
             }
         }
         

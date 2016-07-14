@@ -68,7 +68,7 @@ package jp.coremind.view.interaction
             var scale:Number = 1 + Starling.contentScaleFactor * .4;
             
             _slidAcceleration = requireUpdate(v) ?
-                v.preventDelta / Application.stage.frameRate * scale:
+                v.previousDelta / Application.stage.frameRate * scale:
                 0;
             
             _springAcceleration = 0;
@@ -80,8 +80,8 @@ package jp.coremind.view.interaction
         public function requireUpdate(v:NumberTracker):Boolean
         {
             if      (v.now < v.min || v.max < v.now)         return true;
-            else if (v.preventDelta < 0 && v.totalDelta < 0) return true;
-            else if (0 < v.preventDelta && 0 < v.totalDelta) return true;
+            else if (v.previousDelta < 0 && v.latestTotalDelta < 0) return true;
+            else if (0 < v.previousDelta && 0 < v.latestTotalDelta) return true;
             else return false;
         }
         

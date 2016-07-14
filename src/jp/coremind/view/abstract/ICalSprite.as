@@ -11,5 +11,10 @@ package jp.coremind.view.abstract
          * このオブジェクト内に存在する子表示オブジェクトのnameプロパティーリストを生成する.
          */
         function createChildrenNameList():Array;
+        
+        /**
+         * ステージ上にこのオブジェクトが存在するかを示す値を返す.
+         */
+        function containsStage():Boolean;
     }
 }

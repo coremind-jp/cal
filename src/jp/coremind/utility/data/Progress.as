@@ -111,7 +111,7 @@ package jp.coremind.utility.data
                 rate < 0 ? 0: 1 < rate ? 1: rate:
                 rate;
             
-            return update(_min + distance * rate);
+            return update(_min + (_max - _min) * rate);
         }
         
         public function toString():String

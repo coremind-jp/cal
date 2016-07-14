@@ -31,5 +31,10 @@ package jp.coremind.view.implement.flash
             
             return result;
         }
+        
+        public function containsStage():Boolean
+        {
+            return Boolean(stage);
+        }
     }
 }

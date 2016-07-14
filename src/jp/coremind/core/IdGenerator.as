@@ -1,7 +1,12 @@
 package jp.coremind.core
 {
+    import jp.coremind.utility.Log;
+
     public class IdGenerator
     {
+        public static const TAG:String = "[IdGenerator]";
+        Log.addCustomTag(TAG);
+        
         private static const PREFIX_LAYER:String   = "L";
         private static const PREFIX_VIEW:String    = "V";
         private static const PREFIX_ELEMENT:String = "E";
@@ -42,6 +47,7 @@ package jp.coremind.core
             var id:String = prefix+_requestSuffix(prefix);
             
             _aliasList[id] = alias;
+            Log.custom(TAG, "created.", "["+id+"] (origin name:　"+alias+")");
             
             return id;
         }

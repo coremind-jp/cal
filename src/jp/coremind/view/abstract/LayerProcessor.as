@@ -5,7 +5,7 @@ package jp.coremind.view.abstract
     import jp.coremind.asset.Asset;
     import jp.coremind.configure.IViewBluePrint;
     import jp.coremind.core.Application;
-    import jp.coremind.core.Controller;
+    import jp.coremind.controller.Controller;
     import jp.coremind.core.Transition;
     import jp.coremind.event.TransitionEvent;
     import jp.coremind.utility.Log;

@@ -1,4 +1,4 @@
-package jp.coremind.core
+package jp.coremind.controller
 {
     import flash.utils.Dictionary;
     
@@ -8,6 +8,7 @@ package jp.coremind.core
     import jp.coremind.utility.process.Thread;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.abstract.IView;
+    import jp.coremind.core.ViewAccessor;
 
     public class Controller extends ViewAccessor
     {

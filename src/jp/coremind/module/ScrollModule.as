@@ -179,9 +179,9 @@ package jp.coremind.module
             var trackerX:NumberTracker = null;
             if (_container.maxWidth < _container.elementWidth)
             {
-                resultX      = _before.containerPosition.x + x.totalDelta;
-                _dragSize.x  = _before.dragSize.x          + x.totalDelta;
-                _dragArea.x  = _before.flickAreaPosition.x - x.totalDelta;
+                resultX      = _before.containerPosition.x + x.latestTotalDelta;
+                _dragSize.x  = _before.dragSize.x          + x.latestTotalDelta;
+                _dragArea.x  = _before.flickAreaPosition.x - x.latestTotalDelta;
                 trackerX = x;
             }
             
@@ -189,9 +189,9 @@ package jp.coremind.module
             var trackerY:NumberTracker = null;
             if (_container.maxHeight < _container.elementHeight)
             {
-                resultY      = _before.containerPosition.y + y.totalDelta;
-                _dragSize.y  = _before.dragSize.y          + y.totalDelta;
-                _dragArea.y  = _before.flickAreaPosition.y - y.totalDelta;
+                resultY      = _before.containerPosition.y + y.latestTotalDelta;
+                _dragSize.y  = _before.dragSize.y          + y.latestTotalDelta;
+                _dragArea.y  = _before.flickAreaPosition.y - y.latestTotalDelta;
                 trackerY = y;
             }
             

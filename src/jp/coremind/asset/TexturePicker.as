@@ -42,7 +42,7 @@ package jp.coremind.asset
             for (var i:int = 0; i < _painterList.length; i++) 
                 _painterList[i].draw(source, paintableArea);
             
-            var sourceTexture:Texture = Texture.fromBitmapData(source, true, false, Starling.contentScaleFactor);
+            var sourceTexture:Texture = Texture.fromBitmapData(source, false, false, Starling.contentScaleFactor);
             
             if (atlasXml) _atlas = new TextureAtlas(sourceTexture, atlasXml);
             

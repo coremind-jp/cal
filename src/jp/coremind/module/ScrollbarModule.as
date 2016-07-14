@@ -37,16 +37,16 @@ package jp.coremind.module
             return _yScrollList.push(new Scrollbar(new Grid3Y().setAsset(parts), size, position)) - 1;
         }
         
-        public function updateWidth(pageSize:Number, containerSize:Number):void
+        public function updateContentWidth(contentSize:Number, containerSize:Number):void
         {
             for (var i:int = 0, len:int = _xScrollList.length; i < len; i++) 
-                _xScrollList[i].setRange(pageSize, containerSize);
+                _xScrollList[i].setRange(contentSize, containerSize);
         }
         
-        public function updateHeight(pageSize:Number, containerSize:Number):void
+        public function updateContentHeight(contentSize:Number, containerSize:Number):void
         {
             for (var i:int = 0, len:int = _yScrollList.length; i < len; i++) 
-                _yScrollList[i].setRange(pageSize, containerSize);
+                _yScrollList[i].setRange(contentSize, containerSize);
         }
         
         public function update(...params):void

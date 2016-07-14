@@ -24,7 +24,7 @@
     <classEntry path="jp.coremind.configure.InteractionConfigure"/>
     <classEntry path="jp.coremind.configure.StatusModelConfigure"/>
     <classEntry path="jp.coremind.configure.ViewLayerConfigure"/>
-    <classEntry path="jp.coremind.core.Controller"/>
+    <classEntry path="jp.coremind.controller.Controller"/>
     <classEntry path="jp.coremind.core.AbstractStageAccessor"/>
     <classEntry path="jp.coremind.core.Application"/>
     <classEntry path="jp.coremind.core.AsyncProcess"/>
@@ -201,8 +201,7 @@
     <classEntry path="jp.coremind.utility.Repeater"/>
     <classEntry path="jp.coremind.module.ScrollType"/>
     <classEntry path="jp.coremind.utility.process.JugglerLoop"/>
-    <classEntry path="jp.coremind.module.DragModule"/>
-    <classEntry path="jp.coremind.core.DragAndDropController"/>
+    <classEntry path="jp.coremind.controller.DragAndDropController"/>
     <classEntry path="jp.coremind.core.ElementPathParser"/>
     <classEntry path="jp.coremind.core.IDragDropControl"/>
     <classEntry path="jp.coremind.utility.Id"/>
@@ -220,13 +219,16 @@
     <classEntry path="jp.coremind.storage.transaction.DiffListInfo"/>
     <classEntry path="jp.coremind.storage.transaction.DiffHashInfo"/>
     <classEntry path="jp.coremind.utility.Delay"/>
-    <classEntry path="jp.coremind.core.DragAndDropConfigure"/>
+    <classEntry path="jp.coremind.controller.DragAndDropConfigure"/>
     <classEntry path="jp.coremind.core.IdGenerator"/>
-    <classEntry path="jp.coremind.view.implement.starling.ProgressElement"/>
     <classEntry path="jp.coremind.module.ScrollbarModule"/>
     <classEntry path="jp.coremind.view.builder.parts.Grid3ColorPainterBuilder"/>
     <classEntry path="jp.coremind.view.builder.parts.Grid3TextureBuilder"/>
     <classEntry path="jp.coremind.view.builder.element.ListContainerBuilder"/>
+    <classEntry path="jp.coremind.controller.SliderController"/>
+    <classEntry path="jp.coremind.controller.SliderConfigure"/>
+    <classEntry path="jp.coremind.view.interaction.DisplayObjectInteraction"/>
+    <classEntry path="jp.coremind.controller.SliderConfigure2D"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

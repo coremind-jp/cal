@@ -20,7 +20,8 @@ package jp.coremind.configure
         
         protected function createInteraction(interactionName:String, interaction:IElementInteraction):void
         {
-            _EI_CACHE[interactionName] = interaction;
+            if (!(interactionName in _EI_CACHE))
+                _EI_CACHE[interactionName] = interaction;
         }
         
         public function getInteraction(interactionName:String):IElementInteraction

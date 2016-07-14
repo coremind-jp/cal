@@ -70,7 +70,7 @@ package jp.coremind.view.implement.starling
         
         override public function reset():void
         {
-            if (_reader)
+            if (_info.modules && !_info.modules.isUndefined(StatusModule))
             {
                 _info.modules.getModule(StatusModule).removeListener(_applyStatus);
                 _info.modules.getModule(StatusModule).removeListener(_applyInteraction);
@@ -81,7 +81,7 @@ package jp.coremind.view.implement.starling
         
         override public function destroy(withReference:Boolean = false):void
         {
-            if (_reader && !_info.modules.isUndefined(StatusModule))
+            if (_info.modules && !_info.modules.isUndefined(StatusModule))
             {
                 _info.modules.getModule(StatusModule).removeListener(_applyStatus);
                 _info.modules.getModule(StatusModule).removeListener(_applyInteraction);

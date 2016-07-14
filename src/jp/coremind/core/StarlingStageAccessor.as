@@ -7,6 +7,7 @@ package jp.coremind.core
     import jp.coremind.view.implement.starling.View;
     
     import starling.core.Starling;
+    import starling.events.ResizeEvent;
     import starling.utils.RectangleUtil;
     import starling.utils.ScaleMode;
     
@@ -41,6 +42,10 @@ package jp.coremind.core
             _starling.stage.stageWidth  = appViewPort.width;
             _starling.stage.stageHeight = appViewPort.height;
             _starling.start();
+            
+            stage.addEventListener(ResizeEvent.RESIZE, function(e:ResizeEvent):void {
+                Starling.current.viewPort = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
+            });
         }
         
         override protected function get _commonView():Class

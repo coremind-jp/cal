@@ -67,11 +67,11 @@ package jp.coremind.view.layout
             _buildParts(bluePrintKey);
         }
         
-        private function _buildParts(bluePrintKey:*):void
+        private function _buildElementParts(bluePrintKey:*):void
         {
-            Log.custom(TAG, " ---build Parts---", _element.name, bluePrintKey);
+            Log.custom(TAG, " ---build Element---", _element.name, bluePrintKey);
             
-            var bluePrint:IPartsBluePrint = Application.configure.partsBluePrint;
+            var bluePrint:IElementBluePrint = Application.configure.elementBluePrint;
             var partsList:Array = bluePrintKey is String ?
                 bluePrint.createPartsListByName(bluePrintKey):
                 bluePrint.createPartsListByClass(bluePrintKey);
@@ -81,11 +81,11 @@ package jp.coremind.view.layout
             Log.custom(TAG, "---");
         }
         
-        private function _buildElementParts(bluePrintKey:*):void
+        private function _buildParts(bluePrintKey:*):void
         {
-            Log.custom(TAG, " ---build Element---", _element.name, bluePrintKey);
+            Log.custom(TAG, " ---build Parts---", _element.name, bluePrintKey);
             
-            var bluePrint:IElementBluePrint = Application.configure.elementBluePrint;
+            var bluePrint:IPartsBluePrint = Application.configure.partsBluePrint;
             var partsList:Array = bluePrintKey is String ?
                 bluePrint.createPartsListByName(bluePrintKey):
                 bluePrint.createPartsListByClass(bluePrintKey);
@@ -111,7 +111,7 @@ package jp.coremind.view.layout
                 
                 builder.enabledPointerDevice ?
                     child.enablePointerDeviceControl():
-                    child.disablePointerDeviceControl()
+                    child.disablePointerDeviceControl();
                 
                 _layoutList[child] = builder.layout;
             }

@@ -107,7 +107,7 @@ package jp.coremind.asset
                         result.createBitmapFont(bitmapFont.name, xml(bitmapFont.id));
                     });
             }
-            else Log.warning("undefined atlasId. assetId:", assetId);
+            else Log.warning("undefined atlasId. id:", assetId);
             
             return result;
         }

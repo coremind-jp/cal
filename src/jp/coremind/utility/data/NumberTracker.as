@@ -4,26 +4,26 @@ package jp.coremind.utility.data
     {
         private var
             _start:Number,
-            _prevent:Number,
-            _preventDelta:Number,
-            _totalDelta:Number;
+            _previous:Number,
+            _previousDelta:Number,
+            _latestTotalDelta:Number;
         
         /**
          * 数値の変動を追跡するクラス.
          */
         public function NumberTracker()
         {
-            _start = _preventDelta = _prevent = _totalDelta = 0;
+            _start = _previousDelta = _previous = _latestTotalDelta = 0;
         }
         
         public function clone():NumberTracker
         {
             var result:NumberTracker = new NumberTracker();
             
-            result._start        = _start;
-            result._prevent      = _prevent;
-            result._preventDelta = _preventDelta;
-            result._totalDelta   = _totalDelta;
+            result._start            = _start;
+            result._previous         = _previous;
+            result._previousDelta    = _previousDelta;
+            result._latestTotalDelta = _latestTotalDelta;
             
             return result;
         }
@@ -34,9 +34,9 @@ package jp.coremind.utility.data
          */
         public function initialize(start:Number):void
         {
-            _preventDelta = _totalDelta = 0;
+            _previousDelta = _latestTotalDelta = 0;
             
-            _start = _prevent = start;
+            _start = _previous = start;
             update(_start);
         }
         
@@ -46,14 +46,30 @@ package jp.coremind.utility.data
          */
         override public function update(n:Number):Boolean
         {
-            _prevent = now;
+            _previous = now;
             
             super.update(n);
             
-            _preventDelta = now - _prevent;
-            _totalDelta   = now - _start;
+            _previousDelta = now - _previous;
+            _latestTotalDelta = now - _start;
             
-            return _prevent !== now;
+            return _previous !== now;
+        }
+        
+        /**
+         * 値をパーセンテージで更新する.
+         * @param   per   更新値
+         */
+        override public function updateByRate(per:Number):Boolean
+        {
+            _previous = now;
+            
+            super.updateByRate(per);
+            
+            _previousDelta = now - _previous;
+            _latestTotalDelta   = now - _start;
+            
+            return _previous !== now;
         }
         
         /** 初期値を取得する. */
@@ -63,26 +79,26 @@ package jp.coremind.utility.data
         }
 
         /** 直前に更新された値を取得する. */
-        public function get prevent():Number
+        public function get previous():Number
         {
-            return _prevent;
+            return _previous;
         }
         
         /** 最後に更新された値と直前に更新された値の差を取得する. */
-        public function get preventDelta():Number
+        public function get previousDelta():Number
         {
-            return _preventDelta;
+            return _previousDelta;
         }
         
         /** 初期値と最後に更新された値の差を取得する. */
-        public function get totalDelta():Number
+        public function get latestTotalDelta():Number
         {
-            return _totalDelta;
+            return _latestTotalDelta;
         }
         
         override public function toString():String
         {
-            return super.toString()+" start="+_start+" prevent="+_prevent+" preventDelta="+_preventDelta+" totalDelta="+_totalDelta;
+            return super.toString()+" start="+_start+" previous="+_previous+" previousDelta="+_previousDelta+" latestTotalDelta="+_latestTotalDelta;
         }
     }
 }

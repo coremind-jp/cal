@@ -28,7 +28,7 @@ package jp.coremind.view.builder.element
             var element:StatefulElement = new _elementClass(layout, _backgroundBuilder);
             element.name = name;
             element.interactionId = _interactionId;
-            element.initialize(actualParentWidth, actualParentHeight, _storageId);
+            element.initialize(actualParentWidth, actualParentHeight, _storageId, _storageInteractionId, _runInteractionOnCreated);
             
             return element;
         }

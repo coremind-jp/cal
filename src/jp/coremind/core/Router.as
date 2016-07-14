@@ -1,5 +1,10 @@
 package jp.coremind.core
 {
+    import jp.coremind.controller.Controller;
+    import jp.coremind.controller.DragAndDropConfigure;
+    import jp.coremind.controller.DragAndDropController;
+    import jp.coremind.controller.SliderConfigure2D;
+    import jp.coremind.controller.SliderController;
     import jp.coremind.event.ElementInfo;
     import jp.coremind.module.StatusGroup;
     import jp.coremind.utility.Log;
@@ -46,6 +51,16 @@ package jp.coremind.core
             }
         }
         
+        public function listenSlider(configure:SliderConfigure2D, path:Array):void
+        {
+            configure.createSlideAreaRectangle();
+            
+            var confId:int = SliderController.addConfigure(configure);
+            var params:Array = [confId];
+            
+            listenStatus(SliderController, "beginSlide", path, StatusGroup.PRESS, Status.DOWN, params);
+        }
+        
         public function notify(info:ElementInfo, statusGroup:String, statusValue:String):void
         {
             var executor:Executor;
@@ -82,7 +97,7 @@ package jp.coremind.core
         }
     }
 }
-import jp.coremind.core.Controller;
+import jp.coremind.controller.Controller;
 
 class Executor
 {
