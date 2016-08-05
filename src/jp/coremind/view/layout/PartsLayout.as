@@ -113,7 +113,7 @@ package jp.coremind.view.layout
                     child.enablePointerDeviceControl():
                     child.disablePointerDeviceControl();
                 
-                _layoutList[child] = builder.layout;
+                _layoutList[abstractChild] = builder.layout;
             }
         }
         
