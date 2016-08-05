@@ -8,12 +8,12 @@ package jp.coremind.view.interaction
         function destroy():void;
         
         /**
-         * このリソースをparentへ即座に適応する.
+         * インタラクションをビューへ適応する.
          */
         function apply(parent:IElement):void;
         
         /**
-         * このリソースの適応対象を特定するための名前を返す.
+         * インタラクションの適応対象を特定するための名前を返す.
          */
         function get applyTargetName():String;
     }

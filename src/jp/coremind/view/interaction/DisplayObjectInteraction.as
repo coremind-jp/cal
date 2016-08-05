@@ -1,7 +1,10 @@
 package jp.coremind.view.interaction
 {
-    import jp.coremind.view.abstract.IDisplayObject;
+    import jp.coremind.asset.Grid3ImageAsset;
+    import jp.coremind.asset.Grid9ImageAsset;
     import jp.coremind.view.abstract.IElement;
+    import jp.coremind.view.abstract.component.Grid3X;
+    import jp.coremind.view.abstract.component.Grid9;
 
     public class DisplayObjectInteraction extends ElementInteraction
     {
@@ -16,10 +19,23 @@ package jp.coremind.view.interaction
         
         override public function apply(parent:IElement):void
         {
-            var  child:IDisplayObject = parent.getDisplayByName(_name) as IDisplayObject;
-            var target:IDisplayObject = child || parent;
+            var child:* = parent.getDisplayByName(_name);
+            var value:* = doInteraction(parent, child);
             
-            target[_targetPropertyName] = doInteraction(parent, null);
+            if (child is Grid3ImageAsset && _targetPropertyName === "size")
+                Grid3X.updateSize(child as Grid3ImageAsset, value);
+            else
+            if (child is Grid9ImageAsset)
+            {
+                switch (_targetPropertyName)
+                {
+                    case      "x": Grid9.updateX(     child as Grid9ImageAsset, value); break;
+                    case      "Y": Grid9.updateY(     child as Grid9ImageAsset, value); break;
+                    case  "width": Grid9.updateWidth( child as Grid9ImageAsset, value); break;
+                    case "height": Grid9.updateHeight(child as Grid9ImageAsset, value); break;
+                }
+            }
+            else (child || parent)[_targetPropertyName] = value;
         }
     }
 }

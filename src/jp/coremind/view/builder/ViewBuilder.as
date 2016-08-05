@@ -2,6 +2,7 @@ package jp.coremind.view.builder
 {
     import jp.coremind.configure.IElementBluePrint;
     import jp.coremind.core.Application;
+    import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IDisplayObject;
     import jp.coremind.view.abstract.IStretchBox;
     import jp.coremind.view.abstract.IView;
@@ -39,7 +40,11 @@ package jp.coremind.view.builder
             for (var i:int = 0; i < _elementIdList.length; i++) 
             {
                 var elementId:String = _elementIdList[i];
-                result.addDisplay(bluePrint.createBuilder(elementId).build(elementId, w, h) as IDisplayObject);
+                var builder:IDisplayObjectBuilder = bluePrint.createBuilder(elementId);
+                
+                builder ?
+                    result.addDisplay(builder.build(elementId, w, h) as IDisplayObject):
+                    Log.error("undefined ViewBuilder. ("+elementId+")");
             }
             
             return result;

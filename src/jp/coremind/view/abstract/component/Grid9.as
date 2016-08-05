@@ -10,6 +10,38 @@ package jp.coremind.view.abstract.component
      */
     public class Grid9 implements IStretchBox, IBox
     {
+        private static const TEMP:Grid9 = new Grid9();
+        public static function updateWidth(grid9:GridAsset, width:Number):void
+        {
+            TEMP.setAsset(grid9).width = width;
+            _RESET_ASSET();
+        }
+        public static function updateHeight(grid9:GridAsset, height:Number):void
+        {
+            TEMP.setAsset(grid9).height = height;
+            _RESET_ASSET();
+        }
+        public static function updateX(grid9:GridAsset, x:Number):void
+        {
+            TEMP.setAsset(grid9).x = x;
+            _RESET_ASSET();
+        }
+        public static function updateY(grid9:GridAsset, y:Number):void
+        {
+            TEMP.setAsset(grid9).y = y;
+            _RESET_ASSET();
+        }
+        private static function _RESET_ASSET():void
+        {
+            TEMP._top.resetAsset();
+            TEMP._vCenter.resetAsset();
+            TEMP._bottom.resetAsset();
+            
+            TEMP._left.resetAsset();
+            TEMP._hCenter.resetAsset();
+            TEMP._right.resetAsset();
+        }
+        
         private var
             _top:Grid3X,
             _vCenter:Grid3X,
@@ -72,6 +104,19 @@ package jp.coremind.view.abstract.component
               _right.setAsset(asset);
               
             return this;
+        }
+        
+        public function resetAsset():Grid9
+        {
+                _top.resetAsset();
+            _vCenter.resetAsset();
+             _bottom.resetAsset();
+            
+               _left.resetAsset();
+            _hCenter.resetAsset();
+              _right.resetAsset();
+              
+              return this;
         }
         
         public function get asset():IDisplayObject

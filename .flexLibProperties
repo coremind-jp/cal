@@ -6,7 +6,6 @@
     <classEntry path="jp.coremind.asset.Asset"/>
     <classEntry path="jp.coremind.asset.Color"/>
     <classEntry path="jp.coremind.asset.Grid3ImageAsset"/>
-    <classEntry path="jp.coremind.asset.Grid9Asset"/>
     <classEntry path="jp.coremind.asset.Grid9ImageAsset"/>
     <classEntry path="jp.coremind.asset.GridAsset"/>
     <classEntry path="jp.coremind.asset.TextureMap"/>
@@ -194,7 +193,7 @@
     <classEntry path="jp.coremind.utility.IUrlConverter"/>
     <classEntry path="jp.coremind.utility.UrlConverter"/>
     <classEntry path="jp.coremind.core.Router"/>
-    <classEntry path="jp.coremind.view.interaction.Interaction"/>
+    <classEntry path="jp.coremind.view.interaction.InteractionObserver"/>
     <classEntry path="jp.coremind.event.ElementInfo"/>
     <classEntry path="jp.coremind.view.interaction.StorageInteraction"/>
     <classEntry path="jp.coremind.module.ScrollModule"/>
@@ -229,6 +228,14 @@
     <classEntry path="jp.coremind.controller.SliderConfigure"/>
     <classEntry path="jp.coremind.view.interaction.DisplayObjectInteraction"/>
     <classEntry path="jp.coremind.controller.SliderConfigure2D"/>
+    <classEntry path="jp.coremind.view.interaction.StorageInteractionObserver"/>
+    <classEntry path="jp.coremind.view.interactions.RoundrectInteraction"/>
+    <classEntry path="jp.coremind.view.interactions.AtlasTextureInteraction"/>
+    <classEntry path="jp.coremind.view.interactions.StorageValueTextInteraction"/>
+    <classEntry path="jp.coremind.view.interactions.IStorageInteraction"/>
+    <classEntry path="jp.coremind.view.interactions.StorageValueBitmapTextInteraction"/>
+    <classEntry path="jp.coremind.view.interactions.PainterTextureInteraction"/>
+    <classEntry path="jp.coremind.view.interactions.Grid9TextureInteraction"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

@@ -45,9 +45,16 @@ package jp.coremind.view.abstract.component
             return this;
         }
         
-        public function destroy(withReference:Boolean = true):void
+        public function resetAsset():Grid3
         {
             _asset = null;
+            
+            return this;
+        }
+        
+        public function destroy(withReference:Boolean = true):void
+        {
+            resetAsset();
         }
         
         /**

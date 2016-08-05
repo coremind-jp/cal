@@ -14,12 +14,18 @@ package jp.coremind.view.interaction
             _name = applyTargetName;
         }
         
+        /**
+         * @inheritdoc
+         */
         public function destroy():void
         {
             _name = _bindKey = null;
             _injectionCode = null;
         }
         
+        /**
+         * @inheritdoc
+         */
         public function get applyTargetName():String
         {
             return _name;
@@ -33,7 +39,12 @@ package jp.coremind.view.interaction
         }
         
         /**
-         * 定義したインタラクション処理を実行する.
+         * @inheritdoc
+         */
+        public function apply(parent:IElement):void {}
+        
+        /**
+         * 定義したインタラクション処理を実行し最新のデータを返す.
          */
         public function doInteraction(parent:IElement, child:* = null):*
         {
@@ -47,8 +58,6 @@ package jp.coremind.view.interaction
             else
                 return _injectionCode is Function ? _injectionCode(null, child): null;
         }
-        
-        public function apply(parent:IElement):void {}
         
         public function getRuntimeValue(parent:*, params:Array):*
         {

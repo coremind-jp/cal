@@ -1,7 +1,6 @@
 package jp.coremind.view.builder.parts
 {
     import jp.coremind.asset.Asset;
-    import jp.coremind.utility.Log;
     
     import starling.display.Sprite;
 
