@@ -190,8 +190,6 @@
     <classEntry path="jp.coremind.view.layout.LayoutSimulation"/>
     <classEntry path="jp.coremind.view.layout.PartsLayout"/>
     <classEntry path="jp.coremind.view.layout.Size"/>
-    <classEntry path="jp.coremind.utility.IUrlConverter"/>
-    <classEntry path="jp.coremind.utility.UrlConverter"/>
     <classEntry path="jp.coremind.core.Router"/>
     <classEntry path="jp.coremind.event.ElementInfo"/>
     <classEntry path="jp.coremind.view.interaction.StorageInteraction"/>
@@ -234,6 +232,9 @@
     <classEntry path="jp.coremind.view.interactions.StorageValueBitmapTextInteraction"/>
     <classEntry path="jp.coremind.view.interactions.PainterTextureInteraction"/>
     <classEntry path="jp.coremind.view.interactions.Grid9TextureInteraction"/>
+    <classEntry path="jp.coremind.network.GlobalResource"/>
+    <classEntry path="jp.coremind.network.TextureResource"/>
+    <classEntry path="jp.coremind.asset.painter.BitmapPainter"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
