@@ -19,16 +19,13 @@ package jp.coremind.core
     {
         private static var _STAGE:Stage;
         public static function get stage():Stage { return _STAGE; }
-        public static function get pointerX():Number { return _STAGE.mouseX / Starling.contentScaleFactor; }
-        public static function get pointerY():Number { return _STAGE.mouseY / Starling.contentScaleFactor; }
+        public static function get pointerX():Number { return (_STAGE.mouseX - Starling.current.viewPort.x) / Starling.contentScaleFactor; }
+        public static function get pointerY():Number { return (_STAGE.mouseY - Starling.current.viewPort.y) / Starling.contentScaleFactor; }
         
         private static const _DEVICE_POINT:Point = new Point();
         public static function get pointer():Point
         {
-            _DEVICE_POINT.setTo(
-                _STAGE.mouseX / Starling.contentScaleFactor,
-                _STAGE.mouseY / Starling.contentScaleFactor
-            );
+            _DEVICE_POINT.setTo(pointerX, pointerY);
             return _DEVICE_POINT;
         }
         

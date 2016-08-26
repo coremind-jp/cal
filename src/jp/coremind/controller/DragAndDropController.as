@@ -3,11 +3,15 @@ package jp.coremind.controller
     import flash.geom.Point;
     import flash.geom.Rectangle;
     
+    import jp.coremind.core.Application;
+    import jp.coremind.core.ElementPathParser;
+    import jp.coremind.core.Layer;
     import jp.coremind.event.ElementInfo;
     import jp.coremind.module.ScrollModule;
     import jp.coremind.module.StatusGroup;
     import jp.coremind.module.StatusModule;
     import jp.coremind.utility.Delay;
+    import jp.coremind.utility.Log;
     import jp.coremind.utility.data.NumberTracker;
     import jp.coremind.utility.data.Status;
     import jp.coremind.view.abstract.ICalSprite;
@@ -17,9 +21,6 @@ package jp.coremind.controller
     import jp.coremind.view.interaction.Drag;
     
     import starling.core.Starling;
-    import jp.coremind.core.Application;
-    import jp.coremind.core.ElementPathParser;
-    import jp.coremind.core.Layer;
     
     public class DragAndDropController extends Controller
     {
@@ -215,18 +216,22 @@ package jp.coremind.controller
             };
             
             //ドラッグしたオブジェクトの座標, サイズ情報を_latestHitAreaオブジェクトに与える為に一度ヒットテストを行っておく.
-            _hitTestByElement(from, true);
-            _initialHitArea = _latestHitArea.clone();
-            
-            //drag initialize
-            from.toLocalPoint(_latestPointer, _TMP_POINT);
-            _TMP_RECT.setTo(_TMP_POINT.x, _TMP_POINT.y, from.elementWidth, from.elementHeight);
-            
-            var dragger:Drag = new Drag(0);
-            dragger.initialize(_TMP_RECT, configure.dragArea, onDrag, onDrop);
-            dragger.beginPointerDeviceListening();
-            
-            Controller.exec(klass, "onDrag", params);
+            var isHit:Boolean = _hitTestByElement(from, true);
+            if (isHit)
+            {
+                _initialHitArea = _latestHitArea.clone();
+                
+                //drag initialize
+                from.toLocalPoint(_latestPointer, _TMP_POINT);
+                _TMP_RECT.setTo(_TMP_POINT.x, _TMP_POINT.y, from.elementWidth, from.elementHeight);
+                
+                var dragger:Drag = new Drag(0);
+                dragger.initialize(_TMP_RECT, configure.dragArea, onDrag, onDrop);
+                dragger.beginPointerDeviceListening();
+                
+                Controller.exec(klass, "onDrag", params);
+            }
+            else Log.error("[DragAndDropController] failed initializing HitTest.", from.elementInfo);
         }
         
         private function _eachHitTest():ElementInfo
@@ -275,11 +280,12 @@ package jp.coremind.controller
             if (!ignoreFiltering && !Controller.exec(configure.controllerClass, "dropFiltering", [e.elementInfo]))
                 return false;
             
-            var c:IContainer = e as IContainer;
-            
             e.toGlobalPoint(_ZERO, _TMP_POINT);
+            
+            var c:IContainer = e as IContainer;
             c ? _TMP_RECT.setTo(_TMP_POINT.x, _TMP_POINT.y, c.maxWidth, c.maxHeight):
                 _TMP_RECT.setTo(_TMP_POINT.x, _TMP_POINT.y, e.elementWidth, e.elementHeight);
+            
             if (_TMP_RECT.containsPoint(_latestPointer))
             {
                 _latestHitArea = _TMP_RECT.clone();
