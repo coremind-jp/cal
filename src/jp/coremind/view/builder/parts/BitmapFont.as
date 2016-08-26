@@ -38,9 +38,9 @@ package jp.coremind.view.builder.parts
         
         public function create(text:String, width:Number, height:Number):Sprite
         {
-            return Asset.texture(_assetId).getBitmapFont(_fontface).createSprite(
-                width, height, text, _fontSize, _fontColor,
-                _hAlign, _vAlign, _autoScale, _kerning);
+            return Asset.texture(_assetId)
+                .getBitmapFont(_fontface)
+                    .createSprite(width, height, text, _fontSize, _fontColor, _hAlign, _vAlign, _autoScale, _kerning);
         }
     }
 }

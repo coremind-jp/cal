@@ -45,7 +45,7 @@ package jp.coremind.view.layout
         }
         
         /**
-         * テクスチャーアトラスを利用している場合、サイズはXML内に予め含まれているが
+         * アトラステクスチャーを利用している場合、サイズはXML内に予め含まれているが
          * それをわざわざ定義には含めるのが手間なので生成時に後から動的に入れるためのメソッド.
          */
         public function setAtlasTextureSize(size:Number):void

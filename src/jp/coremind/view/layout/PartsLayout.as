@@ -106,6 +106,7 @@ package jp.coremind.view.layout
                 builder       = bluePrint.createBuilder(partsList[i]);
                 abstractChild = builder.build(partsList[i], _element.elementWidth, _element.elementHeight);
                 child         = abstractChild is Grid9 ? (abstractChild as Grid9).asset: abstractChild as IDisplayObject;
+                Log.info("actual layout info:", Application.idGen.toAlias(child.name), child.x, child.y, child.width, child.height);
                 
                 _element.addDisplay(child);
                 

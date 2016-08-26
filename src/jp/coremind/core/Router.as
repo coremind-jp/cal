@@ -71,7 +71,7 @@ package jp.coremind.core
             {
                 executor = searchBuzzElementIdExecutor(info, statusGroup, statusValue);
                 if (executor) executor.exec(info);
-                //else Log.info("undefined Executor.", elementInfo);
+                //else Log.info("undefined Executor.", info);
             }
         }
         
@@ -93,6 +93,7 @@ package jp.coremind.core
         
         public function getExecutor(uniqueId:String):Executor
         {
+            //Log.custom(TAG, "dump uniqueId:", uniqueId);
             return uniqueId in _LISTENER_LIST ? _LISTENER_LIST[uniqueId]: null;
         }
     }

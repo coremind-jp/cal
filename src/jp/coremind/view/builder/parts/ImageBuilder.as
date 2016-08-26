@@ -65,8 +65,7 @@ package jp.coremind.view.builder.parts
             image.name = name;
             image.x = _layout.horizontalAlign.calc(actualParentWidth, image.width);
             image.y = _layout.verticalAlign.calc(actualParentHeight, image.height);
-            
-            Log.info("builded Image", image.x, image.y, image.width, image.height)
+            Log.info("builded Image", name);
             
             return image;
         }
