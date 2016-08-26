@@ -1,11 +1,14 @@
 package jp.coremind.configure
 {
     import flash.geom.Rectangle;
-    
-    import jp.coremind.utility.IUrlConverter;
 
     public interface IApplicationConfigure
     {
+        /**
+         * assetIdを元にアプリケーションから読み込む外部リソースのURLを生成する.
+         */
+        function createAssetUrl(assetId:String):String;
+        
         /**
          * アプリケーション内で利用するビュー定義を返す.
          */
@@ -74,10 +77,5 @@ package jp.coremind.configure
          * PC基準のため、モバイル機器の場合はScreenOrientationをLandscapeLeft/Rightに
          */
         function get screenOrientaion():int;
-        
-        /**
-         * ローカルファイルを参照する際に利用するURLコンバーター.
-         */
-        function get urlConverter():IUrlConverter;
     }
 }

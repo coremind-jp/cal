@@ -8,7 +8,6 @@ package jp.coremind.asset
     import jp.coremind.utility.Log;
     import jp.coremind.view.implement.starling.buildin.Image;
     
-    import starling.core.Starling;
     import starling.text.BitmapFont;
     import starling.textures.SubTexture;
     import starling.textures.Texture;
@@ -39,14 +38,15 @@ package jp.coremind.asset
         
         public function initialize(source:BitmapData, atlasXml:XML, paintableArea:Rectangle):void
         {
-            for (var i:int = 0; i < _painterList.length; i++) 
-                _painterList[i].draw(source, paintableArea);
+            for (var j:int = 0; j < _painterList.length; j++) 
+                _painterList[j].draw(source, paintableArea);
             
-            var sourceTexture:Texture = Texture.fromBitmapData(source, false, false, Starling.contentScaleFactor);
+            if (atlasXml)
+                _atlas = new TextureAtlas(
+                    Texture.fromBitmapData(source, false, false, Asset.textureScale),
+                    atlasXml);
             
-            if (atlasXml) _atlas = new TextureAtlas(sourceTexture, atlasXml);
-            
-            //Application.stage.addChild(new Bitmap(source));
+//            Application.stage.addChild(bmp);
         }
         
         public function destroy():void

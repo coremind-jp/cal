@@ -5,10 +5,9 @@ package jp.coremind.asset.painter
     import flash.geom.Rectangle;
     import flash.utils.Dictionary;
     
+    import jp.coremind.asset.Asset;
     import jp.coremind.asset.TextureMap;
     import jp.coremind.utility.Log;
-    
-    import starling.core.Starling;
 
     public class RuntimeTexturePainter
     {
@@ -22,11 +21,13 @@ package jp.coremind.asset.painter
             
         public function RuntimeTexturePainter(drawSizeWidth:int, drawSizeHeight:int)
         {
-            _rect = new Rectangle(0, 0, drawSizeWidth * MAX_SCALE_FACTOR, drawSizeHeight * MAX_SCALE_FACTOR);
+            _rect = new Rectangle(0, 0, drawSizeWidth, drawSizeHeight);
         }
         
         public function initialize(...values):RuntimeTexturePainter
         {
+            _rect
+            
             _mapList = new Dictionary(false);
             for (var i:int = 0; i < values.length; i++) 
                 _mapList[values[i]] = new TextureMap(0, 0);
@@ -73,8 +74,8 @@ package jp.coremind.asset.painter
                     }
                     
                     var map:TextureMap = _mapList[p];
-                    map.x = (globalX + localX) / Starling.contentScaleFactor;
-                    map.y = (globalY + localY) / Starling.contentScaleFactor;
+                    map.x = (globalX + localX) / Asset.textureScale;
+                    map.y = (globalY + localY) / Asset.textureScale;
                     
                     _drawTexture(dist, localX, localY, p);
                     localX += _rect.width;

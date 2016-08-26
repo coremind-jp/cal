@@ -5,6 +5,7 @@ package jp.coremind.asset.painter
     import flash.geom.Matrix;
     import flash.geom.Rectangle;
     
+    import jp.coremind.asset.Asset;
     import jp.coremind.asset.TextureMap;
     
     import starling.core.Starling;
@@ -26,7 +27,7 @@ package jp.coremind.asset.painter
         
         public function CirclePainter(diameter:int)
         {
-            super(diameter, diameter);
+            super(diameter * Asset.textureScale, diameter * Asset.textureScale);
         }
         
         override protected function _drawTexture(distBitmapData:BitmapData, x:int, y:int, value:*):void
@@ -49,7 +50,7 @@ package jp.coremind.asset.painter
             var map:TextureMap = _getTextureMap(value);
             if (!map) return new Rectangle();
             
-            var diameter:int = _rect.width / Starling.contentScaleFactor;
+            var diameter:int = _rect.width / Asset.textureScale;
             var result:Rectangle = new Rectangle(map.x, map.y, diameter, diameter);
             var radius:int = diameter >> 1;
             switch (clipOption)

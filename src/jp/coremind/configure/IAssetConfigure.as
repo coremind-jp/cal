@@ -8,6 +8,7 @@ package jp.coremind.configure
         function getPaintableArea(id:String):Rectangle;
         function getBitmapFontConfigureList(id:String):Array;
         function getPainterList(id:String):Array;
+        function getTextureMagnificationScale():uint;
         function getAllocateIdList(viewName:String):Array;
     }
 }

@@ -3,13 +3,15 @@ package jp.coremind.asset.painter
     import flash.display.BitmapData;
     import flash.geom.Rectangle;
     
+    import jp.coremind.asset.Asset;
     import jp.coremind.asset.TextureMap;
 
     public class ColorPainter extends RuntimeTexturePainter
     {
         public function ColorPainter()
         {
-            super(3, 3);
+            var n:Number = Asset.textureScale * 3;
+            super(n, n);
         }
         
         override protected function _drawTexture(distBitmapData:BitmapData, x:int, y:int, value:*):void
