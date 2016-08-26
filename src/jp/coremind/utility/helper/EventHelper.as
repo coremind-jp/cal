@@ -25,6 +25,7 @@ package jp.coremind.utility.helper
             var _removeEventListener:Function = function():void
             {
                 Log.custom(TAG, "- anyone", target, types);
+                
                 for (var i:int = 0; i < types.length; i++) 
                     target.removeEventListener(types[i], funcs[i]);
             };
@@ -33,14 +34,22 @@ package jp.coremind.utility.helper
             {
                 Log.custom(TAG, "+ anyone ", target, types);
                 
-                var func:Function = funcs[i];
-                target.addEventListener(types[i], funcs[i] = function(e:Event):void
-                {
-                    _removeEventListener();
-                    func(e);
-                });
+                target.addEventListener(
+                    types[i],
+                    wrapListenerFunction(
+                        funcs[i],
+                        _removeEventListener));
             }
 		}
+        
+        private function wrapListenerFunction(f:Function, injectionCode:Function):Function
+        {
+            return function(e:Event):void
+            {
+                f(e);
+                injectionCode();
+            }
+        }
         
 		public function createSamelistenerArray(listener:Function, num:int = 0):Array
 		{
