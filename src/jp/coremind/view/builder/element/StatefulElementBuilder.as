@@ -1,7 +1,6 @@
 package jp.coremind.view.builder.element
 {
     import jp.coremind.utility.Log;
-    import jp.coremind.view.abstract.IBox;
     import jp.coremind.view.abstract.IElement;
     import jp.coremind.view.implement.starling.StatefulElement;
     import jp.coremind.view.layout.Layout;
@@ -21,26 +20,11 @@ package jp.coremind.view.builder.element
             _interactionId = interactionId;
         }
         
-        override public function build(name:String, actualParentWidth:int, actualParentHeight:int):IBox
+        override public function initializeElement(element:IElement, name:String, actualParentWidth:int, actualParentHeight:int):IElement
         {
-            Log.custom(TAG, "build", name, _interactionId);
+            (element as StatefulElement).interactionId = _interactionId;
             
-            var element:StatefulElement = new _elementClass(layout, _backgroundBuilder);
-            element.name = name;
-            element.interactionId = _interactionId;
-            element.initialize(actualParentWidth, actualParentHeight, _storageId, _storageInteractionId, _runInteractionOnCreated);
-            
-            return element;
-        }
-        
-        override public function buildForListElement():IElement
-        {
-            Log.custom(TAG, "build for ListElement", _elementClass);
-            
-            var element:StatefulElement = new _elementClass(null, _backgroundBuilder);
-            element.interactionId = _interactionId;
-            
-            return element;
+            return super.initializeElement(element, name, actualParentWidth, actualParentHeight);
         }
     }
 }

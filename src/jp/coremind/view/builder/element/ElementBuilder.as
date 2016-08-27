@@ -4,11 +4,11 @@ package jp.coremind.view.builder.element
     import jp.coremind.utility.Log;
     import jp.coremind.view.abstract.IBox;
     import jp.coremind.view.abstract.IElement;
+    import jp.coremind.view.builder.DisplayObjectBuilder;
+    import jp.coremind.view.builder.IDisplayObjectBuilder;
+    import jp.coremind.view.builder.parts.IBackgroundBuilder;
     import jp.coremind.view.implement.starling.Element;
     import jp.coremind.view.layout.Layout;
-    import jp.coremind.view.builder.DisplayObjectBuilder;
-    import jp.coremind.view.builder.parts.IBackgroundBuilder;
-    import jp.coremind.view.builder.IDisplayObjectBuilder;
 
     public class ElementBuilder extends DisplayObjectBuilder implements IDisplayObjectBuilder
     {
@@ -28,7 +28,7 @@ package jp.coremind.view.builder.element
             
             _storageId    = ModelStorage.UNDEFINED_STORAGE_ID;
             _elementClass = Element;
-            _runInteractionOnCreated = false;
+            _runInteractionOnCreated = true;
             
             touchable();
         }
@@ -67,17 +67,17 @@ package jp.coremind.view.builder.element
         {
             Log.custom(TAG, "build", name);
             
-            var element:IElement = new _elementClass(layout, _backgroundBuilder);
+            return initializeElement(new _elementClass(layout, _backgroundBuilder), name, actualParentWidth, actualParentHeight);
+        }
+        
+        public function initializeElement(element:IElement, name:String, actualParentWidth:int, actualParentHeight:int):IElement
+        {
+            Log.custom(TAG, "initialize", name);
+            
             element.name = name;
             element.initialize(actualParentWidth, actualParentHeight, _storageId, _storageInteractionId, _runInteractionOnCreated);
             
             return element;
-        }
-        
-        public function buildForListElement():IElement
-        {
-            Log.custom(TAG, "build for ListElement", _elementClass);
-            return new _elementClass(null, _backgroundBuilder);
         }
     }
 }

@@ -41,9 +41,7 @@ package jp.coremind.event
         public function get storageId():String { return _storageId; }
         public function setReader(storageId:String, listener:IModelStorageListener):void
         {
-            _storageId = storageId && storageId.length > 0 ?
-                storageId:
-                ModelStorage.UNDEFINED_STORAGE_ID;
+            _storageId = storageId || ModelStorage.UNDEFINED_STORAGE_ID;
             
             _reader = StorageAccessor.requestReader(_storageId);
             _reader.addListener(listener, ModelReader.LISTENER_PRIORITY_ELEMENT);

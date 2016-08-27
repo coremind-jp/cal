@@ -85,16 +85,20 @@ package jp.coremind.view.builder.list
                     index = n == -1 ? length: n;
                 }
                 
-                var builder:ElementBuilder = _getBuilder(modelData, index, length);
-                var  element:IElement = _pool.request(builder.getElementClass()) as IElement;
-                if (!element) element = builder.buildForListElement();
-                element.initialize(actualParentWidth, actualParentHeight, _reader.id + "." + index);
+                var builder:ElementBuilder = _getBuilder(modelData, index, length).storageId(_reader.id + "." + index);
+                var element:IElement = _pool.request(builder.getElementClass()) as IElement;
+                
+                element ?
+                    builder.initializeElement(element, index.toString(), actualParentWidth, actualParentHeight):
+                    element = builder.build(index.toString(), actualParentWidth, actualParentHeight) as IElement;
                 
                 _createdInstance[modelData] = element;
             }
             
-            if (index > -1)
-                _createdInstance[modelData].name = index.toString();
+//            if (index > -1)
+//            {
+//                _createdInstance[modelData].name = index.toString();
+//            }
             
             return _createdInstance[modelData];
         }
@@ -134,18 +138,14 @@ package jp.coremind.view.builder.list
                 index = n == -1 ? length: n;
             }
             
-            var builder:ElementBuilder = _getBuilder(modelData, index, length);
-            var  element:IElement = builder.buildForListElement();
-            element.initialize(actualParentWidth, actualParentHeight, _reader.id + "." + index);
-            element.name = index.toString();
-            
-            return element;
+            return _getBuilder(modelData, index, length)
+                .storageId(_reader.id + "." + index)
+                .build(index.toString(), actualParentWidth, actualParentHeight) as IElement;
         }
         
         protected function _getBuilder(modelData:*, index:int, length:int):ElementBuilder
         {
             var builderName:String = getBuilderName(modelData, index, length);
-            
             var bluePrint:IElementBluePrint = Application.configure.elementBluePrint;
             
             return builderName in _builderCache ?

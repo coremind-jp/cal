@@ -4,6 +4,7 @@ package jp.coremind.view.implement.starling
     import jp.coremind.event.ElementEvent;
     import jp.coremind.event.ElementInfo;
     import jp.coremind.storage.IModelStorageListener;
+    import jp.coremind.storage.ModelStorage;
     import jp.coremind.storage.transaction.Diff;
     import jp.coremind.utility.IRecycle;
     import jp.coremind.utility.Log;
@@ -55,14 +56,12 @@ package jp.coremind.view.implement.starling
         override public function destroy(withReference:Boolean = false):void
         {
             Log.custom(TAG, "destroy", this, _info);
-            _background = null;
             
             _partsLayout.destroy();
+            _info.reset(this);
             
+            _background = null;
             _layout = null;
-            
-            if (_info.reader)
-                _info.reset(this);
             
             super.destroy(withReference);
         }
@@ -70,11 +69,9 @@ package jp.coremind.view.implement.starling
         public function reset():void
         {
             Log.custom(TAG, "reset", name);
-            if (_info.reader)
-            {
-                _info.reset(this);
-                _partsLayout.reset();
-            }
+            
+            _partsLayout.reset();
+            _info.reset(this);
             
             if (parent) removeFromParent();
         }
@@ -111,7 +108,7 @@ package jp.coremind.view.implement.starling
                 builder.build(name, parent.width, parent.height) as IElement;
         }
         
-        public function initialize(actualParentWidth:int, actualParentHeight:int, storageId:String = null, storageInteractionId:String = null, runInteractionOnCreated:Boolean = false):void
+        public function initialize(actualParentWidth:int, actualParentHeight:int, storageId:String = ModelStorage.UNDEFINED_STORAGE_ID, storageInteractionId:String = null, runInteractionOnCreated:Boolean = false):void
         {
             _initializeElementSize(actualParentWidth, actualParentHeight);
             _initializeChildren();
@@ -128,7 +125,11 @@ package jp.coremind.view.implement.starling
                 
                 _initializeModules();
                 
-                if (runInteractionOnCreated) _applyStorageInteraction(_info.reader.createKeyList());
+                if (storageId != ModelStorage.UNDEFINED_STORAGE_ID
+                &&  runInteractionOnCreated)
+                {
+                    _applyStorageInteraction(_info.reader.createKeyList());
+                }
                 
                 ready();
             }
