@@ -39,7 +39,7 @@ package jp.coremind.utility
             var hasPool:Boolean = pool.length > 0;
             var instance:IRecycle = hasPool ? pool.shift(): null;
             
-            Log.custom(TAG, "request", klass, "recycle ?", hasPool);
+            Log.custom(TAG, "request", klass, "poolNum(after)", pool.length);
             
             return instance;
         }
@@ -54,9 +54,9 @@ package jp.coremind.utility
             
             var klass:Class = $.getClassByInstance(instance);
             
-            Log.custom(TAG, "recycle", klass);
-            
             _getPool(klass).push(instance);
+            
+            Log.custom(TAG, "recycle", klass, "poolNum", _getPool(klass).length);
         }
         
         /**
