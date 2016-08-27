@@ -38,13 +38,21 @@ package jp.coremind.view.implement.starling
         {
             super._initializeModules();
             
+            var module:StatusModule;
             if (_info.modules.isUndefined(StatusModule))
-                _info.modules.addModule(new StatusModule(statusModelType))
-            
-            _info.modules.getModule(StatusModule).addListener(_applyStatus);
-            _info.modules.getModule(StatusModule).addListener(_applyInteraction);
-            
-            _initializeStatus();
+            {
+                _info.modules.addModule(module = new StatusModule(statusModelType));
+                module.addListener(_applyStatus);
+                module.addListener(_applyInteraction);
+                _initializeStatus();
+            }
+            else
+            {
+                module = _info.modules.getModule(StatusModule) as StatusModule;
+                module.addListener(_applyStatus);
+                module.addListener(_applyInteraction);
+                _applyInteraction(module.headGroup, module.headStatus);
+            }
         }
         
         /**
