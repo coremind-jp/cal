@@ -234,7 +234,6 @@
     <classEntry path="jp.coremind.view.interactions.Grid9TextureInteraction"/>
     <classEntry path="jp.coremind.network.GlobalResource"/>
     <classEntry path="jp.coremind.network.TextureResource"/>
-    <classEntry path="jp.coremind.asset.painter.BitmapPainter"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
